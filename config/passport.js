@@ -57,7 +57,8 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
         callbackURL: process.env.GITHUB_CALLBACK_URL || '/auth/github/callback',
         scope: ['user:email'],
-        passReqToCallback: true
+        passReqToCallback: true,
+        state: true
     }, async (req, accessToken, refreshToken, profile, done) => {
         try {
             console.log('GitHub OAuth callback - Profile:', JSON.stringify(profile, null, 2));

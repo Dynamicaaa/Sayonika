@@ -165,6 +165,16 @@ CREATE TABLE IF NOT EXISTS sessions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- OAuth link tokens table (for handling session persistence issues during OAuth flows)
+CREATE TABLE IF NOT EXISTS oauth_link_tokens (
+    token VARCHAR(500) PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    provider VARCHAR(20) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Notifications table
 CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

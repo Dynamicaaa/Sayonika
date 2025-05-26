@@ -58,7 +58,8 @@ router.get('/github', optionalAuth, async (req, res, next) => {
 
                     console.log('Session saved successfully, proceeding with GitHub OAuth');
                     passport.authenticate('github', {
-                        scope: ['user:email']
+                        scope: ['user:email'],
+                        state: req.query.token
                     })(req, res, next);
                 });
                 return; // Important: return here to prevent the code below from executing
@@ -82,10 +83,14 @@ router.get('/github/callback', (req, res, next) => {
         return res.redirect('/login?error=github_not_configured');
     }
 
+    console.log('GitHub OAuth callback received');
+    console.log('Query params:', req.query);
+    console.log('Session data:', req.session);
+
     passport.authenticate('github', {
         failureRedirect: '/login?error=github_auth_failed',
         failureFlash: false
-    }, (err, user, info) => {
+    }, async (err, user, info) => {
         if (err) {
             console.error('GitHub OAuth authentication error:', err);
 
@@ -104,8 +109,46 @@ router.get('/github/callback', (req, res, next) => {
             return res.redirect('/login?error=github_auth_failed');
         }
 
-        // Check if this was a linking request
-        const wasLinking = req.session.linkProvider === 'github';
+        // Check if this was a linking request - check both session and database
+        let wasLinking = req.session.linkProvider === 'github';
+        let linkUserId = req.session.linkUserId;
+
+        console.log('GitHub OAuth session data:', {
+            linkUserId: req.session.linkUserId,
+            linkProvider: req.session.linkProvider,
+            linkTimestamp: req.session.linkTimestamp,
+            sessionId: req.sessionID
+        });
+
+        // If session doesn't indicate linking, check database for token
+        if (!wasLinking && req.query.state) {
+            try {
+                const Database = require('../database/database');
+                const db = new Database();
+                await db.connect();
+
+                // Check if the state parameter is a valid link token
+                const decoded = jwt.verify(req.query.state, process.env.JWT_SECRET || 'your-secret-key');
+                if (decoded.linkProvider === 'github') {
+                    // Verify token exists in database and hasn't expired
+                    const tokenRecord = await db.get(
+                        'SELECT user_id FROM oauth_link_tokens WHERE token = ? AND provider = ? AND expires_at > CURRENT_TIMESTAMP',
+                        [req.query.state, 'github']
+                    );
+
+                    if (tokenRecord) {
+                        wasLinking = true;
+                        linkUserId = tokenRecord.user_id;
+                        console.log('GitHub OAuth linking detected via database token for user:', linkUserId);
+
+                        // Clean up the used token
+                        await db.run('DELETE FROM oauth_link_tokens WHERE token = ?', [req.query.state]);
+                    }
+                }
+            } catch (error) {
+                console.log('Could not verify GitHub link token from database:', error.message);
+            }
+        }
 
         if (wasLinking) {
             // For linking requests, don't log in - just redirect to profile
@@ -383,6 +426,10 @@ router.get('/discord/callback', (req, res, next) => {
 // Link existing account with OAuth provider
 router.post('/link/github', requireAuth, async (req, res) => {
     try {
+        const Database = require('../database/database');
+        const db = new Database();
+        await db.connect();
+
         // Create a temporary JWT token to store linking information
         const linkToken = jwt.sign(
             {
@@ -392,6 +439,13 @@ router.post('/link/github', requireAuth, async (req, res) => {
             },
             process.env.JWT_SECRET || 'your-secret-key',
             { expiresIn: '10m' } // 10 minutes should be enough for OAuth flow
+        );
+
+        // Also store in database as backup for session persistence issues
+        await db.run(
+            `INSERT OR REPLACE INTO oauth_link_tokens (token, user_id, provider, created_at, expires_at)
+             VALUES (?, ?, ?, CURRENT_TIMESTAMP, datetime('now', '+10 minutes'))`,
+            [linkToken, req.user.id, 'github']
         );
 
         console.log('Created GitHub link token for user:', req.user.id);
