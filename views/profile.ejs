@@ -1,0 +1,462 @@
+<%- include('partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/profile-gamification.css">
+
+<div class="profile-page">
+    <div class="container">
+        <!-- Alert Messages -->
+        <% if (error === 'account_already_linked' && errorMessage) { %>
+            <div class="account-linking-error">
+                <div class="error-icon">
+                    <i class="fas fa-unlink"></i>
+                </div>
+                <div class="error-content">
+                    <h3 class="error-title">Account Already Connected</h3>
+                    <p class="error-message"><%= errorMessage %></p>
+                    <div class="error-actions">
+                        <button class="btn btn-outline btn-sm" onclick="this.closest('.account-linking-error').style.display='none'">
+                            <i class="fas fa-times"></i> Dismiss
+                        </button>
+                        <a href="/settings" class="btn btn-primary btn-sm">
+                            <i class="fas fa-cog"></i> Go to Settings
+                        </a>
+                    </div>
+                </div>
+                <button type="button" class="error-close" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        <% } else if (error) { %>
+            <div class="alert alert-danger alert-dismissible">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Error:</strong>
+                <% if (error === 'github_linked') { %>
+                    Failed to link GitHub account.
+                <% } else if (error === 'discord_linked') { %>
+                    Failed to link Discord account.
+                <% } else { %>
+                    An error occurred. Please try again.
+                <% } %>
+                <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        <% } %>
+
+        <% if (success === 'github_linked') { %>
+            <div class="account-linking-success">
+                <div class="success-icon">
+                    <i class="fab fa-github"></i>
+                </div>
+                <div class="success-content">
+                    <h3 class="success-title">GitHub Account Connected!</h3>
+                    <p class="success-message">Your GitHub account has been successfully linked to your Sayonika account. You can now sign in using either method.</p>
+                    <div class="success-actions">
+                        <button class="btn btn-outline btn-sm" onclick="this.closest('.account-linking-success').style.display='none'">
+                            <i class="fas fa-times"></i> Dismiss
+                        </button>
+                        <a href="/settings" class="btn btn-primary btn-sm">
+                            <i class="fas fa-cog"></i> Manage Accounts
+                        </a>
+                    </div>
+                </div>
+                <button type="button" class="success-close" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        <% } else if (success === 'discord_linked') { %>
+            <div class="account-linking-success">
+                <div class="success-icon">
+                    <i class="fab fa-discord"></i>
+                </div>
+                <div class="success-content">
+                    <h3 class="success-title">Discord Account Connected!</h3>
+                    <p class="success-message">Your Discord account has been successfully linked to your Sayonika account. You can now sign in using either method.</p>
+                    <div class="success-actions">
+                        <button class="btn btn-outline btn-sm" onclick="this.closest('.account-linking-success').style.display='none'">
+                            <i class="fas fa-times"></i> Dismiss
+                        </button>
+                        <a href="/settings" class="btn btn-primary btn-sm">
+                            <i class="fas fa-cog"></i> Manage Accounts
+                        </a>
+                    </div>
+                </div>
+                <button type="button" class="success-close" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        <% } %>
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <img src="<%= user.avatar_url || 'https://picsum.photos/1024/1024' %>" alt="<%= user.display_name %>" class="profile-avatar">
+
+            <div class="profile-info">
+                <h1><%= user.display_name || user.username %></h1>
+                <p class="profile-username">@<%= user.username %></p>
+                <div class="profile-level">
+                    <span class="user-title"><%= user.user_title || 'Newcomer' %></span>
+                    <span class="user-level">Level <%= user.user_level || 1 %></span>
+                    <span class="achievement-points">
+                        <i class="fas fa-star"></i> <%= user.achievement_points || 0 %> points
+                    </span>
+                </div>
+                <% if (user.bio) { %>
+                    <p class="profile-bio"><%= user.bio %></p>
+                <% } %>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <span class="stat-number"><%= userMods.length %></span>
+                    <span class="stat-label">Mods</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number"><%= userMods.reduce((sum, mod) => sum + mod.download_count, 0) %></span>
+                    <span class="stat-label">Downloads</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number"><%= userAchievements ? userAchievements.length : 0 %></span>
+                    <span class="stat-label">Achievements</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number"><%= userStats ? userStats.commentsPosted : 0 %></span>
+                    <span class="stat-label">Comments</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn btn-primary" onclick="editProfile()">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+                <a href="/upload" class="btn btn-outline">
+                    <i class="fas fa-upload"></i> Upload Mod
+                </a>
+                <% if (user.is_admin) { %>
+                    <a href="/admin" class="btn btn-admin">
+                        <i class="fas fa-shield-alt"></i> Admin Panel
+                    </a>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <div class="profile-main">
+                <!-- User Mods -->
+                <div class="content-section">
+                    <h2>
+                        My Mods
+                        <div class="section-actions">
+                            <a href="/upload" class="btn btn-sm btn-primary">
+                                <i class="fas fa-plus"></i> New Mod
+                            </a>
+                        </div>
+                    </h2>
+
+                    <% if (userMods.length > 0) { %>
+                        <div class="user-mods-grid">
+                            <% userMods.forEach(mod => { %>
+                                <div class="user-mod-card">
+                                    <img src="<%= mod.thumbnail_url || '/images/default-mod-thumbnail.png' %>" alt="<%= mod.title %>" class="mod-thumbnail">
+
+                                    <div class="mod-content">
+                                        <h3 class="mod-title">
+                                            <a href="/mod/<%= mod.slug %>"><%= mod.title %></a>
+                                        </h3>
+
+                                        <div class="mod-status <%= mod.is_published ? 'published' : 'pending' %>">
+                                            <% if (mod.is_published) { %>
+                                                <i class="fas fa-check"></i> Published
+                                            <% } else { %>
+                                                <i class="fas fa-clock"></i> Pending Review
+                                            <% } %>
+                                        </div>
+
+                                        <div class="mod-meta">
+                                            <span class="mod-downloads">
+                                                <i class="fas fa-download"></i> <%= mod.download_count %>
+                                            </span>
+                                            <span class="mod-version">v<%= mod.version %></span>
+                                        </div>
+
+                                        <div class="mod-actions">
+                                            <a href="/mod/<%= mod.slug %>" class="btn btn-sm btn-outline">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            <a href="/mod/<%= mod.slug %>/edit" class="btn btn-sm btn-outline">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <button class="btn btn-sm btn-outline analytics-btn" data-mod-id="<%= mod.id %>">
+                                                <i class="fas fa-chart-bar"></i> Analytics
+                                            </button>
+                                            <button class="btn btn-sm btn-danger delete-mod-btn" data-mod-id="<%= mod.id %>" data-mod-title="<%= mod.title %>">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <h3>No mods yet</h3>
+                            <p>You haven't uploaded any mods yet. Share your creativity with the community!</p>
+                            <a href="/upload" class="btn btn-primary">
+                                <i class="fas fa-upload"></i> Upload Your First Mod
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="content-section">
+                    <h2>Recent Activity</h2>
+                    <div class="activity-feed">
+                        <div class="activity-item">
+                            <div class="activity-icon upload">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Joined Sayonika</div>
+                                <div class="activity-time"><%= helpers.formatRelativeTime(user.created_at) %></div>
+                            </div>
+                        </div>
+
+                        <% userMods.slice(0, 5).forEach(mod => { %>
+                            <div class="activity-item">
+                                <div class="activity-icon upload">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-text">
+                                        Uploaded <a href="/mod/<%= mod.slug %>"><%= mod.title %></a>
+                                    </div>
+                                    <div class="activity-time"><%= helpers.formatRelativeTime(mod.created_at) %></div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-sidebar">
+                <!-- Account Info -->
+                <div class="sidebar-section">
+                    <h3>Account Info</h3>
+                    <div class="account-info">
+                        <div class="info-item">
+                            <span class="info-label">Member since:</span>
+                            <span class="info-value"><%= new Date(user.created_at).toLocaleDateString() %></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Last seen:</span>
+                            <span class="info-value">
+                                <%= user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never' %>
+                            </span>
+                        </div>
+                        <% if (user.is_verified) { %>
+                            <div class="info-item">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value">
+                                    <i class="fas fa-check-circle" style="color: #28a745;"></i> Verified
+                                </span>
+                            </div>
+                        <% } %>
+                        <% if (user.is_owner) { %>
+                            <div class="info-item">
+                                <span class="info-label">Role:</span>
+                                <span class="info-value">
+                                    <i class="fas fa-crown" style="color: #ff6b9d;"></i> Owner
+                                </span>
+                            </div>
+                        <% } else if (user.is_admin) { %>
+                            <div class="info-item">
+                                <span class="info-label">Role:</span>
+                                <span class="info-value">
+                                    <i class="fas fa-crown" style="color: #ffc107;"></i> Administrator
+                                </span>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Achievements -->
+                <div class="sidebar-section">
+                    <h3>
+                        Recent Achievements
+                        <a href="/achievements" class="section-link">
+                            <i class="fas fa-external-link-alt"></i> View All
+                        </a>
+                    </h3>
+
+                    <% if (recentAchievements && recentAchievements.length > 0) { %>
+                        <div class="achievements-list">
+                            <% recentAchievements.forEach(achievement => { %>
+                                <div class="achievement-item earned">
+                                    <div class="achievement-icon earned">
+                                        <i class="<%= achievement.icon %>"></i>
+                                    </div>
+                                    <div class="achievement-details">
+                                        <div class="achievement-name"><%= achievement.name %></div>
+                                        <div class="achievement-description"><%= achievement.description %></div>
+                                        <div class="achievement-meta">
+                                            <span class="achievement-points">
+                                                <i class="fas fa-star"></i> <%= achievement.points %> points
+                                            </span>
+                                            <span class="achievement-date">
+                                                <%= new Date(achievement.earned_at).toLocaleDateString() %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="no-achievements">
+                            <div class="empty-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <p>No achievements yet!</p>
+                            <p class="empty-subtitle">Start uploading mods and engaging with the community to earn achievements.</p>
+                            <a href="/achievements" class="btn btn-outline btn-sm">
+                                <i class="fas fa-trophy"></i> View All Achievements
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Level Progress -->
+                <div class="sidebar-section">
+                    <h3>Level Progress</h3>
+                    <div class="level-progress">
+                        <div class="level-info">
+                            <div class="current-level">
+                                <span class="level-number">Level <%= user.user_level || 1 %></span>
+                                <span class="level-title"><%= user.user_title || 'Newcomer' %></span>
+                            </div>
+                            <div class="level-points">
+                                <%= user.achievement_points || 0 %> points
+                            </div>
+                        </div>
+
+                        <%
+                        const currentPoints = user.achievement_points || 0;
+                        const levelThresholds = [0, 25, 50, 75, 100, 150, 200, 300, 500, 1000];
+                        const currentLevel = user.user_level || 1;
+                        const nextLevelThreshold = levelThresholds[currentLevel] || 1000;
+                        const prevLevelThreshold = levelThresholds[currentLevel - 1] || 0;
+                        const progressPercent = Math.min(100, ((currentPoints - prevLevelThreshold) / (nextLevelThreshold - prevLevelThreshold)) * 100);
+                        %>
+
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <%= progressPercent %>%"></div>
+                        </div>
+
+                        <div class="progress-text">
+                            <% if (currentLevel < 10) { %>
+                                <%= nextLevelThreshold - currentPoints %> points to next level
+                            <% } else { %>
+                                Max level reached!
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="sidebar-section">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions">
+                        <a href="/upload" class="btn btn-outline btn-sm btn-block">
+                            <i class="fas fa-upload"></i> Upload Mod
+                        </a>
+                        <button class="btn btn-outline btn-sm btn-block edit-profile-btn">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <a href="/settings" class="btn btn-outline btn-sm btn-block">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                        <% if (user.is_admin) { %>
+                            <a href="/admin" class="btn btn-outline btn-sm btn-block">
+                                <i class="fas fa-shield-alt"></i> Admin Panel
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Profile</h3>
+                <button class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm" class="profile-settings-form">
+                    <div class="avatar-upload">
+                        <img src="<%= user.avatar_url || 'https://picsum.photos/1024/1024' %>" alt="Avatar" class="current-avatar" data-original-src="<%= user.avatar_url || 'https://picsum.photos/1024/1024' %>">
+                        <div class="upload-btn">
+                            <input type="file" id="avatarFile" accept="image/*">
+                            <label for="avatarFile" class="btn btn-outline btn-sm">
+                                <i class="fas fa-camera"></i> Change Avatar
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editDisplayName" class="form-label">Display Name</label>
+                            <input
+                                type="text"
+                                id="editDisplayName"
+                                name="display_name"
+                                class="form-control"
+                                value="<%= user.display_name || '' %>"
+                                maxlength="100"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input
+                                type="email"
+                                id="editEmail"
+                                name="email"
+                                class="form-control"
+                                value="<%= user.email %>"
+                                readonly
+                            >
+                            <small class="form-text">Contact support to change your email</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editBio" class="form-label">Bio</label>
+                        <textarea
+                            id="editBio"
+                            name="bio"
+                            class="form-control"
+                            rows="4"
+                            maxlength="1000"
+                            placeholder="Tell us about yourself..."
+                        ><%= user.bio || '' %></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline">Cancel</button>
+                <button class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer', { scripts: ['/js/pages/profile.js', '/js/user-mods.js'] }) %>

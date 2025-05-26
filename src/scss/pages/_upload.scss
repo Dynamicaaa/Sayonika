@@ -1,0 +1,1422 @@
+// Upload page styles
+@use 'sass:color';
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.upload-page {
+  min-height: calc(100vh - 140px);
+  padding: 2rem 0;
+  background: linear-gradient(
+    135deg,
+    rgba($primary-pink, 0.03) 0%,
+    rgba($primary-blue, 0.03) 50%,
+    rgba($primary-purple, 0.03) 100%
+  );
+}
+
+.upload-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+
+  .upload-header-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    color: $primary-pink;
+    margin-bottom: 1rem;
+
+    i {
+      background: linear-gradient(135deg, $primary-pink, $primary-blue);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  h1 {
+    color: $light-text;
+    margin-bottom: 0.75rem;
+    font-size: 2.75rem;
+    font-weight: $font-weight-bold;
+    background: linear-gradient(135deg, $light-text, rgba($light-text, 0.8));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  p {
+    color: $light-text-muted;
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+}
+
+// Upload steps indicator
+.upload-steps {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: $border-radius-lg;
+    @include transition(all);
+    opacity: 0.6;
+
+    &.active {
+      opacity: 1;
+      background: rgba($primary-pink, 0.1);
+      color: $primary-pink;
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba($light-text-muted, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: $font-weight-semibold;
+      @include transition(all);
+    }
+
+    &.active .step-number {
+      background: $primary-pink;
+      color: white;
+    }
+
+    .step-text {
+      font-size: 0.875rem;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    gap: 1rem;
+
+    .step {
+      padding: 0.25rem 0.5rem;
+
+      .step-text {
+        display: none;
+      }
+    }
+  }
+}
+
+// Dark theme upload header
+body.dark-theme .upload-header {
+  .upload-icon i {
+    background: linear-gradient(135deg, $primary-pink, $primary-blue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h1 {
+    color: $dark-text;
+    background: linear-gradient(135deg, $dark-text, rgba($dark-text, 0.8));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  p {
+    color: $dark-text-muted;
+  }
+
+  .upload-steps .step {
+    color: $dark-text-muted;
+
+    &.active {
+      background: rgba($primary-pink, 0.15);
+      color: $primary-pink;
+    }
+
+    .step-number {
+      background: rgba($dark-text-muted, 0.2);
+      color: $dark-text-muted;
+    }
+
+    &.active .step-number {
+      background: $primary-pink;
+      color: white;
+    }
+
+    .step-text {
+      color: inherit;
+    }
+  }
+}
+
+.upload-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.upload-form {
+  background-color: $light-surface;
+  border-radius: $border-radius-xl;
+  box-shadow: $box-shadow-lg;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $primary-pink, $primary-blue, $primary-purple);
+  }
+}
+
+// Dark theme upload form
+body.dark-theme .upload-form {
+  background-color: $dark-surface;
+}
+
+// Form progress indicator
+.form-progress {
+  margin-bottom: 3rem;
+  text-align: center;
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba($light-text-muted, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, $primary-pink, $primary-blue);
+      border-radius: 3px;
+      @include transition(width);
+    }
+  }
+
+  .progress-text {
+    font-size: 0.875rem;
+    color: $light-text-muted;
+    font-weight: $font-weight-medium;
+  }
+}
+
+body.dark-theme .form-progress {
+  .progress-bar {
+    background: rgba($dark-text-muted, 0.1);
+  }
+
+  .progress-text {
+    color: $dark-text-muted;
+  }
+}
+
+// Form sections - Step wizard visibility
+.upload-form .form-section {
+  display: none !important;
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  @include transition(all);
+
+  // Show first step by default (fallback if JS doesn't load)
+  &:first-of-type {
+    display: block !important;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.active {
+    display: block !important;
+    opacity: 1;
+    transform: translateY(0);
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Section headers
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h2 {
+    color: $light-text;
+    font-size: 1.75rem;
+    font-weight: $font-weight-bold;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+
+    i {
+      color: $primary-pink;
+    }
+  }
+
+  p {
+    color: $light-text-muted;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+body.dark-theme .section-header {
+  h2 {
+    color: $dark-text;
+  }
+
+  p {
+    color: $dark-text-muted;
+  }
+}
+
+// Modern form elements
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @include media-breakpoint-down(md) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.form-group {
+  margin-bottom: 2rem;
+
+  .form-label {
+    display: block;
+    font-weight: $font-weight-semibold;
+    color: $light-text;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+
+    .label-hint {
+      display: block;
+      font-weight: $font-weight-normal;
+      color: $light-text-muted;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .input-wrapper,
+  .textarea-wrapper {
+    position: relative;
+
+    .input-feedback {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.25rem;
+      opacity: 0;
+      @include transition(opacity);
+
+      &.valid {
+        color: $success;
+        opacity: 1;
+      }
+
+      &.invalid {
+        color: $danger;
+        opacity: 1;
+      }
+    }
+  }
+
+  .char-counter {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    font-size: 0.75rem;
+    color: $light-text-muted;
+    background: rgba($light-surface, 0.9);
+    padding: 0.25rem 0.5rem;
+    border-radius: $border-radius;
+
+    .char-count {
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  .formatting-help {
+    margin-top: 0.5rem;
+
+    small {
+      color: $light-text-muted;
+      font-size: 0.8rem;
+    }
+  }
+
+  .version-examples {
+    margin-top: 0.5rem;
+
+    small {
+      color: $light-text-muted;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+body.dark-theme .form-group {
+  .form-label {
+    color: $dark-text;
+
+    .label-hint {
+      color: $dark-text-muted;
+    }
+  }
+
+  .input-wrapper,
+  .textarea-wrapper {
+    .input-feedback {
+      &.valid {
+        color: $success;
+      }
+
+      &.invalid {
+        color: $danger;
+      }
+    }
+  }
+
+  .char-counter {
+    color: $dark-text-muted;
+    background: rgba($dark-surface, 0.9);
+  }
+
+  .formatting-help small,
+  .version-examples small {
+    color: $dark-text-muted;
+  }
+}
+
+// Select wrapper
+.select-wrapper {
+  position: relative;
+
+  .select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $light-text-muted;
+    pointer-events: none;
+    @include transition(transform);
+  }
+
+  &:hover .select-arrow {
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+body.dark-theme .select-wrapper .select-arrow {
+  color: $dark-text-muted;
+}
+
+// Upload grid layout
+.upload-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @include media-breakpoint-down(md) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+// Thumbnail upload area
+.thumbnail-upload-area {
+  border: 2px dashed $border-color;
+  border-radius: $border-radius-lg;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  @include transition(all);
+  background-color: rgba($light-text, 0.02);
+  aspect-ratio: 3/2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &:hover {
+    border-color: $primary-pink;
+    background-color: rgba($primary-pink, 0.05);
+  }
+
+  .thumbnail-placeholder {
+    .thumbnail-icon {
+      font-size: 2rem;
+      color: $primary-pink;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 0.875rem;
+      color: $light-text;
+      margin-bottom: 0.25rem;
+    }
+
+    small {
+      color: $light-text-muted;
+      font-size: 0.75rem;
+    }
+  }
+
+  .thumbnail-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: $border-radius-lg;
+    }
+
+    .thumbnail-overlay {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      opacity: 0;
+      @include transition(opacity);
+
+      .remove-thumbnail {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+      }
+    }
+
+    &:hover .thumbnail-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+body.dark-theme .thumbnail-upload-area {
+  border-color: $dark-surface-light;
+  background-color: rgba($dark-text, 0.02);
+
+  &:hover {
+    border-color: $primary-pink;
+    background-color: rgba($primary-pink, 0.05);
+  }
+
+  .thumbnail-placeholder {
+    p {
+      color: $dark-text;
+    }
+
+    small {
+      color: $dark-text-muted;
+    }
+  }
+}
+
+// File upload area
+.file-upload-area {
+  border: 2px dashed $border-color;
+  border-radius: $border-radius-xl;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  @include transition(all);
+  background-color: rgba($light-text, 0.02);
+  position: relative;
+  overflow: hidden;
+
+  &.modern {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:hover {
+    border-color: $primary-pink;
+    background-color: rgba($primary-pink, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba($primary-pink, 0.15);
+  }
+
+  &.drag-over {
+    border-color: $primary-pink;
+    background-color: rgba($primary-pink, 0.1);
+    transform: scale(1.02);
+  }
+
+  &.file-selected {
+    border-color: $success;
+    background-color: rgba($success, 0.05);
+
+    .upload-placeholder {
+      color: $success;
+    }
+  }
+
+  .upload-placeholder {
+    color: $light-text-muted;
+
+    .upload-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: $primary-pink;
+
+      i {
+        background: linear-gradient(135deg, $primary-pink, $primary-blue);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    .upload-text {
+      h3 {
+        font-size: 1.5rem;
+        font-weight: $font-weight-bold;
+        color: $light-text;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        color: $light-text-muted;
+
+        .upload-link {
+          color: $primary-pink;
+          font-weight: $font-weight-semibold;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .upload-specs {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+
+      .spec-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: $light-text-muted;
+
+        i {
+          color: $primary-pink;
+        }
+      }
+
+      @include media-breakpoint-down(sm) {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    .remove-file-btn {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba($danger, 0.1);
+      color: $danger;
+      border: 1px solid $danger;
+      border-radius: $border-radius-lg;
+      cursor: pointer;
+      font-weight: $font-weight-semibold;
+      @include transition(all);
+
+      &:hover {
+        background: $danger;
+        color: white;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+// Dark theme file upload area
+body.dark-theme .file-upload-area {
+  border-color: $dark-surface-light;
+  background-color: rgba($dark-text, 0.02);
+
+  &:hover {
+    border-color: $primary-pink;
+    background-color: rgba($primary-pink, 0.05);
+  }
+
+  &.drag-over {
+    border-color: $primary-pink;
+    background-color: rgba($primary-pink, 0.1);
+  }
+
+  &.file-selected {
+    border-color: $success;
+    background-color: rgba($success, 0.05);
+  }
+
+  .upload-placeholder {
+    color: $dark-text-muted;
+
+    .upload-text {
+      h3 {
+        color: $dark-text;
+      }
+
+      p {
+        color: $dark-text-muted;
+
+        .upload-link {
+          color: $primary-pink;
+        }
+      }
+    }
+
+    .upload-specs {
+      .spec-item {
+        color: $dark-text-muted;
+
+        i {
+          color: $primary-pink;
+        }
+      }
+    }
+
+    small {
+      color: $dark-text-muted;
+    }
+  }
+}
+
+// Upload progress
+.upload-progress {
+  margin-top: 1rem;
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: rgba($light-text, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, $primary-pink, $primary-blue);
+      width: 0%;
+      @include transition(width);
+    }
+  }
+
+  .progress-text {
+    display: block;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: $light-text-muted;
+  }
+}
+
+// Dark theme upload progress
+body.dark-theme .upload-progress {
+  .progress-bar {
+    background-color: rgba($dark-text, 0.1);
+  }
+
+  .progress-text {
+    color: $dark-text-muted;
+  }
+}
+
+// Screenshots upload
+.screenshots-upload {
+  .screenshot-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .screenshot-slot {
+    aspect-ratio: 16/9;
+    border: 2px dashed $border-color;
+    border-radius: $border-radius;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    @include transition(border-color, background-color);
+    background-color: rgba($light-text, 0.02);
+    position: relative;
+
+    &:hover {
+      border-color: $primary-pink;
+      background-color: rgba($primary-pink, 0.05);
+    }
+
+    i {
+      font-size: 1.5rem;
+      color: $light-text-muted;
+      margin-bottom: 0.5rem;
+    }
+
+    span {
+      font-size: 0.875rem;
+      color: $light-text-muted;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: $border-radius;
+    }
+
+    .screenshot-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba($dark-bg, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      @include transition(opacity);
+      border-radius: $border-radius;
+
+      .remove-screenshot-btn {
+        background-color: $danger;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        @include transition(background-color);
+
+        &:hover {
+          background-color: color.adjust($danger, $lightness: -10%);
+        }
+      }
+    }
+
+    &:hover .screenshot-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+// Dark theme screenshots upload
+body.dark-theme .screenshots-upload .screenshot-slot {
+  border-color: $dark-surface-light;
+  background-color: rgba($dark-text, 0.02);
+
+  &:hover {
+    border-color: $primary-pink;
+    background-color: rgba($primary-pink, 0.05);
+  }
+
+  i, span {
+    color: $dark-text-muted;
+  }
+}
+
+// Form actions
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid $border-color;
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+  }
+}
+
+// Dark theme form actions
+body.dark-theme .form-actions {
+  border-top-color: $dark-surface-light;
+}
+
+// Tags input
+.tags-input-wrapper {
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    min-height: 2rem;
+
+    .tag-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, $primary-pink, $primary-blue);
+      color: white;
+      padding: 0.375rem 0.75rem;
+      border-radius: $border-radius-lg;
+      font-size: 0.875rem;
+      font-weight: $font-weight-medium;
+      @include transition(all);
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba($primary-pink, 0.3);
+      }
+
+      .remove-tag {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0;
+        font-size: 1rem;
+        line-height: 1;
+        @include transition(transform);
+
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+    }
+  }
+
+  .tags-suggestions {
+    margin-top: 0.5rem;
+
+    small {
+      color: $light-text-muted;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+body.dark-theme .tags-input-wrapper .tags-suggestions small {
+  color: $dark-text-muted;
+}
+
+// Content rating section
+.content-rating-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba($light-text, 0.02);
+  border-radius: $border-radius-lg;
+  border: 1px solid $border-color;
+
+  h3 {
+    color: $light-text;
+    font-size: 1.125rem;
+    font-weight: $font-weight-semibold;
+    margin-bottom: 1rem;
+  }
+
+  .rating-options {
+    .rating-option {
+      .form-check-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border: 2px solid $border-color;
+        border-radius: $border-radius-lg;
+        cursor: pointer;
+        @include transition(all);
+
+        &:hover {
+          border-color: $primary-pink;
+          background: rgba($primary-pink, 0.05);
+        }
+
+        .rating-info {
+          .rating-title {
+            display: block;
+            font-weight: $font-weight-semibold;
+            color: $light-text;
+            margin-bottom: 0.25rem;
+          }
+
+          .rating-desc {
+            display: block;
+            font-size: 0.875rem;
+            color: $light-text-muted;
+          }
+        }
+
+        .rating-icon {
+          color: $warning;
+          font-size: 1.25rem;
+        }
+      }
+
+      .form-check-input:checked + .form-check-label {
+        border-color: $warning;
+        background: rgba($warning, 0.1);
+
+        .rating-icon {
+          color: $warning;
+        }
+      }
+    }
+  }
+}
+
+body.dark-theme .content-rating-section {
+  background: rgba($dark-text, 0.02);
+  border-color: $dark-surface-light;
+
+  h3 {
+    color: $dark-text;
+  }
+
+  .rating-options .rating-option .form-check-label {
+    border-color: $dark-surface-light;
+
+    &:hover {
+      border-color: $primary-pink;
+      background: rgba($primary-pink, 0.05);
+    }
+
+    .rating-info {
+      .rating-title {
+        color: $dark-text;
+      }
+
+      .rating-desc {
+        color: $dark-text-muted;
+      }
+    }
+  }
+}
+
+// Section actions
+.section-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid $border-color;
+
+  .prev-section {
+    margin-right: auto;
+  }
+
+  .next-section {
+    margin-left: auto;
+  }
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+    gap: 1rem;
+
+    .prev-section,
+    .next-section {
+      margin: 0;
+      width: 100%;
+    }
+  }
+}
+
+body.dark-theme .section-actions {
+  border-top-color: $dark-surface-light;
+}
+
+// Screenshots section
+.screenshots-section {
+  margin-bottom: 3rem;
+
+  h3 {
+    color: $light-text;
+    font-size: 1.25rem;
+    font-weight: $font-weight-semibold;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: $light-text-muted;
+    margin-bottom: 1.5rem;
+  }
+}
+
+body.dark-theme .screenshots-section {
+  h3 {
+    color: $dark-text;
+  }
+
+  p {
+    color: $dark-text-muted;
+  }
+}
+
+// Modern screenshots upload
+.screenshots-upload.modern {
+  .screenshot-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .screenshot-slot {
+    aspect-ratio: 16/9;
+    border: 2px dashed $border-color;
+    border-radius: $border-radius-lg;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    @include transition(all);
+    background-color: rgba($light-text, 0.02);
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+      border-color: $primary-pink;
+      background-color: rgba($primary-pink, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba($primary-pink, 0.15);
+    }
+
+    i {
+      font-size: 2rem;
+      color: $primary-pink;
+      margin-bottom: 0.5rem;
+    }
+
+    span {
+      font-size: 0.875rem;
+      color: $light-text-muted;
+      font-weight: $font-weight-medium;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: $border-radius-lg;
+    }
+
+    .screenshot-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba($dark-bg, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      @include transition(opacity);
+      border-radius: $border-radius-lg;
+
+      .remove-screenshot-btn {
+        background-color: $danger;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.25rem;
+        @include transition(all);
+
+        &:hover {
+          background-color: color.adjust($danger, $lightness: -10%);
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    &:hover .screenshot-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+body.dark-theme .screenshots-upload.modern .screenshot-slot {
+  border-color: $dark-surface-light;
+  background-color: rgba($dark-text, 0.02);
+
+  &:hover {
+    border-color: $primary-pink;
+    background-color: rgba($primary-pink, 0.05);
+  }
+
+  i {
+    color: $primary-pink;
+  }
+
+  span {
+    color: $dark-text-muted;
+  }
+}
+
+// Review section
+.review-section {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: rgba($light-text, 0.02);
+  border-radius: $border-radius-lg;
+  border: 1px solid $border-color;
+
+  h3 {
+    color: $light-text;
+    font-size: 1.25rem;
+    font-weight: $font-weight-semibold;
+    margin-bottom: 1.5rem;
+  }
+
+  .submission-summary {
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid $border-color;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .summary-label {
+        font-weight: $font-weight-semibold;
+        color: $light-text;
+      }
+
+      .summary-value {
+        color: $light-text-muted;
+        text-align: right;
+        max-width: 60%;
+        word-break: break-word;
+      }
+    }
+  }
+}
+
+body.dark-theme .review-section {
+  background: rgba($dark-text, 0.02);
+  border-color: $dark-surface-light;
+
+  h3 {
+    color: $dark-text;
+  }
+
+  .submission-summary .summary-item {
+    border-bottom-color: $dark-surface-light;
+
+    .summary-label {
+      color: $dark-text;
+    }
+
+    .summary-value {
+      color: $dark-text-muted;
+    }
+  }
+}
+
+// Terms notice
+.terms-notice {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba($primary-blue, 0.05);
+  border: 1px solid rgba($primary-blue, 0.2);
+  border-radius: $border-radius-lg;
+
+  .terms-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+
+    i {
+      color: $primary-blue;
+      font-size: 1.25rem;
+      margin-top: 0.125rem;
+      flex-shrink: 0;
+    }
+
+    p {
+      color: $light-text;
+      margin: 0;
+      line-height: 1.6;
+
+      a {
+        color: $primary-blue;
+        font-weight: $font-weight-semibold;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+body.dark-theme .terms-notice {
+  background: rgba($primary-blue, 0.1);
+  border-color: rgba($primary-blue, 0.3);
+
+  .terms-content p {
+    color: $dark-text;
+  }
+}
+
+// Comprehensive dark theme text color fixes
+body.dark-theme .upload-page {
+  // Ensure all text elements have proper dark theme colors
+  h1, h2, h3, h4, h5, h6 {
+    color: $dark-text;
+  }
+
+  p, span, div, label {
+    color: $dark-text;
+  }
+
+  small {
+    color: $dark-text-muted;
+  }
+
+  // Form elements
+  .form-control {
+    color: $dark-text;
+    background-color: $dark-surface;
+    border-color: $dark-surface-light;
+
+    &::placeholder {
+      color: $dark-text-muted;
+    }
+
+    &:focus {
+      color: $dark-text;
+      background-color: $dark-surface;
+      border-color: $primary-pink;
+    }
+  }
+
+  // Button text
+  .btn {
+    &:not(.btn-primary):not(.btn-danger):not(.btn-success):not(.btn-warning) {
+      color: $dark-text;
+    }
+  }
+
+  // Links
+  a {
+    color: $primary-pink;
+
+    &:hover {
+      color: color.adjust($primary-pink, $lightness: 10%);
+    }
+  }
+
+  // Muted text
+  .text-muted,
+  .form-text,
+  .help-text {
+    color: $dark-text-muted !important;
+  }
+
+  // Upload specific elements
+  .upload-placeholder,
+  .thumbnail-placeholder {
+    color: $dark-text-muted;
+
+    h3, p, span {
+      color: inherit;
+    }
+  }
+
+  // Screenshot elements
+  .screenshot-slot {
+    color: $dark-text-muted;
+
+    i, span {
+      color: inherit;
+    }
+  }
+
+  // Section headers
+  .section-header {
+    h2 {
+      color: $dark-text;
+    }
+
+    p {
+      color: $dark-text-muted;
+    }
+  }
+
+  // Progress text
+  .progress-text {
+    color: $dark-text-muted;
+  }
+
+  // Any remaining text elements
+  * {
+    &:not(.btn):not(.form-control):not(.upload-icon):not(.tag-item) {
+      color: inherit;
+    }
+  }
+}

@@ -1,0 +1,389 @@
+// Authentication pages styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.auth-page {
+  min-height: calc(100vh - 140px); // Account for header and footer
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  background: linear-gradient(
+    135deg,
+    rgba($primary-pink, 0.05) 0%,
+    rgba($primary-blue, 0.05) 50%,
+    rgba($primary-purple, 0.05) 100%
+  );
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 0 1rem;
+}
+
+.auth-card {
+  background-color: $light-surface;
+  border-radius: $border-radius-xl;
+  box-shadow: $box-shadow-lg;
+  padding: 2.5rem;
+  text-align: center;
+}
+
+// Dark theme auth card
+body.dark-theme .auth-card {
+  background-color: $dark-surface;
+}
+
+.auth-header {
+  margin-bottom: 2rem;
+
+  .auth-logo {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, $primary-pink, $primary-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  h1 {
+    color: $light-text;
+    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
+  }
+
+  p {
+    color: $light-text-muted;
+    margin: 0;
+  }
+}
+
+// Dark theme auth header
+body.dark-theme .auth-header {
+  h1 {
+    color: $dark-text;
+  }
+
+  p {
+    color: $dark-text-muted;
+  }
+}
+
+.auth-form {
+  text-align: left;
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    font-weight: $font-weight-medium;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control {
+    height: 48px;
+    font-size: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    height: 48px;
+    font-size: 1rem;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.auth-options {
+  margin: 1.5rem 0;
+  text-align: center;
+
+  .forgot-password {
+    color: $primary-pink;
+    text-decoration: none;
+    font-size: $font-size-sm;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Dark theme auth options
+body.dark-theme .auth-options .forgot-password {
+  color: $secondary-pink;
+}
+
+.auth-divider {
+  position: relative;
+  margin: 2rem 0;
+  text-align: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: $border-color;
+  }
+
+  span {
+    background-color: $light-surface;
+    padding: 0 1rem;
+    color: $light-text-muted;
+    font-size: $font-size-sm;
+  }
+}
+
+// Dark theme auth divider
+body.dark-theme .auth-divider {
+  &::before {
+    background-color: $dark-surface-light;
+  }
+
+  span {
+    background-color: $dark-surface;
+    color: $dark-text-muted;
+  }
+}
+
+.social-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    background-color: $light-bg;
+    color: $light-text;
+    text-decoration: none;
+    font-weight: $font-weight-medium;
+    @include transition();
+
+    &:hover {
+      background-color: $light-surface;
+      text-decoration: none;
+      color: $light-text;
+    }
+
+    i {
+      font-size: 1.125rem;
+    }
+
+    &.github {
+      &:hover {
+        background-color: #333;
+        color: white;
+        border-color: #333;
+      }
+    }
+
+    &.discord {
+      &:hover {
+        background-color: #5865f2;
+        color: white;
+        border-color: #5865f2;
+      }
+    }
+  }
+}
+
+// Dark theme social auth
+body.dark-theme .social-auth .social-btn {
+  border-color: $dark-surface-light;
+  background-color: $dark-surface-light;
+  color: $dark-text;
+
+  &:hover {
+    background-color: $dark-surface;
+    color: $dark-text;
+  }
+}
+
+.auth-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $border-color;
+  text-align: center;
+
+  p {
+    color: $light-text-muted;
+    margin: 0;
+    font-size: $font-size-sm;
+
+    a {
+      color: $primary-pink;
+      text-decoration: none;
+      font-weight: $font-weight-medium;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Dark theme auth footer
+body.dark-theme .auth-footer {
+  border-top-color: $dark-surface-light;
+
+  p {
+    color: $dark-text-muted;
+
+    a {
+      color: $secondary-pink;
+    }
+  }
+}
+
+// Form validation styles for auth
+.auth-form {
+  .form-control.is-invalid {
+    border-color: $danger;
+    box-shadow: 0 0 0 0.2rem rgba($danger, 0.25);
+  }
+
+  .form-control.is-valid {
+    border-color: $success;
+    box-shadow: 0 0 0 0.2rem rgba($success, 0.25);
+  }
+
+  .invalid-feedback {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: $font-size-sm;
+    color: $danger;
+  }
+
+  .valid-feedback {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: $font-size-sm;
+    color: $success;
+  }
+}
+
+// Password strength indicator
+.password-strength {
+  margin-top: 0.5rem;
+
+  .strength-bar {
+    height: 4px;
+    background-color: $light-surface-dark;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+
+    .strength-fill {
+      height: 100%;
+      @include transition(width, background-color);
+      width: 0%;
+
+      &.weak {
+        background-color: $danger;
+        width: 25%;
+      }
+
+      &.fair {
+        background-color: $warning;
+        width: 50%;
+      }
+
+      &.good {
+        background-color: $info;
+        width: 75%;
+      }
+
+      &.strong {
+        background-color: $success;
+        width: 100%;
+      }
+    }
+  }
+
+  .strength-text {
+    font-size: $font-size-sm;
+    color: $light-text-muted;
+  }
+}
+
+// Dark theme password strength
+body.dark-theme .password-strength .strength-bar {
+  background-color: $dark-surface-light;
+}
+
+body.dark-theme .password-strength .strength-text {
+  color: $dark-text-muted;
+}
+
+// Terms and privacy
+.terms-privacy {
+  margin-top: 1rem;
+  font-size: $font-size-sm;
+  color: $light-text-muted;
+  line-height: 1.4;
+
+  a {
+    color: $primary-pink;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Dark theme terms and privacy
+body.dark-theme .terms-privacy {
+  color: $dark-text-muted;
+
+  a {
+    color: $secondary-pink;
+  }
+}
+
+// Loading state for auth forms
+.auth-form .btn-loading {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    margin: auto;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .btn-text {
+    opacity: 0;
+  }
+}
+
+// Responsive adjustments
+@include media-breakpoint-down(sm) {
+  .auth-card {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+
+  .auth-header h1 {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,673 @@
+<%- include('../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link active">Error Handling</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Error Handling Guide -->
+                    <section class="docs-section" id="error-handling">
+                        <h2>Error Handling</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                The Sayonika API uses conventional HTTP response codes and provides detailed error information
+                                to help you understand and handle errors gracefully in your applications.
+                            </p>
+
+                            <!-- HTTP Status Codes -->
+                            <h3>HTTP Status Codes</h3>
+                            <p>The API uses standard HTTP status codes to indicate the success or failure of requests:</p>
+
+                            <!-- Success Codes -->
+                            <h4>Success Codes (2xx)</h4>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Status</th>
+                                        <th>Description</th>
+                                        <th>Usage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="status-code success">200</span></td>
+                                        <td>OK</td>
+                                        <td>Request successful</td>
+                                        <td>GET, PUT, PATCH requests</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code success">201</span></td>
+                                        <td>Created</td>
+                                        <td>Resource created successfully</td>
+                                        <td>POST requests</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code success">204</span></td>
+                                        <td>No Content</td>
+                                        <td>Request successful, no content returned</td>
+                                        <td>DELETE requests</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Client Error Codes -->
+                            <h4>Client Error Codes (4xx)</h4>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Status</th>
+                                        <th>Description</th>
+                                        <th>Common Causes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="status-code client-error">400</span></td>
+                                        <td>Bad Request</td>
+                                        <td>Invalid request parameters</td>
+                                        <td>Malformed JSON, missing required fields</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code client-error">401</span></td>
+                                        <td>Unauthorized</td>
+                                        <td>Authentication required</td>
+                                        <td>Missing or invalid token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code client-error">403</span></td>
+                                        <td>Forbidden</td>
+                                        <td>Insufficient permissions</td>
+                                        <td>Valid token but lacking required permissions</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code client-error">404</span></td>
+                                        <td>Not Found</td>
+                                        <td>Resource not found</td>
+                                        <td>Invalid endpoint or resource ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code client-error">409</span></td>
+                                        <td>Conflict</td>
+                                        <td>Resource conflict</td>
+                                        <td>Duplicate resource, version conflicts</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code client-error">422</span></td>
+                                        <td>Unprocessable Entity</td>
+                                        <td>Validation failed</td>
+                                        <td>Invalid data format or business rules</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code client-error">429</span></td>
+                                        <td>Too Many Requests</td>
+                                        <td>Rate limit exceeded</td>
+                                        <td>Too many requests in time window</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Server Error Codes -->
+                            <h4>Server Error Codes (5xx)</h4>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Status</th>
+                                        <th>Description</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="status-code server-error">500</span></td>
+                                        <td>Internal Server Error</td>
+                                        <td>Server error occurred</td>
+                                        <td>Retry after delay, contact support if persistent</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code server-error">502</span></td>
+                                        <td>Bad Gateway</td>
+                                        <td>Upstream server error</td>
+                                        <td>Temporary issue, retry after delay</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-code server-error">503</span></td>
+                                        <td>Service Unavailable</td>
+                                        <td>Service temporarily unavailable</td>
+                                        <td>Check status page, retry with backoff</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Error Response Format -->
+                            <h3>Error Response Format</h3>
+                            <p>All error responses follow a consistent structure:</p>
+
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": {
+      // Additional error details
+    }
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Error Codes -->
+                            <h3>Error Codes</h3>
+                            <p>The API uses specific error codes to help you identify and handle different types of errors:</p>
+
+                            <!-- Authentication Errors -->
+                            <h4>Authentication Errors</h4>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>HTTP Status</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>MISSING_TOKEN</code></td>
+                                        <td>401</td>
+                                        <td>No authentication token provided</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>INVALID_TOKEN</code></td>
+                                        <td>401</td>
+                                        <td>Token is malformed or invalid</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>EXPIRED_TOKEN</code></td>
+                                        <td>401</td>
+                                        <td>Token has expired</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>INSUFFICIENT_PERMISSIONS</code></td>
+                                        <td>403</td>
+                                        <td>User lacks required permissions</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Validation Errors -->
+                            <h4>Validation Errors</h4>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>HTTP Status</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>VALIDATION_ERROR</code></td>
+                                        <td>422</td>
+                                        <td>Input validation failed</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>MISSING_REQUIRED_FIELD</code></td>
+                                        <td>400</td>
+                                        <td>Required field is missing</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>INVALID_FORMAT</code></td>
+                                        <td>400</td>
+                                        <td>Field format is invalid</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>VALUE_TOO_LONG</code></td>
+                                        <td>422</td>
+                                        <td>Field value exceeds maximum length</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Resource Errors -->
+                            <h4>Resource Errors</h4>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>HTTP Status</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>RESOURCE_NOT_FOUND</code></td>
+                                        <td>404</td>
+                                        <td>Requested resource doesn't exist</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>RESOURCE_ALREADY_EXISTS</code></td>
+                                        <td>409</td>
+                                        <td>Resource with same identifier exists</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>RESOURCE_LOCKED</code></td>
+                                        <td>423</td>
+                                        <td>Resource is locked for editing</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Example Error Responses -->
+                            <h3>Example Error Responses</h3>
+
+                            <!-- Validation Error -->
+                            <h4>Validation Error</h4>
+                            <div class="code-block">
+                                <pre><code>HTTP/1.1 422 Unprocessable Entity
+Content-Type: application/json
+
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed for one or more fields",
+    "details": {
+      "fields": {
+        "email": "Invalid email format",
+        "password": "Password must be at least 8 characters long",
+        "title": "Title is required"
+      }
+    }
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Authentication Error -->
+                            <h4>Authentication Error</h4>
+                            <div class="code-block">
+                                <pre><code>HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "success": false,
+  "error": {
+    "code": "EXPIRED_TOKEN",
+    "message": "Your authentication token has expired",
+    "details": {
+      "expired_at": "2024-01-15T09:30:00Z",
+      "refresh_url": "/api/auth/refresh"
+    }
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Rate Limit Error -->
+                            <h4>Rate Limit Error</h4>
+                            <div class="code-block">
+                                <pre><code>HTTP/1.1 429 Too Many Requests
+Content-Type: application/json
+Retry-After: 3600
+
+{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Rate limit exceeded. Please try again later.",
+    "details": {
+      "limit": 1000,
+      "used": 1000,
+      "reset_at": "2024-01-15T11:30:00Z",
+      "retry_after": 3600
+    }
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Error Handling Best Practices -->
+                            <h3>Error Handling Best Practices</h3>
+
+                            <!-- Code Examples -->
+                            <div class="language-tabs">
+                                <div class="tab-buttons">
+                                    <button class="tab-button active" data-tab="js-error">JavaScript</button>
+                                    <button class="tab-button" data-tab="python-error">Python</button>
+                                    <button class="tab-button" data-tab="curl-error">cURL</button>
+                                </div>
+
+                                <div class="tab-content active" id="js-error">
+                                    <div class="code-block">
+                                        <pre><code>async function handleAPIRequest(url, options = {}) {
+  try {
+    const response = await fetch(url, options);
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new APIError(data.error, response.status);
+    }
+    
+    return data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      handleAPIError(error);
+    } else {
+      console.error('Network or parsing error:', error);
+      throw error;
+    }
+  }
+}
+
+function handleAPIError(error) {
+  switch (error.code) {
+    case 'EXPIRED_TOKEN':
+      // Refresh token and retry
+      return refreshTokenAndRetry();
+      
+    case 'RATE_LIMIT_EXCEEDED':
+      // Wait and retry
+      const retryAfter = error.details.retry_after * 1000;
+      setTimeout(() => {
+        // Retry the request
+      }, retryAfter);
+      break;
+      
+    case 'VALIDATION_ERROR':
+      // Show validation errors to user
+      displayValidationErrors(error.details.fields);
+      break;
+      
+    case 'INSUFFICIENT_PERMISSIONS':
+      // Redirect to login or show permission error
+      showPermissionError();
+      break;
+      
+    default:
+      // Generic error handling
+      showGenericError(error.message);
+  }
+}
+
+class APIError extends Error {
+  constructor(errorData, statusCode) {
+    super(errorData.message);
+    this.code = errorData.code;
+    this.details = errorData.details;
+    this.statusCode = statusCode;
+  }
+}</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="python-error">
+                                    <div class="code-block">
+                                        <pre><code>import requests
+import time
+from typing import Dict, Any
+
+class APIError(Exception):
+    def __init__(self, error_data: Dict[str, Any], status_code: int):
+        super().__init__(error_data.get('message', 'Unknown error'))
+        self.code = error_data.get('code')
+        self.details = error_data.get('details', {})
+        self.status_code = status_code
+
+def handle_api_request(url: str, **kwargs) -> Dict[str, Any]:
+    try:
+        response = requests.request(**kwargs, url=url)
+        data = response.json()
+        
+        if not response.ok:
+            raise APIError(data.get('error', {}), response.status_code)
+        
+        return data
+    except requests.RequestException as e:
+        print(f"Network error: {e}")
+        raise
+    except APIError as e:
+        handle_api_error(e)
+        raise
+
+def handle_api_error(error: APIError):
+    if error.code == 'EXPIRED_TOKEN':
+        # Refresh token and retry
+        refresh_token_and_retry()
+    elif error.code == 'RATE_LIMIT_EXCEEDED':
+        # Wait and retry
+        retry_after = error.details.get('retry_after', 60)
+        print(f"Rate limited. Waiting {retry_after} seconds...")
+        time.sleep(retry_after)
+    elif error.code == 'VALIDATION_ERROR':
+        # Handle validation errors
+        fields = error.details.get('fields', {})
+        for field, message in fields.items():
+            print(f"Validation error in {field}: {message}")
+    elif error.code == 'INSUFFICIENT_PERMISSIONS':
+        # Handle permission errors
+        print("Insufficient permissions for this operation")
+    else:
+        # Generic error handling
+        print(f"API error: {error}")
+
+# Usage example
+try:
+    data = handle_api_request(
+        url='https://your-domain.com/api/mods',
+        method='GET',
+        headers={'Authorization': 'Bearer your_token'}
+    )
+    print("Success:", data)
+except APIError as e:
+    print(f"API Error: {e.code} - {e}")</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="curl-error">
+                                    <div class="code-block">
+                                        <pre><code>#!/bin/bash
+
+# Function to handle API errors
+handle_api_error() {
+    local status_code=$1
+    local response_body=$2
+    
+    case $status_code in
+        400)
+            echo "Bad Request: Check your request parameters"
+            echo "Response: $response_body"
+            ;;
+        401)
+            echo "Unauthorized: Check your authentication token"
+            # Try to refresh token
+            refresh_token
+            ;;
+        403)
+            echo "Forbidden: Insufficient permissions"
+            ;;
+        404)
+            echo "Not Found: Resource doesn't exist"
+            ;;
+        422)
+            echo "Validation Error: Check your input data"
+            echo "Details: $response_body"
+            ;;
+        429)
+            local retry_after=$(echo "$response_body" | jq -r '.error.details.retry_after // 60')
+            echo "Rate limited. Waiting $retry_after seconds..."
+            sleep "$retry_after"
+            ;;
+        5*)
+            echo "Server Error: Try again later"
+            ;;
+        *)
+            echo "Unknown error (HTTP $status_code): $response_body"
+            ;;
+    esac
+}
+
+# Function to make API request with error handling
+api_request() {
+    local url=$1
+    local method=${2:-GET}
+    local data=${3:-}
+    
+    local response=$(curl -s -w "\n%{http_code}" \
+        -X "$method" \
+        -H "Authorization: Bearer $TOKEN" \
+        -H "Content-Type: application/json" \
+        ${data:+-d "$data"} \
+        "$url")
+    
+    local body=$(echo "$response" | head -n -1)
+    local status_code=$(echo "$response" | tail -n 1)
+    
+    if [[ $status_code -ge 200 && $status_code -lt 300 ]]; then
+        echo "$body"
+        return 0
+    else
+        handle_api_error "$status_code" "$body"
+        return 1
+    fi
+}
+
+# Usage
+TOKEN="your_jwt_token"
+api_request "https://your-domain.com/api/mods" "GET"</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Debugging Tips -->
+                            <h3>Debugging Tips</h3>
+                            
+                            <div class="debugging-tips">
+                                <div class="tip">
+                                    <h4><i class="fas fa-search"></i> Use Request IDs</h4>
+                                    <p>Every response includes a unique <code>request_id</code> in the meta section. Include this when reporting issues for faster debugging.</p>
+                                </div>
+
+                                <div class="tip">
+                                    <h4><i class="fas fa-clock"></i> Check Timestamps</h4>
+                                    <p>Response timestamps help identify timing issues. Compare with your local time to detect clock skew problems.</p>
+                                </div>
+
+                                <div class="tip">
+                                    <h4><i class="fas fa-list"></i> Log Full Responses</h4>
+                                    <p>Log complete error responses (excluding sensitive data) to help with debugging and support requests.</p>
+                                </div>
+
+                                <div class="tip">
+                                    <h4><i class="fas fa-retry"></i> Implement Retry Logic</h4>
+                                    <p>Use exponential backoff for retrying failed requests, especially for 5xx errors and rate limits.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../partials/footer') %>

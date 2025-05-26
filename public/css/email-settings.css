@@ -1,0 +1,123 @@
+/* Email status styles */
+.email-status-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.email-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.email-status-header h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.email-status-header i {
+    margin-right: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+
+.status-badge i {
+    margin-right: 0.25rem;
+}
+
+.status-badge.verified {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-badge.unverified {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.email-address {
+    color: #666;
+    margin: 0.5rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+}
+
+.verification-notice {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 6px;
+}
+
+.verification-notice p {
+    margin: 0 0 1rem 0;
+    color: #1565c0;
+}
+
+.disabled-notice {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    color: #856404;
+    display: flex;
+    align-items: center;
+}
+
+.disabled-notice i {
+    margin-right: 0.5rem;
+}
+
+.email-options {
+    margin-left: 1.5rem;
+    margin-top: 1rem;
+}
+
+.email-options .form-check {
+    margin-bottom: 0.75rem;
+}
+
+/* Dark theme support */
+body.dark-theme .email-status-card {
+    background: #2d2d2d;
+    border-color: #3d3d3d;
+}
+
+body.dark-theme .email-status-header h4 {
+    color: #fff;
+}
+
+body.dark-theme .email-address {
+    color: #ccc;
+}
+
+body.dark-theme .verification-notice {
+    background: #1e3a8a;
+    border-color: #3b82f6;
+}
+
+body.dark-theme .verification-notice p {
+    color: #93c5fd;
+}
+
+body.dark-theme .disabled-notice {
+    background: #92400e;
+    border-color: #f59e0b;
+    color: #fbbf24;
+}

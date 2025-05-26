@@ -1,0 +1,148 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1>Join Sayonika</h1>
+                <p>Create your account and start sharing mods</p>
+            </div>
+
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="form-control"
+                        required
+                        autocomplete="username"
+                        placeholder="Choose a unique username"
+                        pattern="[a-zA-Z0-9_-]{3,50}"
+                        title="Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="form-control"
+                        required
+                        autocomplete="email"
+                        placeholder="Enter your email address"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="display_name" class="form-label">Display Name (Optional)</label>
+                    <input
+                        type="text"
+                        id="display_name"
+                        name="display_name"
+                        class="form-control"
+                        autocomplete="name"
+                        placeholder="How others will see your name"
+                        maxlength="100"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        required
+                        autocomplete="new-password"
+                        placeholder="Create a strong password"
+                        minlength="6"
+                    >
+                    <div class="password-strength" id="passwordStrength" style="display: none;">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        class="form-control"
+                        required
+                        autocomplete="new-password"
+                        placeholder="Confirm your password"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" id="terms" name="terms" class="form-check-input" required>
+                        <label for="terms" class="form-check-label">
+                            I agree to the <a href="/terms" target="_blank">Terms of Service</a>
+                            and <a href="/privacy" target="_blank">Privacy Policy</a>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" id="newsletter" name="newsletter" class="form-check-input">
+                        <label for="newsletter" class="form-check-label">
+                            Subscribe to our newsletter for updates and featured mods
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Create Account</span>
+                </button>
+            </form>
+
+            <div class="auth-divider">
+                <span>or</span>
+            </div>
+
+            <div class="social-auth">
+                <% if (process.env.GITHUB_CLIENT_ID) { %>
+                    <a href="/auth/github" class="social-btn github" id="githubOAuthRegister">
+                        <i class="fab fa-github"></i>
+                        Sign up with GitHub
+                    </a>
+                <% } %>
+                <% if (process.env.DISCORD_CLIENT_ID) { %>
+                    <a href="/auth/discord" class="social-btn discord" id="discordOAuthRegister">
+                        <i class="fab fa-discord"></i>
+                        Sign up with Discord
+                    </a>
+                <% } %>
+            </div>
+
+            <div class="auth-footer">
+                <p>
+                    Already have an account?
+                    <a href="/login">Sign in here</a>
+                </p>
+            </div>
+
+            <div class="terms-privacy">
+                By creating an account, you agree to our
+                <a href="/terms">Terms of Service</a> and
+                <a href="/privacy">Privacy Policy</a>.
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer', { scripts: ['/js/pages/register.js'] }) %>

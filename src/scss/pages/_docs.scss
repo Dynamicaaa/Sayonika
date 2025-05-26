@@ -1,0 +1,388 @@
+// Documentation Page Styles
+// This file contains styles specific to the documentation pages
+
+// Variables for documentation
+$docs-primary: #ff6b9d;
+$docs-secondary: #4ecdc4;
+$docs-accent: #ffd93d;
+$docs-success: #28a745;
+$docs-warning: #ffc107;
+$docs-danger: #dc3545;
+$docs-info: #17a2b8;
+
+// Light theme colors
+$docs-bg: #ffffff;
+$docs-surface: #f8f9fa;
+$docs-surface-hover: #e9ecef;
+$docs-text: #2c3e50;
+$docs-text-muted: #6c757d;
+$docs-text-light: #8e9aaf;
+$docs-border: #dee2e6;
+$docs-border-light: #f1f3f4;
+$docs-shadow: rgba(0, 0, 0, 0.1);
+$docs-shadow-hover: rgba(0, 0, 0, 0.15);
+
+// Code block colors
+$docs-code-bg: #2d3748;
+$docs-code-text: #e2e8f0;
+$docs-code-border: #4a5568;
+
+// Animation variables
+$docs-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$docs-transition-fast: all 0.15s ease;
+$docs-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+// Mixins
+@mixin docs-card {
+    background: var(--docs-surface);
+    border-radius: 16px;
+    border: 1px solid var(--docs-border);
+    transition: $docs-transition;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--docs-shadow-hover);
+    }
+}
+
+@mixin docs-gradient-border {
+    position: relative;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, $docs-primary, $docs-secondary);
+        border-radius: 2px 0 0 2px;
+    }
+}
+
+// Base documentation page styles
+.docs-page {
+    min-height: 100vh;
+    background: var(--docs-bg);
+    color: var(--docs-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+}
+
+// Mobile menu toggle
+.docs-mobile-toggle {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1001;
+    background: $docs-primary;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px var(--docs-shadow);
+    transition: $docs-transition;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--docs-shadow-hover);
+    }
+    
+    i {
+        font-size: 1.1rem;
+    }
+    
+    @media (max-width: 1024px) {
+        display: flex;
+    }
+}
+
+// Hero section
+.docs-hero {
+    background: linear-gradient(135deg, $docs-primary 0%, $docs-secondary 100%);
+    color: white;
+    padding: 6rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 107, 157, 0.9) 0%, rgba(78, 205, 196, 0.9) 100%);
+        z-index: 1;
+    }
+    
+    > .container {
+        position: relative;
+        z-index: 2;
+    }
+}
+
+.docs-hero-content {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+
+.hero-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    opacity: 0.95;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+// Main content layout
+.docs-main {
+    background: var(--docs-bg);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.docs-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+    align-items: start;
+    
+    @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+// Sidebar
+.docs-sidebar {
+    @include docs-card;
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    max-height: calc(100vh - 4rem);
+    overflow: hidden;
+    
+    @media (max-width: 1024px) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 320px;
+        height: 100vh;
+        max-height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        border-radius: 0;
+        border-left: none;
+        
+        &.mobile-open {
+            transform: translateX(0);
+        }
+    }
+}
+
+.sidebar-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--docs-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--docs-text);
+    }
+}
+
+.sidebar-close {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--docs-text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: $docs-transition;
+    
+    &:hover {
+        background: var(--docs-surface-hover);
+        color: var(--docs-text);
+    }
+    
+    @media (max-width: 1024px) {
+        display: block;
+    }
+}
+
+// Navigation
+.sidebar-nav {
+    padding: 1rem 0;
+    overflow-y: auto;
+    max-height: calc(100vh - 8rem);
+}
+
+.nav-section {
+    margin-bottom: 1.5rem;
+    
+    h4 {
+        color: var(--docs-text);
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 0 0.75rem 0;
+        padding: 0 2rem;
+        opacity: 0.8;
+    }
+    
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    li {
+        margin: 0;
+    }
+}
+
+.nav-link {
+    display: block;
+    color: var(--docs-text-muted);
+    text-decoration: none;
+    padding: 0.75rem 2rem;
+    transition: $docs-transition;
+    border-left: 3px solid transparent;
+    font-size: 0.9rem;
+    position: relative;
+    
+    &:hover {
+        color: $docs-primary;
+        background: rgba(255, 107, 157, 0.08);
+        border-left-color: $docs-primary;
+    }
+    
+    &.active {
+        color: $docs-primary;
+        background: rgba(255, 107, 157, 0.12);
+        border-left-color: $docs-primary;
+        font-weight: 600;
+    }
+}
+
+// Content area
+.docs-content {
+    background: var(--docs-bg);
+    color: var(--docs-text);
+    line-height: 1.7;
+}
+
+.docs-section {
+    margin-bottom: 5rem;
+    scroll-margin-top: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+    
+    h2 {
+        color: var(--docs-text);
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, $docs-primary, $docs-secondary);
+            border-radius: 2px;
+        }
+    }
+    
+    h3 {
+        color: var(--docs-text);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 2rem 0 1rem;
+    }
+    
+    h4 {
+        color: var(--docs-text);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 1.5rem 0 0.75rem;
+    }
+    
+    p {
+        color: var(--docs-text-muted);
+        margin-bottom: 1.5rem;
+        line-height: 1.7;
+    }
+    
+    ul, ol {
+        color: var(--docs-text-muted);
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+    }
+    
+    li {
+        margin-bottom: 0.5rem;
+    }
+}
+
+.lead {
+    font-size: 1.2rem;
+    color: var(--docs-text);
+    margin-bottom: 2rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+// Animations
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

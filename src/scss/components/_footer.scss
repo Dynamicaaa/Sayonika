@@ -1,0 +1,175 @@
+// Footer styles
+@use 'sass:color';
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.footer {
+  background-color: $light-surface-dark;
+  border-top: 1px solid $border-color;
+  margin-top: auto;
+  padding: 3rem 0 1rem;
+  @include transition(background-color);
+}
+
+// Dark theme footer
+body.dark-theme .footer {
+  background-color: $dark-surface;
+  border-top-color: $dark-surface-light;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @include media-breakpoint-down(md) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.footer-section {
+  h4 {
+    color: $primary-pink;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+    font-weight: $font-weight-medium;
+  }
+
+  p {
+    color: $light-text-muted;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+}
+
+// Dark theme footer section
+body.dark-theme .footer-section {
+  h4 {
+    color: $secondary-pink;
+  }
+
+  p {
+    color: $dark-text-muted;
+  }
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: $light-text-muted;
+    text-decoration: none;
+    @include transition(color);
+
+    &:hover {
+      color: $primary-pink;
+      text-decoration: none;
+    }
+  }
+}
+
+// Dark theme footer links
+body.dark-theme .footer-links a {
+  color: $dark-text-muted;
+
+  &:hover {
+    color: $secondary-pink;
+  }
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba($primary-pink, 0.1);
+    color: $primary-pink;
+    border-radius: 50%;
+    text-decoration: none;
+    @include transition();
+
+    &:hover {
+      background-color: $primary-pink;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    i {
+      font-size: 1.125rem;
+    }
+  }
+}
+
+// Dark theme social links
+body.dark-theme .social-links .social-link {
+  background-color: rgba($secondary-pink, 0.1);
+  color: $secondary-pink;
+
+  &:hover {
+    background-color: $secondary-pink;
+    color: $dark-bg;
+  }
+}
+
+.footer-bottom {
+  padding-top: 2rem;
+  border-top: 1px solid $border-color;
+  text-align: center;
+
+  p {
+    color: $light-text-muted;
+    font-size: $font-size-sm;
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    a {
+      color: $primary-pink;
+      text-decoration: none;
+      @include transition(color);
+
+      &:hover {
+        color: color.adjust($primary-pink, $lightness: 10%);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .disclaimer {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+}
+
+// Dark theme footer bottom
+body.dark-theme .footer-bottom {
+  border-top-color: $dark-surface-light;
+
+  p {
+    color: $dark-text-muted;
+
+    a {
+      color: $secondary-pink;
+
+      &:hover {
+        color: color.adjust($secondary-pink, $lightness: 10%);
+      }
+    }
+  }
+}

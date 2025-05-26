@@ -1,0 +1,367 @@
+<%- include('partials/header', { title: title }) %>
+
+<div class="leaderboard-page">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-crown"></i> Leaderboard</h1>
+            <p class="page-subtitle">See who's leading the Sayonika community!</p>
+        </div>
+
+        <div class="leaderboard-controls">
+            <div class="sort-options">
+                <label>Sort by:</label>
+                <select id="sortSelect" class="form-control">
+                    <option value="achievement_points" <%= currentSort === 'achievement_points' ? 'selected' : '' %>>Achievement Points</option>
+                    <option value="user_level" <%= currentSort === 'user_level' ? 'selected' : '' %>>User Level</option>
+                    <option value="created_at" <%= currentSort === 'created_at' ? 'selected' : '' %>>Join Date</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="leaderboard-content">
+            <% if (topUsers.length === 0) { %>
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>No users found</h3>
+                    <p>Be the first to join the leaderboard!</p>
+                </div>
+            <% } else { %>
+                <div class="leaderboard-list">
+                    <% topUsers.forEach((leaderUser, index) => { %>
+                        <div class="leaderboard-item <%= index < 3 ? 'top-three' : '' %>" data-rank="<%= index + 1 %>">
+                            <div class="rank-badge">
+                                <% if (index === 0) { %>
+                                    <i class="fas fa-crown gold"></i>
+                                <% } else if (index === 1) { %>
+                                    <i class="fas fa-medal silver"></i>
+                                <% } else if (index === 2) { %>
+                                    <i class="fas fa-medal bronze"></i>
+                                <% } else { %>
+                                    <span class="rank-number">#<%= index + 1 %></span>
+                                <% } %>
+                            </div>
+                            
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    <img src="<%= leaderUser.avatar_url || 'https://picsum.photos/1024/1024' %>" alt="<%= leaderUser.display_name || leaderUser.username %>">
+                                </div>
+                                <div class="user-details">
+                                    <h3 class="user-name"><%= leaderUser.display_name || leaderUser.username %></h3>
+                                    <p class="user-title"><%= leaderUser.user_title %></p>
+                                </div>
+                            </div>
+                            
+                            <div class="user-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value"><%= leaderUser.achievement_points %></span>
+                                    <span class="stat-label">Points</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">Level <%= leaderUser.user_level %></span>
+                                    <span class="stat-label">Level</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value"><%= leaderUser.mod_count %></span>
+                                    <span class="stat-label">Mods</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value"><%= leaderUser.total_downloads.toLocaleString() %></span>
+                                    <span class="stat-label">Downloads</span>
+                                </div>
+                            </div>
+                            
+                            <div class="user-actions">
+                                <a href="/user/<%= leaderUser.username %>" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-user"></i> View Profile
+                                </a>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+
+        <% if (user) { %>
+            <div class="user-position">
+                <h3>Your Position</h3>
+                <p>Keep creating and engaging to climb the leaderboard!</p>
+                <div class="current-user-stats">
+                    <div class="stat-card">
+                        <div class="stat-number"><%= user.achievement_points || 0 %></div>
+                        <div class="stat-label">Your Points</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">Level <%= user.user_level || 1 %></div>
+                        <div class="stat-label">Your Level</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title"><%= user.user_title || 'Newcomer' %></div>
+                        <div class="stat-label">Your Title</div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="login-cta">
+                <h3>Join the Competition!</h3>
+                <p>Create an account to start earning points and climb the leaderboard.</p>
+                <div class="cta-actions">
+                    <a href="/register" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </a>
+                    <a href="/login" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+.leaderboard-page {
+    padding: 2rem 0;
+    min-height: 80vh;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+.leaderboard-controls {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sort-options label {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.leaderboard-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.leaderboard-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-item.top-three {
+    border-width: 2px;
+}
+
+.leaderboard-item[data-rank="1"] {
+    border-color: #FFD700;
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 215, 0, 0.1) 100%);
+}
+
+.leaderboard-item[data-rank="2"] {
+    border-color: #C0C0C0;
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(192, 192, 192, 0.1) 100%);
+}
+
+.leaderboard-item[data-rank="3"] {
+    border-color: #CD7F32;
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(205, 127, 50, 0.1) 100%);
+}
+
+.rank-badge {
+    font-size: 1.5rem;
+    min-width: 50px;
+    text-align: center;
+}
+
+.rank-badge .gold {
+    color: #FFD700;
+}
+
+.rank-badge .silver {
+    color: #C0C0C0;
+}
+
+.rank-badge .bronze {
+    color: #CD7F32;
+}
+
+.rank-number {
+    font-weight: bold;
+    color: var(--text-muted);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.user-avatar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.user-title {
+    margin: 0;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.user-stats {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.user-position {
+    margin-top: 3rem;
+    text-align: center;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.current-user-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    max-width: 500px;
+    margin: 2rem auto 0;
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.login-cta {
+    text-align: center;
+    padding: 3rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-top: 3rem;
+}
+
+.cta-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .leaderboard-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .user-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .current-user-stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.getElementById('sortSelect').addEventListener('change', function() {
+    const sortBy = this.value;
+    window.location.href = `/leaderboard?sort=${sortBy}`;
+});
+</script>
+
+<%- include('partials/footer') %>

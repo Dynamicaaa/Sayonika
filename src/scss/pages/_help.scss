@@ -1,0 +1,422 @@
+// Help Center Page Styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.help-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 0;
+
+    // Search Section
+    .help-search {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, $primary-pink, $primary-blue);
+        border-radius: 16px;
+        color: white;
+
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto 1rem;
+
+            i {
+                position: absolute;
+                left: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: $light-text-muted;
+                font-size: 1.1rem;
+            }
+
+            .search-input {
+                width: 100%;
+                padding: 1rem 1rem 1rem 3rem;
+                border: none;
+                border-radius: 50px;
+                font-size: 1rem;
+                background: white;
+                color: $light-text;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+
+                &:focus {
+                    outline: none;
+                    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+                    transform: translateY(-2px);
+                }
+
+                &::placeholder {
+                    color: $light-text-muted;
+                }
+
+                // Dark mode override
+                [data-theme="dark"] & {
+                    background: $dark-surface;
+                    color: $dark-text;
+
+                    &::placeholder {
+                        color: $dark-text-muted;
+                    }
+                }
+            }
+        }
+
+        .search-hint {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    }
+
+    .help-section {
+        margin-bottom: 3rem;
+        padding: 2.5rem;
+        background: $light-bg;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+
+        h2 {
+            color: $light-text;
+            margin-bottom: 2rem;
+            font-size: 1.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            i {
+                font-size: 1.5rem;
+                color: $primary-pink;
+            }
+        }
+
+        h3 {
+            color: $light-text;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        p {
+            color: $light-text-muted;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            color: $light-text-muted;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+
+            li {
+                margin-bottom: 0.5rem;
+                line-height: 1.6;
+            }
+        }
+
+        a {
+            color: $primary-pink;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .quick-links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .quick-link-card {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        background: $light-bg;
+        border: 2px solid rgba($primary-pink, 0.1);
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        gap: 1rem;
+
+        &:hover {
+            border-color: $primary-pink;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba($primary-pink, 0.15);
+            text-decoration: none;
+
+            .card-icon {
+                background: $primary-pink;
+                color: white;
+                transform: scale(1.1);
+            }
+
+            .card-arrow {
+                transform: translateX(4px);
+                color: $primary-pink;
+            }
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: rgba($primary-pink, 0.1);
+            color: $primary-pink;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .card-content {
+            flex: 1;
+
+            h3 {
+                color: $light-text;
+                margin-bottom: 0.25rem;
+                font-size: 1.125rem;
+                font-weight: 600;
+            }
+
+            p {
+                color: $light-text-muted;
+                margin: 0;
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+        }
+
+        .card-arrow {
+            color: $light-text-muted;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+    }
+
+    .faq-item {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid $border-color;
+
+        &:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        h3 {
+            color: $light-text;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        p, ul, ol {
+            color: $light-text-muted;
+            line-height: 1.6;
+        }
+
+        ul {
+            margin-left: 1.5rem;
+
+            li {
+                margin-bottom: 0.25rem;
+
+                strong {
+                    color: $light-text;
+                }
+            }
+        }
+
+        ol {
+            margin-left: 1.5rem;
+
+            li {
+                margin-bottom: 0.5rem;
+            }
+        }
+    }
+
+    .help-contact {
+        text-align: center;
+        background: linear-gradient(135deg, $primary-pink, $primary-blue);
+        color: white;
+
+        h2 {
+            color: white;
+            margin-bottom: 1rem;
+
+            i {
+                color: white;
+            }
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+
+            .btn {
+                min-width: 150px;
+
+                // Ensure button text is always visible
+                &.btn-primary {
+                    color: white !important;
+                    background-color: rgba(255, 255, 255, 0.2) !important;
+                    border-color: rgba(255, 255, 255, 0.3) !important;
+
+                    &:hover {
+                        color: white !important;
+                        background-color: rgba(255, 255, 255, 0.3) !important;
+                        border-color: white !important;
+                    }
+                }
+            }
+
+            .btn-outline {
+                border-color: rgba(255, 255, 255, 0.3) !important;
+                color: white !important;
+                background-color: transparent !important;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.1) !important;
+                    border-color: white !important;
+                    color: white !important;
+                }
+            }
+        }
+    }
+}
+
+// Dark Theme
+[data-theme="dark"] {
+    .help-content {
+        .help-section {
+            background: $dark-surface;
+            border-color: $dark-surface-light;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+            h2 {
+                color: $dark-text;
+            }
+
+            h3 {
+                color: $dark-text;
+            }
+
+            p {
+                color: $dark-text-muted;
+            }
+
+            ul, ol {
+                color: $dark-text-muted;
+
+                li strong {
+                    color: $dark-text;
+                }
+            }
+        }
+
+        .quick-link-card {
+            background: $dark-surface;
+            border-color: rgba($primary-pink, 0.2);
+
+            .card-content {
+                h3 {
+                    color: $dark-text;
+                }
+
+                p {
+                    color: $dark-text-muted;
+                }
+            }
+
+            .card-arrow {
+                color: $dark-text-muted;
+            }
+        }
+
+        .faq-item {
+            border-bottom-color: $dark-surface-light;
+
+            h3 {
+                color: $dark-text;
+            }
+
+            p, ul, ol {
+                color: $dark-text-muted;
+            }
+
+            ul li strong {
+                color: $dark-text;
+            }
+        }
+    }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+    .help-content {
+        padding: 1rem 0;
+
+        .help-section {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-links-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .quick-link-card {
+            padding: 1.25rem;
+
+            i {
+                font-size: 1.5rem;
+            }
+        }
+
+        .help-contact .contact-options {
+            flex-direction: column;
+            align-items: center;
+
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .help-content {
+        .help-section {
+            padding: 1rem;
+
+            h2 {
+                font-size: 1.25rem;
+            }
+        }
+
+        .faq-item {
+            h3 {
+                font-size: 1rem;
+            }
+        }
+    }
+}

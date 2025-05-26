@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <!-- Meta tags -->
+    <meta name="description" content="Sayonika - The ultimate mod store for Doki Doki Literature Club">
+    <meta name="keywords" content="DDLC, Doki Doki Literature Club, mods, visual novel, sayonika">
+    <meta name="author" content="Sayonika Team">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="Discover and download amazing mods for Doki Doki Literature Club">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= process.env.BASE_URL || 'http://localhost:3000' %>">
+    <meta property="og:image" content="/images/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body class="<%= locals.bodyClass || '' %>">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <a href="/" class="brand-link">
+                    <img src="/images/logo.png" alt="Sayonika" class="brand-logo">
+                </a>
+            </div>
+
+            <div class="navbar-menu">
+                <div class="navbar-nav">
+                    <a href="/" class="nav-link <%= (locals.currentPath || currentPath) === '/' ? 'active' : '' %>">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/browse" class="nav-link <%= (locals.currentPath || currentPath) === '/browse' ? 'active' : '' %>">
+                        <i class="fas fa-search"></i> Browse
+                    </a>
+                    <a href="/achievements" class="nav-link <%= (locals.currentPath || currentPath) === '/achievements' ? 'active' : '' %>">
+                        <i class="fas fa-trophy"></i> Achievements
+                    </a>
+                    <a href="/leaderboard" class="nav-link <%= (locals.currentPath || currentPath) === '/leaderboard' ? 'active' : '' %>">
+                        <i class="fas fa-crown"></i> Leaderboard
+                    </a>
+                    <% if (user) { %>
+                        <a href="/upload" class="nav-link <%= (locals.currentPath || currentPath) === '/upload' ? 'active' : '' %>">
+                            <i class="fas fa-upload"></i> Upload
+                        </a>
+                    <% } %>
+                </div>
+
+                <div class="navbar-actions">
+                    <button class="theme-toggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+
+                    <% if (user) { %>
+                        <!-- Notifications -->
+                        <div class="notifications-menu">
+                            <button class="notifications-toggle" id="notificationsToggle" title="Notifications">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                            </button>
+                            <div class="notifications-dropdown" id="notificationsDropdown">
+                                <div class="notifications-header">
+                                    <h4>Notifications</h4>
+                                    <button class="mark-all-read-btn" id="markAllReadBtn" title="Mark all as read">
+                                        <i class="fas fa-check-double"></i>
+                                    </button>
+                                </div>
+                                <div class="notifications-list" id="notificationsList">
+                                    <div class="loading-notifications">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <span>Loading notifications...</span>
+                                    </div>
+                                </div>
+                                <div class="notifications-footer">
+                                    <a href="/notifications" class="view-all-btn">View All Notifications</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="user-menu">
+                            <button class="user-menu-toggle">
+                                <img src="<%= user.avatar_url || 'https://picsum.photos/1024/1024' %>" alt="<%= user.display_name || user.username %>" class="user-avatar">
+                                <span class="user-name"><%= user.display_name || user.username %></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="user-menu-dropdown">
+                                <a href="/profile" class="dropdown-item">
+                                    <i class="fas fa-user"></i> Profile
+                                </a>
+                                <a href="/settings" class="dropdown-item">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                                <% if (user.is_admin) { %>
+                                    <a href="/admin" class="dropdown-item">
+                                        <i class="fas fa-shield-alt"></i> Admin
+                                    </a>
+                                <% } %>
+                                <div class="dropdown-divider"></div>
+                                <button class="logout-btn dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Mobile menu toggle -->
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main-content">

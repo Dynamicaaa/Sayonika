@@ -1,0 +1,334 @@
+// Header/Navigation styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.navbar {
+  background-color: $light-surface;
+  border-bottom: 1px solid $border-color;
+  position: sticky;
+  top: 0;
+  z-index: $z-index-sticky;
+  @include transition(background-color);
+
+  .container {
+    @include flex-between();
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+}
+
+// Dark theme navbar
+body.dark-theme .navbar {
+  background-color: $dark-surface;
+  border-bottom-color: $dark-surface-light;
+}
+
+.navbar-brand {
+  .brand-link {
+    @include flex-center();
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .brand-logo {
+    height: 80px;
+    width: auto;
+    max-width: 400px;
+  }
+}
+
+.navbar-menu {
+  @include flex-between();
+  flex: 1;
+  margin-left: 2rem;
+
+  @include media-breakpoint-down(md) {
+    display: none;
+  }
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: $light-text;
+    text-decoration: none;
+    border-radius: $border-radius;
+    @include transition();
+
+    &:hover {
+      background-color: rgba($primary-pink, 0.1);
+      color: $primary-pink;
+      text-decoration: none;
+    }
+
+    &.active {
+      background-color: $primary-pink;
+      color: white;
+    }
+
+    i {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Dark theme nav links
+body.dark-theme .navbar-nav .nav-link {
+  color: $dark-text;
+
+  &:hover {
+    background-color: rgba($secondary-pink, 0.1);
+    color: $secondary-pink;
+  }
+
+  &.active {
+    background-color: $secondary-pink;
+    color: $dark-bg;
+  }
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  color: $light-text-muted;
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  @include transition();
+
+  &:hover {
+    background-color: rgba($primary-pink, 0.1);
+    color: $primary-pink;
+  }
+}
+
+// Dark theme toggle
+body.dark-theme .theme-toggle {
+  color: $dark-text-muted;
+
+  &:hover {
+    background-color: rgba($secondary-pink, 0.1);
+    color: $secondary-pink;
+  }
+}
+
+.user-menu {
+  position: relative;
+
+  .user-menu-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    border-radius: $border-radius;
+    cursor: pointer;
+    @include transition();
+
+    &:hover {
+      background-color: rgba($primary-pink, 0.1);
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-name {
+      font-weight: $font-weight-medium;
+      color: $light-text;
+
+      @include media-breakpoint-down(sm) {
+        display: none;
+      }
+    }
+
+    i {
+      color: $light-text-muted;
+      font-size: 0.75rem;
+    }
+  }
+
+  .user-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: $light-surface;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    z-index: $z-index-dropdown;
+    @include transition(all, 0.2s);
+
+    &.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: none;
+      border: none;
+      text-align: left;
+      color: $light-text;
+      text-decoration: none;
+      @include transition();
+
+      &:hover {
+        background-color: rgba($primary-pink, 0.1);
+        color: $primary-pink;
+      }
+
+      i {
+        width: 16px;
+        text-align: center;
+      }
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: $border-color;
+      margin: 0.5rem 0;
+    }
+
+    .logout-btn {
+      cursor: pointer;
+    }
+  }
+}
+
+// Dark theme user menu
+body.dark-theme .user-menu {
+  .user-menu-toggle {
+    &:hover {
+      background-color: rgba($secondary-pink, 0.1);
+    }
+
+    .user-name {
+      color: $dark-text;
+    }
+
+    i {
+      color: $dark-text-muted;
+    }
+  }
+
+  .user-menu-dropdown {
+    background-color: $dark-surface;
+    border-color: $dark-surface-light;
+
+    .dropdown-item {
+      color: $dark-text;
+
+      &:hover {
+        background-color: rgba($secondary-pink, 0.1);
+        color: $secondary-pink;
+      }
+    }
+
+    .dropdown-divider {
+      background-color: $dark-surface-light;
+    }
+  }
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: $light-text;
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  cursor: pointer;
+
+  @include media-breakpoint-down(md) {
+    display: block;
+  }
+}
+
+// Dark theme mobile toggle
+body.dark-theme .mobile-menu-toggle {
+  color: $dark-text;
+}
+
+// Mobile menu styles
+@include media-breakpoint-down(md) {
+  .navbar.mobile-open {
+    .navbar-menu {
+      display: block;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: $light-surface;
+      border-top: 1px solid $border-color;
+      padding: 1rem;
+      box-shadow: $box-shadow;
+    }
+
+    .navbar-nav {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+
+      .nav-link {
+        justify-content: flex-start;
+      }
+    }
+
+    .navbar-actions {
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid $border-color;
+    }
+  }
+
+  // Dark theme mobile menu
+  body.dark-theme .navbar.mobile-open {
+    .navbar-menu {
+      background-color: $dark-surface;
+      border-top-color: $dark-surface-light;
+    }
+
+    .navbar-actions {
+      border-top-color: $dark-surface-light;
+    }
+  }
+}

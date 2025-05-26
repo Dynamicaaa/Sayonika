@@ -1,0 +1,333 @@
+// Merge Accounts page styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.merge-accounts-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  background: linear-gradient(135deg, $secondary-pink 0%, $primary-pink 100%);
+
+  .container {
+    max-width: 800px;
+  }
+}
+
+.merge-accounts-container {
+  background: $light-surface;
+  border-radius: $border-radius-lg;
+  padding: 3rem;
+  box-shadow: $box-shadow-lg;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+    margin: 1rem;
+  }
+}
+
+.merge-accounts-header {
+  margin-bottom: 3rem;
+
+  .merge-icon {
+    width: 80px;
+    height: 80px;
+    background: $primary-pink;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+  }
+
+  h1 {
+    color: $light-text;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  p {
+    color: $light-text-muted;
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+.accounts-comparison {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 3rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.account-card {
+  background: white;
+  border: 2px solid $border-color;
+  border-radius: $border-radius;
+  padding: 2rem;
+  text-align: left;
+  transition: $transition-base;
+
+  &.current {
+    border-color: $success;
+    background: rgba($success, 0.1);
+  }
+
+  &.oauth {
+    border-color: $primary-pink;
+    background: rgba($primary-pink, 0.1);
+  }
+
+  .account-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      margin: 0;
+      color: $light-text;
+      font-size: 1.2rem;
+    }
+  }
+
+  .account-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: $border-radius-sm;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &.current {
+      background: $success;
+      color: white;
+    }
+
+    &.oauth {
+      background: $primary-pink;
+      color: white;
+    }
+  }
+
+  .account-info {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .account-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid $border-color;
+  }
+
+  .oauth-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    @include flex-center();
+    font-size: 1.5rem;
+    color: white;
+
+    &.github {
+      background: #333;
+    }
+
+    &.discord {
+      background: #5865F2;
+    }
+  }
+
+  .account-details {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 0.5rem;
+      color: $light-text;
+      font-size: 1.1rem;
+    }
+
+    .account-username {
+      color: $light-text-muted;
+      margin: 0 0 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    .account-email {
+      color: $light-text-muted;
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+    }
+
+    p {
+      margin: 0;
+      color: $light-text-muted;
+      font-size: 0.9rem;
+    }
+  }
+
+  .account-connections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .connection-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: $light-surface-dark;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-sm;
+    font-size: 0.75rem;
+    color: $light-text-muted;
+
+    &.github {
+      border-color: #333;
+      color: #333;
+    }
+
+    &.discord {
+      border-color: #5865F2;
+      color: #5865F2;
+    }
+
+    &.password {
+      border-color: $warning;
+      color: $warning;
+    }
+  }
+}
+
+.merge-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: $primary-pink;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    transform: rotate(90deg);
+  }
+}
+
+.merge-benefits {
+  background: rgba($info, 0.1);
+  border: 1px solid $info;
+  border-radius: $border-radius;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  text-align: left;
+
+  h3 {
+    color: $light-text;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      color: $light-text-muted;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      i {
+        color: $success;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.merge-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
+  .btn {
+    min-width: 200px;
+
+    @media (max-width: 768px) {
+      min-width: auto;
+    }
+  }
+}
+
+.merge-warning {
+  .alert {
+    text-align: left;
+    margin: 0;
+  }
+}
+
+.merge-error-alert {
+  text-align: left;
+  margin-top: 1rem;
+}
+
+// Dark theme
+body.dark-theme {
+  .merge-accounts-container {
+    background: $dark-surface;
+  }
+
+  .account-card {
+    background: $dark-surface-light;
+    border-color: $dark-surface-light;
+
+    &.current {
+      background: rgba($success, 0.1);
+      border-color: $success;
+    }
+
+    &.oauth {
+      background: rgba($primary-pink, 0.1);
+      border-color: $primary-pink;
+    }
+  }
+
+  .merge-benefits {
+    background: rgba($info, 0.1);
+    border-color: $info;
+  }
+
+  .connection-badge {
+    background: $dark-surface-light;
+    border-color: $dark-surface-light;
+  }
+}

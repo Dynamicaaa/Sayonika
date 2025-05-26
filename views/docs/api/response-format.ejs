@@ -1,0 +1,507 @@
+<%- include('../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link active">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link">Error Handling</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Response Format Guide -->
+                    <section class="docs-section" id="response-format">
+                        <h2>Response Format</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                The Sayonika API uses a consistent JSON response format across all endpoints.
+                                This guide explains the structure and conventions used in API responses.
+                            </p>
+
+                            <!-- Standard Response Structure -->
+                            <h3>Standard Response Structure</h3>
+                            <p>All API responses follow a consistent structure to make them predictable and easy to parse:</p>
+
+                            <!-- Success Response -->
+                            <h4>Success Response</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": true,
+  "data": {
+    // Response data here
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Error Response -->
+                            <h4>Error Response</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input parameters",
+    "details": {
+      "field": "email",
+      "reason": "Invalid email format"
+    }
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Response Fields -->
+                            <h3>Response Fields</h3>
+                            
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Always Present</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>success</code></td>
+                                        <td>boolean</td>
+                                        <td>Indicates if the request was successful</td>
+                                        <td>✅ Yes</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>data</code></td>
+                                        <td>object/array</td>
+                                        <td>Response data (only in successful responses)</td>
+                                        <td>❌ Success only</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>error</code></td>
+                                        <td>object</td>
+                                        <td>Error information (only in error responses)</td>
+                                        <td>❌ Error only</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>meta</code></td>
+                                        <td>object</td>
+                                        <td>Metadata about the response</td>
+                                        <td>✅ Yes</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Data Types -->
+                            <h3>Data Types</h3>
+                            <p>The API uses standard JSON data types with some additional conventions:</p>
+
+                            <!-- Dates and Times -->
+                            <h4>Dates and Times</h4>
+                            <p>All timestamps are returned in ISO 8601 format (UTC):</p>
+                            <div class="code-block">
+                                <pre><code>{
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T14:45:30Z"
+}</code></pre>
+                            </div>
+
+                            <!-- IDs and References -->
+                            <h4>IDs and References</h4>
+                            <p>Entity IDs are typically integers, but some may be strings (like slugs):</p>
+                            <div class="code-block">
+                                <pre><code>{
+  "id": 123,
+  "slug": "my-awesome-mod",
+  "user_id": 456,
+  "category_id": 789
+}</code></pre>
+                            </div>
+
+                            <!-- URLs and Paths -->
+                            <h4>URLs and Paths</h4>
+                            <p>URLs are always absolute, paths are relative to the domain:</p>
+                            <div class="code-block">
+                                <pre><code>{
+  "download_url": "https://your-domain.com/api/mods/123/download",
+  "thumbnail_path": "/uploads/thumbnails/mod-123.jpg",
+  "profile_url": "https://your-domain.com/users/username"
+}</code></pre>
+                            </div>
+
+                            <!-- Pagination -->
+                            <h3>Pagination</h3>
+                            <p>For endpoints that return lists, pagination information is included in the response:</p>
+
+                            <div class="code-block">
+                                <pre><code>{
+  "success": true,
+  "data": [
+    // Array of items
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 20,
+    "total": 150,
+    "total_pages": 8,
+    "has_next": true,
+    "has_prev": false,
+    "next_page": 2,
+    "prev_page": null
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Pagination Fields -->
+                            <h4>Pagination Fields</h4>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>page</code></td>
+                                        <td>integer</td>
+                                        <td>Current page number (1-based)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>per_page</code></td>
+                                        <td>integer</td>
+                                        <td>Number of items per page</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>total</code></td>
+                                        <td>integer</td>
+                                        <td>Total number of items</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>total_pages</code></td>
+                                        <td>integer</td>
+                                        <td>Total number of pages</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>has_next</code></td>
+                                        <td>boolean</td>
+                                        <td>Whether there's a next page</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>has_prev</code></td>
+                                        <td>boolean</td>
+                                        <td>Whether there's a previous page</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>next_page</code></td>
+                                        <td>integer/null</td>
+                                        <td>Next page number (null if none)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>prev_page</code></td>
+                                        <td>integer/null</td>
+                                        <td>Previous page number (null if none)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Content Types -->
+                            <h3>Content Types</h3>
+                            <p>The API primarily uses JSON, but some endpoints may return different content types:</p>
+
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Content Type</th>
+                                        <th>Usage</th>
+                                        <th>Example Endpoints</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>application/json</code></td>
+                                        <td>Standard API responses</td>
+                                        <td>Most endpoints</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>application/octet-stream</code></td>
+                                        <td>File downloads</td>
+                                        <td><code>/api/mods/{id}/download</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>image/*</code></td>
+                                        <td>Image files</td>
+                                        <td><code>/api/users/{id}/avatar</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>text/plain</code></td>
+                                        <td>Plain text responses</td>
+                                        <td>Health checks, status pages</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Example Responses -->
+                            <h3>Example Responses</h3>
+
+                            <!-- Single Resource -->
+                            <h4>Single Resource (Mod)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": true,
+  "data": {
+    "id": 123,
+    "title": "My Awesome Mod",
+    "slug": "my-awesome-mod",
+    "description": "A fantastic mod for DDLC",
+    "version": "1.2.0",
+    "downloads": 1500,
+    "rating": 4.8,
+    "status": "approved",
+    "created_at": "2024-01-10T08:00:00Z",
+    "updated_at": "2024-01-15T10:30:00Z",
+    "author": {
+      "id": 456,
+      "username": "modder123",
+      "display_name": "Awesome Modder"
+    },
+    "category": {
+      "id": 1,
+      "name": "Full Mods",
+      "slug": "full-mods"
+    },
+    "tags": ["romance", "comedy", "original-characters"],
+    "files": [
+      {
+        "id": 789,
+        "filename": "my-awesome-mod-v1.2.0.zip",
+        "size": 52428800,
+        "download_url": "https://your-domain.com/api/mods/123/download"
+      }
+    ]
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Collection Response -->
+                            <h4>Collection Response (Mods List)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 123,
+      "title": "My Awesome Mod",
+      "slug": "my-awesome-mod",
+      "description": "A fantastic mod for DDLC",
+      "version": "1.2.0",
+      "downloads": 1500,
+      "rating": 4.8,
+      "thumbnail_url": "https://your-domain.com/uploads/thumbnails/mod-123.jpg",
+      "created_at": "2024-01-10T08:00:00Z",
+      "author": {
+        "username": "modder123",
+        "display_name": "Awesome Modder"
+      }
+    },
+    {
+      "id": 124,
+      "title": "Another Great Mod",
+      "slug": "another-great-mod",
+      "description": "Yet another fantastic mod",
+      "version": "2.1.0",
+      "downloads": 2300,
+      "rating": 4.9,
+      "thumbnail_url": "https://your-domain.com/uploads/thumbnails/mod-124.jpg",
+      "created_at": "2024-01-12T14:20:00Z",
+      "author": {
+        "username": "creator456",
+        "display_name": "Great Creator"
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 20,
+    "total": 150,
+    "total_pages": 8,
+    "has_next": true,
+    "has_prev": false,
+    "next_page": 2,
+    "prev_page": null
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "version": "1.0",
+    "request_id": "req_123456789"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Response Headers -->
+                            <h3>Response Headers</h3>
+                            <p>Important headers included in API responses:</p>
+
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Header</th>
+                                        <th>Description</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Content-Type</code></td>
+                                        <td>Response content type</td>
+                                        <td><code>application/json; charset=utf-8</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>X-Request-ID</code></td>
+                                        <td>Unique request identifier</td>
+                                        <td><code>req_123456789</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>X-Response-Time</code></td>
+                                        <td>Response time in milliseconds</td>
+                                        <td><code>45ms</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Cache-Control</code></td>
+                                        <td>Caching directives</td>
+                                        <td><code>public, max-age=300</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>ETag</code></td>
+                                        <td>Entity tag for caching</td>
+                                        <td><code>"abc123def456"</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Null Values -->
+                            <h3>Null Values and Optional Fields</h3>
+                            <p>The API handles null values and optional fields consistently:</p>
+
+                            <ul>
+                                <li><strong>Null values:</strong> Explicitly included as <code>null</code> in JSON</li>
+                                <li><strong>Optional fields:</strong> May be omitted entirely if not applicable</li>
+                                <li><strong>Empty arrays:</strong> Returned as <code>[]</code> rather than <code>null</code></li>
+                                <li><strong>Empty strings:</strong> Returned as <code>""</code> for text fields that are empty</li>
+                            </ul>
+
+                            <div class="code-block">
+                                <pre><code>{
+  "id": 123,
+  "title": "Example Mod",
+  "description": null,           // Explicitly null
+  "tags": [],                    // Empty array
+  "website_url": "",             // Empty string
+  "discord_url": null,           // Explicitly null
+  // premium_features omitted    // Optional field not present
+}</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../partials/footer') %>

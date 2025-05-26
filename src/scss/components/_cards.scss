@@ -1,0 +1,321 @@
+// Card component styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.card {
+  background-color: $light-surface;
+  border: $card-border-width solid $card-border-color;
+  border-radius: $card-border-radius;
+  box-shadow: $box-shadow-sm;
+  @include transition();
+
+  &:hover {
+    box-shadow: $box-shadow;
+    transform: translateY(-2px);
+  }
+}
+
+// Dark theme cards
+body.dark-theme .card {
+  background-color: $dark-surface;
+  border-color: $dark-surface-light;
+}
+
+.card-header {
+  padding: $card-spacer-y $card-spacer-x;
+  border-bottom: $card-border-width solid $card-border-color;
+  background-color: rgba($light-text, 0.03);
+  @include border-top-radius($card-border-radius);
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0;
+  }
+}
+
+// Dark theme card header
+body.dark-theme .card-header {
+  border-bottom-color: $dark-surface-light;
+  background-color: rgba($dark-text, 0.03);
+}
+
+.card-body {
+  padding: $card-spacer-y $card-spacer-x;
+  flex: 1 1 auto;
+
+  .card-title {
+    margin-bottom: 0.75rem;
+    color: $light-text;
+  }
+
+  .card-subtitle {
+    margin-bottom: 0.5rem;
+    color: $light-text-muted;
+    font-size: $font-size-sm;
+  }
+
+  .card-text {
+    margin-bottom: 1rem;
+    color: $light-text;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Dark theme card body
+body.dark-theme .card-body {
+  .card-title {
+    color: $dark-text;
+  }
+
+  .card-subtitle {
+    color: $dark-text-muted;
+  }
+
+  .card-text {
+    color: $dark-text;
+  }
+}
+
+.card-footer {
+  padding: $card-spacer-y $card-spacer-x;
+  border-top: $card-border-width solid $card-border-color;
+  background-color: rgba($light-text, 0.03);
+  @include border-bottom-radius($card-border-radius);
+}
+
+// Dark theme card footer
+body.dark-theme .card-footer {
+  border-top-color: $dark-surface-light;
+  background-color: rgba($dark-text, 0.03);
+}
+
+// Mod card specific styles
+.mod-card {
+  @extend .card;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &.featured {
+    border-color: $primary-pink;
+    box-shadow: 0 0 0 2px rgba($primary-pink, 0.2);
+  }
+}
+
+.mod-card-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    @include transition(transform);
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+.mod-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba($dark-bg, 0) 0%,
+    rgba($dark-bg, 0.8) 100%
+  );
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  @include transition(opacity);
+
+  .mod-card:hover & {
+    opacity: 1;
+  }
+}
+
+.mod-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mod-card-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: $primary-pink;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  i {
+    font-size: 0.75rem;
+  }
+}
+
+.mod-card-content {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.mod-card-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: $font-weight-medium;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary-pink;
+      text-decoration: none;
+    }
+  }
+}
+
+// Dark theme mod card title
+body.dark-theme .mod-card-title a:hover {
+  color: $secondary-pink;
+}
+
+.mod-card-author {
+  color: $light-text-muted;
+  font-size: $font-size-sm;
+  margin-bottom: 0.75rem;
+}
+
+// Dark theme mod card author
+body.dark-theme .mod-card-author {
+  color: $dark-text-muted;
+}
+
+.mod-card-description {
+  color: $light-text;
+  font-size: $font-size-sm;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  flex: 1;
+  @include text-truncate();
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Dark theme mod card description
+body.dark-theme .mod-card-description {
+  color: $dark-text;
+}
+
+.mod-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: $font-size-sm;
+  margin-top: auto;
+}
+
+.mod-category {
+  background-color: $primary-blue;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: $border-radius-sm;
+  font-size: 0.75rem;
+  font-weight: $font-weight-medium;
+}
+
+.mod-downloads,
+.mod-rating,
+.mod-version {
+  color: $light-text-muted;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  i {
+    font-size: 0.75rem;
+  }
+}
+
+// Dark theme mod meta
+body.dark-theme {
+  .mod-downloads,
+  .mod-rating,
+  .mod-version {
+    color: $dark-text-muted;
+  }
+}
+
+// Category card styles
+.category-card {
+  @extend .card;
+  text-decoration: none;
+  color: inherit;
+  padding: 1.5rem;
+  text-align: center;
+  @include transition();
+
+  &:hover {
+    text-decoration: none;
+    color: inherit;
+    transform: translateY(-4px);
+    box-shadow: $box-shadow-lg;
+  }
+}
+
+.category-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.category-name {
+  font-size: 1.125rem;
+  font-weight: $font-weight-medium;
+  margin-bottom: 0.5rem;
+  color: $light-text;
+}
+
+// Dark theme category name
+body.dark-theme .category-name {
+  color: $dark-text;
+}
+
+.category-description {
+  color: $light-text-muted;
+  font-size: $font-size-sm;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+// Dark theme category description
+body.dark-theme .category-description {
+  color: $dark-text-muted;
+}

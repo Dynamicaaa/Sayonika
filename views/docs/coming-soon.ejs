@@ -1,0 +1,159 @@
+<%- include('../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link <%= currentPath === '/docs/getting-started' ? 'active' : '' %>">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link <%= currentPath === '/docs/first-run' ? 'active' : '' %>">First Run</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link <%= currentPath === '/docs/examples' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link <%= currentPath === '/docs/examples/javascript' ? 'active' : '' %>">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link <%= currentPath === '/docs/examples/python' ? 'active' : '' %>">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link <%= currentPath === '/docs/examples/php' ? 'active' : '' %>">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link <%= currentPath === '/docs/integration-guides' ? 'active' : '' %>">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link <%= currentPath === '/docs/webhooks' ? 'active' : '' %>">Webhooks</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link <%= currentPath === '/docs/deployment' ? 'active' : '' %>">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Coming Soon Section -->
+                    <section class="docs-section" id="coming-soon">
+                        <h2><%= pageTitle || 'Documentation Page' %></h2>
+                        <div class="section-content">
+                            <div class="coming-soon-container">
+                                <div class="coming-soon-icon">
+                                    <i class="fas fa-hammer"></i>
+                                </div>
+                                <h3>Coming Soon</h3>
+                                <p class="lead">
+                                    This documentation page is currently under construction. 
+                                    We're working hard to bring you comprehensive documentation for this section.
+                                </p>
+                                
+                                <div class="alert info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div>
+                                        <strong>In the meantime:</strong> Check out our 
+                                        <a href="/docs">overview</a>, 
+                                        <a href="/docs/installation">installation guide</a>, or 
+                                        <a href="/docs/api">API reference</a> for available documentation.
+                                    </div>
+                                </div>
+
+                                <div class="quick-links">
+                                    <h4>Available Documentation</h4>
+                                    <div class="link-grid">
+                                        <a href="/docs" class="quick-link">
+                                            <i class="fas fa-home"></i>
+                                            <div>
+                                                <h5>Overview</h5>
+                                                <p>Platform overview and features</p>
+                                            </div>
+                                        </a>
+
+                                        <a href="/docs/installation" class="quick-link">
+                                            <i class="fas fa-download"></i>
+                                            <div>
+                                                <h5>Installation</h5>
+                                                <p>Get Sayonika up and running</p>
+                                            </div>
+                                        </a>
+
+                                        <a href="/docs/api" class="quick-link">
+                                            <i class="fas fa-code"></i>
+                                            <div>
+                                                <h5>API Reference</h5>
+                                                <p>REST API documentation</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="help-section">
+                                    <h4>Need Help?</h4>
+                                    <p>
+                                        If you have questions or need assistance, feel free to 
+                                        <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank">create an issue</a>
+                                        on our GitHub repository.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../partials/footer') %>

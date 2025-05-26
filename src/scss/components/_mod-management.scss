@@ -1,0 +1,397 @@
+// Mod Management Styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// Admin Mods Table
+.admin-mods-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid $border-color;
+  }
+
+  th {
+    background-color: $light-bg;
+    font-weight: 600;
+    color: $light-text;
+  }
+
+  .mod-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .mod-thumbnail {
+      width: 40px;
+      height: 40px;
+      border-radius: $border-radius;
+      object-fit: cover;
+    }
+
+    .mod-details {
+      .mod-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+
+        a {
+          color: $light-text;
+          text-decoration: none;
+
+          &:hover {
+            color: $primary-pink;
+          }
+        }
+      }
+
+      .mod-version {
+        font-size: 0.875rem;
+        color: $light-text-muted;
+      }
+    }
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: $border-radius;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &.published {
+      background-color: rgba($success, 0.1);
+      color: $success;
+    }
+
+    &.pending {
+      background-color: rgba($warning, 0.1);
+      color: $warning;
+    }
+  }
+
+  .category-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: $border-radius;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+  }
+
+  .featured-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    background-color: rgba($warning, 0.1);
+    color: $warning;
+    border-radius: $border-radius;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 0.5rem;
+  }
+
+  .download-count {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: $light-text-muted;
+  }
+
+  .date-info {
+    font-size: 0.875rem;
+    color: $light-text-muted;
+  }
+
+  .mod-actions {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+}
+
+// Dark theme
+body.dark-theme .admin-mods-table {
+  th {
+    background-color: $dark-surface-light;
+    color: $dark-text;
+  }
+
+  .mod-info .mod-details .mod-title a {
+    color: $dark-text;
+
+    &:hover {
+      color: $primary-pink;
+    }
+  }
+}
+
+// Pagination
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .pagination-ellipsis {
+      padding: 0.5rem;
+      color: $light-text-muted;
+    }
+  }
+}
+
+// Analytics Modal
+.analytics-content {
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .analytics-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: $light-bg;
+    border-radius: $border-radius;
+    border: 1px solid $border-color;
+
+    .analytics-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba($primary-pink, 0.1);
+      color: $primary-pink;
+      border-radius: $border-radius;
+      font-size: 1.25rem;
+    }
+
+    .analytics-info {
+      h4 {
+        margin: 0 0 0.25rem 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: $light-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .analytics-number {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $light-text;
+      }
+
+      small {
+        color: $light-text-muted;
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .analytics-section {
+    margin-bottom: 2rem;
+
+    h4 {
+      margin-bottom: 1rem;
+      color: $light-text;
+    }
+
+    .chart-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      background-color: $light-bg;
+      border: 2px dashed $border-color;
+      border-radius: $border-radius;
+      color: $light-text-muted;
+
+      i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    .activity-list {
+      .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background-color: $light-bg;
+        border-radius: $border-radius;
+        margin-bottom: 0.5rem;
+
+        i {
+          color: $primary-pink;
+        }
+      }
+    }
+  }
+}
+
+// Dark theme analytics
+body.dark-theme .analytics-content {
+  .analytics-card {
+    background-color: $dark-surface-light;
+    border-color: $dark-surface-light;
+
+    .analytics-info {
+      h4 {
+        color: $dark-text-muted;
+      }
+
+      .analytics-number {
+        color: $dark-text;
+      }
+
+      small {
+        color: $dark-text-muted;
+      }
+    }
+  }
+
+  .analytics-section {
+    h4 {
+      color: $dark-text;
+    }
+
+    .chart-placeholder {
+      background-color: $dark-surface-light;
+      border-color: $dark-surface-light;
+      color: $dark-text-muted;
+    }
+
+    .activity-list .activity-item {
+      background-color: $dark-surface-light;
+    }
+  }
+}
+
+// User mod management enhancements
+.user-mod-card {
+  .mod-actions {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+
+    .btn {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+}
+
+// Loading and error states
+.loading-state, .error-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  color: $light-text-muted;
+
+  i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    margin-bottom: 0.5rem;
+    color: $light-text;
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+}
+
+.error-state {
+  color: $danger;
+
+  i {
+    color: $danger;
+  }
+}
+
+// Dark theme states
+body.dark-theme {
+  .loading-state, .error-state, .empty-state {
+    color: $dark-text-muted;
+
+    h3 {
+      color: $dark-text;
+    }
+  }
+
+  .error-state {
+    color: $danger;
+
+    i {
+      color: $danger;
+    }
+  }
+}
+
+// Responsive design
+@include media-breakpoint-down(md) {
+  .admin-mods-table {
+    font-size: 0.875rem;
+
+    .mod-actions {
+      flex-direction: column;
+      gap: 0.125rem;
+
+      .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+  }
+
+  .analytics-content .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .admin-mods-table {
+    th, td {
+      padding: 0.5rem 0.25rem;
+    }
+
+    .mod-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+
+      .mod-thumbnail {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  .pagination-container .pagination {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+}

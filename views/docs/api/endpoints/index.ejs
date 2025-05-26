@@ -1,0 +1,503 @@
+<%- include('../../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link">Error Handling</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link active">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- API Endpoints Overview -->
+                    <section class="docs-section" id="endpoints-overview">
+                        <h2>API Endpoints Overview</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                The Sayonika API provides a comprehensive set of endpoints for managing mods, users, and platform data.
+                                All endpoints follow RESTful conventions and return JSON responses.
+                            </p>
+
+                            <!-- Base URL -->
+                            <div class="alert info">
+                                <i class="fas fa-info-circle"></i>
+                                <div>
+                                    <strong>Base URL:</strong> All endpoints are relative to <code><%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api</code>
+                                </div>
+                            </div>
+
+                            <!-- Endpoint Categories -->
+                            <h3>Endpoint Categories</h3>
+                            
+                            <!-- Authentication Endpoints -->
+                            <div class="endpoint-category">
+                                <h4><i class="fas fa-key"></i> Authentication Endpoints</h4>
+                                <p>Handle user authentication, registration, and session management.</p>
+                                
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Method</th>
+                                            <th>Endpoint</th>
+                                            <th>Description</th>
+                                            <th>Auth Required</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/auth/register</code></td>
+                                            <td>Register a new user account</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/auth/login</code></td>
+                                            <td>Login with email and password</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/auth/logout</code></td>
+                                            <td>Logout and invalidate token</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/auth/refresh</code></td>
+                                            <td>Refresh authentication token</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/auth/github</code></td>
+                                            <td>GitHub OAuth authentication</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/auth/discord</code></td>
+                                            <td>Discord OAuth authentication</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <p><a href="/docs/api/endpoints/auth" class="btn btn-primary">View Authentication Endpoints →</a></p>
+                            </div>
+
+                            <!-- Mod Endpoints -->
+                            <div class="endpoint-category">
+                                <h4><i class="fas fa-puzzle-piece"></i> Mod Endpoints</h4>
+                                <p>Browse, upload, and manage DDLC mods.</p>
+                                
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Method</th>
+                                            <th>Endpoint</th>
+                                            <th>Description</th>
+                                            <th>Auth Required</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/mods</code></td>
+                                            <td>List all public mods</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/mods/{slug}</code></td>
+                                            <td>Get specific mod details</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/mods</code></td>
+                                            <td>Upload a new mod</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method put">PUT</span></td>
+                                            <td><code>/mods/{slug}</code></td>
+                                            <td>Update mod information</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method delete">DELETE</span></td>
+                                            <td><code>/mods/{slug}</code></td>
+                                            <td>Delete a mod</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/mods/{slug}/download</code></td>
+                                            <td>Download mod file</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/search</code></td>
+                                            <td>Search mods</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <p><a href="/docs/api/endpoints/mods" class="btn btn-primary">View Mod Endpoints →</a></p>
+                            </div>
+
+                            <!-- User Endpoints -->
+                            <div class="endpoint-category">
+                                <h4><i class="fas fa-users"></i> User Endpoints</h4>
+                                <p>Manage user profiles and account settings.</p>
+                                
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Method</th>
+                                            <th>Endpoint</th>
+                                            <th>Description</th>
+                                            <th>Auth Required</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/users/me</code></td>
+                                            <td>Get current user profile</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method put">PUT</span></td>
+                                            <td><code>/users/me</code></td>
+                                            <td>Update current user profile</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/users/{username}</code></td>
+                                            <td>Get public user profile</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/users/{username}/mods</code></td>
+                                            <td>Get user's public mods</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/users/me/avatar</code></td>
+                                            <td>Upload profile avatar</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method delete">DELETE</span></td>
+                                            <td><code>/users/me/avatar</code></td>
+                                            <td>Remove profile avatar</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <p><a href="/docs/api/endpoints/users" class="btn btn-primary">View User Endpoints →</a></p>
+                            </div>
+
+                            <!-- Category Endpoints -->
+                            <div class="endpoint-category">
+                                <h4><i class="fas fa-tags"></i> Category Endpoints</h4>
+                                <p>Browse mod categories and tags.</p>
+                                
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Method</th>
+                                            <th>Endpoint</th>
+                                            <th>Description</th>
+                                            <th>Auth Required</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/categories</code></td>
+                                            <td>List all categories</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/categories/{slug}</code></td>
+                                            <td>Get category details</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/categories/{slug}/mods</code></td>
+                                            <td>Get mods in category</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/tags</code></td>
+                                            <td>List all tags</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <p><a href="/docs/api/endpoints/categories" class="btn btn-primary">View Category Endpoints →</a></p>
+                            </div>
+
+                            <!-- Admin Endpoints -->
+                            <div class="endpoint-category">
+                                <h4><i class="fas fa-shield-alt"></i> Admin Endpoints</h4>
+                                <p>Administrative functions for managing the platform.</p>
+                                
+                                <div class="alert warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <div>
+                                        <strong>Admin Only:</strong> These endpoints require administrator privileges.
+                                    </div>
+                                </div>
+                                
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Method</th>
+                                            <th>Endpoint</th>
+                                            <th>Description</th>
+                                            <th>Auth Required</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/admin/users</code></td>
+                                            <td>List all users</td>
+                                            <td>🔒 Admin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/admin/mods</code></td>
+                                            <td>List all mods (including pending)</td>
+                                            <td>🔒 Admin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/admin/mods/{id}/approve</code></td>
+                                            <td>Approve a pending mod</td>
+                                            <td>🔒 Admin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/admin/mods/{id}/reject</code></td>
+                                            <td>Reject a pending mod</td>
+                                            <td>🔒 Admin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method put">PUT</span></td>
+                                            <td><code>/admin/users/{id}</code></td>
+                                            <td>Update user account</td>
+                                            <td>🔒 Admin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/admin/stats</code></td>
+                                            <td>Get platform statistics</td>
+                                            <td>🔒 Admin</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <p><a href="/docs/api/endpoints/admin" class="btn btn-primary">View Admin Endpoints →</a></p>
+                            </div>
+
+                            <!-- Common Parameters -->
+                            <h3>Common Parameters</h3>
+                            <p>Many endpoints support common query parameters for filtering and pagination:</p>
+
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>page</code></td>
+                                        <td>integer</td>
+                                        <td>Page number for pagination (default: 1)</td>
+                                        <td><code>?page=2</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>per_page</code></td>
+                                        <td>integer</td>
+                                        <td>Items per page (default: 20, max: 100)</td>
+                                        <td><code>?per_page=50</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>sort</code></td>
+                                        <td>string</td>
+                                        <td>Sort field (varies by endpoint)</td>
+                                        <td><code>?sort=created_at</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>order</code></td>
+                                        <td>string</td>
+                                        <td>Sort order: asc or desc (default: desc)</td>
+                                        <td><code>?order=asc</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>search</code></td>
+                                        <td>string</td>
+                                        <td>Search query</td>
+                                        <td><code>?search=romance</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>category</code></td>
+                                        <td>string</td>
+                                        <td>Filter by category slug</td>
+                                        <td><code>?category=full-mods</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Quick Start Example -->
+                            <h3>Quick Start Example</h3>
+                            <p>Here's a simple example to get you started with the API:</p>
+
+                            <div class="code-block">
+                                <pre><code># Get all mods
+curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods" \
+  -H "Accept: application/json"
+
+# Search for romance mods
+curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods?search=romance&category=full-mods" \
+  -H "Accept: application/json"
+
+# Get a specific mod
+curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods/my-awesome-mod" \
+  -H "Accept: application/json"</code></pre>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Next Steps</h3>
+                                <div class="link-grid">
+                                    <a href="/docs/api/authentication" class="quick-link">
+                                        <i class="fas fa-key"></i>
+                                        <div>
+                                            <h4>Authentication</h4>
+                                            <p>Learn how to authenticate with the API</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/api/endpoints/mods" class="quick-link">
+                                        <i class="fas fa-puzzle-piece"></i>
+                                        <div>
+                                            <h4>Mod Endpoints</h4>
+                                            <p>Detailed mod management endpoints</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/examples" class="quick-link">
+                                        <i class="fas fa-code"></i>
+                                        <div>
+                                            <h4>Code Examples</h4>
+                                            <p>Working examples in multiple languages</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../../partials/footer') %>

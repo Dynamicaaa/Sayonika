@@ -1,0 +1,694 @@
+<%- include('../../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link active">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Mod Endpoints -->
+                    <section class="docs-section" id="mod-endpoints">
+                        <h2>Mod Endpoints</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Mod endpoints allow you to browse, upload, and manage DDLC mods on the Sayonika platform.
+                                These endpoints handle mod metadata, files, and user interactions.
+                            </p>
+
+                            <!-- List Mods -->
+                            <div class="endpoint">
+                                <h3 id="list-mods">
+                                    <span class="method get">GET</span>
+                                    <code>/api/mods</code>
+                                </h3>
+                                <p>Retrieve a paginated list of public mods.</p>
+
+                                <h4>Query Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                            <th>Default</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>page</code></td>
+                                            <td>integer</td>
+                                            <td>Page number</td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>per_page</code></td>
+                                            <td>integer</td>
+                                            <td>Items per page (max: 100)</td>
+                                            <td>20</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>sort</code></td>
+                                            <td>string</td>
+                                            <td>Sort field: created_at, updated_at, downloads, rating</td>
+                                            <td>created_at</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>order</code></td>
+                                            <td>string</td>
+                                            <td>Sort order: asc, desc</td>
+                                            <td>desc</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>category</code></td>
+                                            <td>string</td>
+                                            <td>Filter by category slug</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>search</code></td>
+                                            <td>string</td>
+                                            <td>Search in title and description</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>tags</code></td>
+                                            <td>string</td>
+                                            <td>Comma-separated list of tags</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 123,
+      "title": "My Awesome Mod",
+      "slug": "my-awesome-mod",
+      "description": "A fantastic mod for DDLC",
+      "version": "1.2.0",
+      "downloads": 1500,
+      "rating": 4.8,
+      "status": "approved",
+      "thumbnail_url": "https://example.com/thumbnails/mod-123.jpg",
+      "created_at": "2024-01-10T08:00:00Z",
+      "updated_at": "2024-01-15T10:30:00Z",
+      "author": {
+        "id": 456,
+        "username": "modder123",
+        "display_name": "Awesome Modder"
+      },
+      "category": {
+        "id": 1,
+        "name": "Full Mods",
+        "slug": "full-mods"
+      },
+      "tags": ["romance", "comedy", "original-characters"]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 20,
+    "total": 150,
+    "total_pages": 8,
+    "has_next": true,
+    "has_prev": false
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code># Get all mods
+curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods"
+
+# Search for romance mods
+curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods?search=romance&tags=romance,comedy"
+
+# Get mods sorted by downloads
+curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods?sort=downloads&order=desc"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Get Mod -->
+                            <div class="endpoint">
+                                <h3 id="get-mod">
+                                    <span class="method get">GET</span>
+                                    <code>/api/mods/{slug}</code>
+                                </h3>
+                                <p>Get detailed information about a specific mod.</p>
+
+                                <h4>Path Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>slug</code></td>
+                                            <td>string</td>
+                                            <td>Unique mod identifier</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "id": 123,
+    "title": "My Awesome Mod",
+    "slug": "my-awesome-mod",
+    "description": "A fantastic mod for DDLC with new characters and storylines...",
+    "version": "1.2.0",
+    "downloads": 1500,
+    "rating": 4.8,
+    "review_count": 25,
+    "status": "approved",
+    "thumbnail_url": "https://example.com/thumbnails/mod-123.jpg",
+    "screenshots": [
+      "https://example.com/screenshots/mod-123-1.jpg",
+      "https://example.com/screenshots/mod-123-2.jpg"
+    ],
+    "created_at": "2024-01-10T08:00:00Z",
+    "updated_at": "2024-01-15T10:30:00Z",
+    "author": {
+      "id": 456,
+      "username": "modder123",
+      "display_name": "Awesome Modder",
+      "avatar_url": "https://example.com/avatars/user-456.jpg"
+    },
+    "category": {
+      "id": 1,
+      "name": "Full Mods",
+      "slug": "full-mods",
+      "description": "Complete story modifications"
+    },
+    "tags": ["romance", "comedy", "original-characters"],
+    "requirements": {
+      "ddlc_version": "1.1.1",
+      "additional_notes": "Requires base DDLC installation"
+    },
+    "files": [
+      {
+        "id": 789,
+        "filename": "my-awesome-mod-v1.2.0.zip",
+        "size": 52428800,
+        "download_count": 1500,
+        "created_at": "2024-01-15T10:30:00Z"
+      }
+    ],
+    "changelog": "Version 1.2.0:\n- Fixed dialogue bugs\n- Added new scenes\n- Improved graphics"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods/my-awesome-mod"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Upload Mod -->
+                            <div class="endpoint">
+                                <h3 id="upload-mod">
+                                    <span class="method post">POST</span>
+                                    <code>/api/mods</code>
+                                </h3>
+                                <p>Upload a new mod. Requires authentication.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_JWT_TOKEN
+Content-Type: multipart/form-data</code></pre>
+                                </div>
+
+                                <h4>Form Data</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Field</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>title</code></td>
+                                            <td>string</td>
+                                            <td>✅ Yes</td>
+                                            <td>Mod title (3-100 characters)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>description</code></td>
+                                            <td>string</td>
+                                            <td>✅ Yes</td>
+                                            <td>Mod description (10-5000 characters)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>version</code></td>
+                                            <td>string</td>
+                                            <td>✅ Yes</td>
+                                            <td>Version number (e.g., "1.0.0")</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>category_id</code></td>
+                                            <td>integer</td>
+                                            <td>✅ Yes</td>
+                                            <td>Category ID</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>tags</code></td>
+                                            <td>string</td>
+                                            <td>❌ No</td>
+                                            <td>Comma-separated tags</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>mod_file</code></td>
+                                            <td>file</td>
+                                            <td>✅ Yes</td>
+                                            <td>Mod ZIP file (max 100MB)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>thumbnail</code></td>
+                                            <td>file</td>
+                                            <td>❌ No</td>
+                                            <td>Thumbnail image (JPG/PNG, max 5MB)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>screenshots</code></td>
+                                            <td>file[]</td>
+                                            <td>❌ No</td>
+                                            <td>Screenshot images (max 10 files)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>changelog</code></td>
+                                            <td>string</td>
+                                            <td>❌ No</td>
+                                            <td>Version changelog</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "id": 124,
+    "title": "New Awesome Mod",
+    "slug": "new-awesome-mod",
+    "status": "pending",
+    "message": "Mod uploaded successfully and is pending review"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X POST "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -F "title=My New Mod" \
+  -F "description=An amazing new mod for DDLC" \
+  -F "version=1.0.0" \
+  -F "category_id=1" \
+  -F "tags=romance,comedy" \
+  -F "mod_file=@my-mod.zip" \
+  -F "thumbnail=@thumbnail.jpg"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Download Mod -->
+                            <div class="endpoint">
+                                <h3 id="download-mod">
+                                    <span class="method get">GET</span>
+                                    <code>/api/mods/{slug}/download</code>
+                                </h3>
+                                <p>Download the mod file. Increments download counter.</p>
+
+                                <h4>Path Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>slug</code></td>
+                                            <td>string</td>
+                                            <td>Unique mod identifier</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <p>Returns the mod file as a binary download with appropriate headers:</p>
+                                <div class="code-block">
+                                    <pre><code>Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="my-awesome-mod-v1.2.0.zip"
+Content-Length: 52428800</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code># Download mod file
+curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods/my-awesome-mod/download" \
+  -o "my-awesome-mod.zip"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Search Mods -->
+                            <div class="endpoint">
+                                <h3 id="search-mods">
+                                    <span class="method get">GET</span>
+                                    <code>/api/search</code>
+                                </h3>
+                                <p>Advanced search for mods with full-text search capabilities.</p>
+
+                                <h4>Query Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>q</code></td>
+                                            <td>string</td>
+                                            <td>Search query (required)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>category</code></td>
+                                            <td>string</td>
+                                            <td>Filter by category slug</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>tags</code></td>
+                                            <td>string</td>
+                                            <td>Comma-separated tags</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>min_rating</code></td>
+                                            <td>number</td>
+                                            <td>Minimum rating (0-5)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>author</code></td>
+                                            <td>string</td>
+                                            <td>Filter by author username</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>page</code></td>
+                                            <td>integer</td>
+                                            <td>Page number</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>per_page</code></td>
+                                            <td>integer</td>
+                                            <td>Results per page</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <p>Same format as <code>GET /api/mods</code> but with search relevance scoring.</p>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code># Search for romance mods with high rating
+curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/search?q=romance&min_rating=4.0&tags=romance"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Update Mod -->
+                            <div class="endpoint">
+                                <h3 id="update-mod">
+                                    <span class="method put">PUT</span>
+                                    <code>/api/mods/{slug}</code>
+                                </h3>
+                                <p>Update mod information. Only the mod author or admins can update mods.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_JWT_TOKEN
+Content-Type: application/json</code></pre>
+                                </div>
+
+                                <h4>Request Body</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "title": "Updated Mod Title",
+  "description": "Updated description...",
+  "version": "1.3.0",
+  "tags": "romance,comedy,updated",
+  "changelog": "Version 1.3.0 changes..."
+}</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "message": "Mod updated successfully",
+    "mod": {
+      "id": 123,
+      "title": "Updated Mod Title",
+      "slug": "my-awesome-mod",
+      "version": "1.3.0"
+    }
+  }
+}</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Delete Mod -->
+                            <div class="endpoint">
+                                <h3 id="delete-mod">
+                                    <span class="method delete">DELETE</span>
+                                    <code>/api/mods/{slug}</code>
+                                </h3>
+                                <p>Delete a mod. Only the mod author or admins can delete mods.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_JWT_TOKEN</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "message": "Mod deleted successfully"
+  }
+}</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Rate Limits -->
+                            <h3>Rate Limits</h3>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Endpoint</th>
+                                        <th>Rate Limit</th>
+                                        <th>Window</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>GET /mods</code></td>
+                                        <td>1000 requests</td>
+                                        <td>Per hour</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>POST /mods</code></td>
+                                        <td>5 requests</td>
+                                        <td>Per hour</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>PUT /mods/{slug}</code></td>
+                                        <td>20 requests</td>
+                                        <td>Per hour</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DELETE /mods/{slug}</code></td>
+                                        <td>10 requests</td>
+                                        <td>Per hour</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>GET /search</code></td>
+                                        <td>100 requests</td>
+                                        <td>Per hour</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>GET /mods/{slug}/download</code></td>
+                                        <td>50 requests</td>
+                                        <td>Per hour</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Error Responses -->
+                            <h3>Common Error Responses</h3>
+
+                            <h4>Mod Not Found (404)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "MOD_NOT_FOUND",
+    "message": "Mod not found"
+  }
+}</code></pre>
+                            </div>
+
+                            <h4>File Too Large (413)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "FILE_TOO_LARGE",
+    "message": "Mod file exceeds maximum size limit",
+    "details": {
+      "max_size": "100MB",
+      "uploaded_size": "150MB"
+    }
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Next Steps</h3>
+                                <div class="link-grid">
+                                    <a href="/docs/api/endpoints/users" class="quick-link">
+                                        <i class="fas fa-users"></i>
+                                        <div>
+                                            <h4>User Endpoints</h4>
+                                            <p>Manage user profiles and accounts</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/api/endpoints/categories" class="quick-link">
+                                        <i class="fas fa-tags"></i>
+                                        <div>
+                                            <h4>Category Endpoints</h4>
+                                            <p>Browse mod categories and tags</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/examples/javascript" class="quick-link">
+                                        <i class="fas fa-code"></i>
+                                        <div>
+                                            <h4>JavaScript Examples</h4>
+                                            <p>Working mod management examples</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../../partials/footer') %>

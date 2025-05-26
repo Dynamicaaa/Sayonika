@@ -1,0 +1,267 @@
+<%- include('../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link <%= currentPath === '/docs/getting-started' ? 'active' : '' %>">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link <%= currentPath === '/docs/first-run' ? 'active' : '' %>">First Run</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link <%= currentPath === '/docs/examples' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link <%= currentPath === '/docs/examples/javascript' ? 'active' : '' %>">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link <%= currentPath === '/docs/examples/python' ? 'active' : '' %>">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link <%= currentPath === '/docs/examples/php' ? 'active' : '' %>">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link <%= currentPath === '/docs/integration-guides' ? 'active' : '' %>">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link <%= currentPath === '/docs/webhooks' ? 'active' : '' %>">Webhooks</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link <%= currentPath === '/docs/deployment' ? 'active' : '' %>">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- First Run Section -->
+                    <section class="docs-section" id="first-run">
+                        <h2>First Run</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                After installing and configuring Sayonika, this guide will walk you through the initial setup 
+                                process, including creating your admin account and configuring basic settings.
+                            </p>
+
+                            <!-- Prerequisites -->
+                            <div class="alert info">
+                                <i class="fas fa-info-circle"></i>
+                                <div>
+                                    <strong>Before you start:</strong> Make sure you have completed the 
+                                    <a href="/docs/installation">installation</a> and 
+                                    <a href="/docs/configuration">configuration</a> steps.
+                                </div>
+                            </div>
+
+                            <!-- Step-by-step Setup -->
+                            <div class="steps-container">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h3>Start the Server</h3>
+                                        <p>Launch your Sayonika instance if it's not already running:</p>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Start server</span>
+                                                <button class="copy-btn" data-copy="npm run dev">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre><code>npm run dev</code></pre>
+                                        </div>
+                                        <p>Your server should be running at <code>http://localhost:3000</code> (or your configured port).</p>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h3>Access the Homepage</h3>
+                                        <p>Open your web browser and navigate to your Sayonika instance. You should see the homepage with a clean, modern interface.</p>
+                                        <div class="alert success">
+                                            <i class="fas fa-check-circle"></i>
+                                            <div>
+                                                <strong>Success!</strong> If you can see the Sayonika homepage, your installation is working correctly.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h3>Create Your Owner Account</h3>
+                                        <p>The first user to register will automatically become the "Owner" with full administrative privileges.</p>
+                                        
+                                        <h4>Registration Options</h4>
+                                        <ul>
+                                            <li><strong>Email Registration:</strong> Click "Register" and create an account with email and password</li>
+                                            <li><strong>OAuth Registration:</strong> Use GitHub or Discord if you've configured OAuth providers</li>
+                                        </ul>
+
+                                        <div class="alert warning">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <div>
+                                                <strong>Important:</strong> The first registered user becomes the Owner. Make sure this is your account!
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h3>Verify Your Email (if applicable)</h3>
+                                        <p>If you registered with email and have configured SMTP settings, you'll receive a verification email.</p>
+                                        <ul>
+                                            <li>Check your inbox for a verification email</li>
+                                            <li>Click the verification link to activate your account</li>
+                                            <li>If you don't see the email, check your spam folder</li>
+                                        </ul>
+                                        
+                                        <div class="alert info">
+                                            <i class="fas fa-info-circle"></i>
+                                            <div>
+                                                <strong>No Email Setup?</strong> If you haven't configured email settings, 
+                                                your account will be automatically verified.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">5</div>
+                                    <div class="step-content">
+                                        <h3>Access Admin Panel</h3>
+                                        <p>Once logged in as the Owner, you'll have access to the admin panel:</p>
+                                        <ul>
+                                            <li>Navigate to <code>/admin</code> or click the "Admin" link in the navigation</li>
+                                            <li>You'll see the admin dashboard with user and mod management options</li>
+                                            <li>Your role will display as "Owner" instead of "Admin"</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">6</div>
+                                    <div class="step-content">
+                                        <h3>Configure Profile</h3>
+                                        <p>Set up your profile information:</p>
+                                        <ul>
+                                            <li>Go to your profile settings</li>
+                                            <li>Upload a profile picture (or keep the default)</li>
+                                            <li>Add a bio or description</li>
+                                            <li>Configure notification preferences</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Admin Features -->
+                            <div class="admin-features">
+                                <h3>Owner Privileges</h3>
+                                <p>As the Owner, you have access to all administrative features:</p>
+                                
+                                <div class="feature-grid">
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-users"></i> User Management</h4>
+                                        <ul>
+                                            <li>View all registered users</li>
+                                            <li>Promote users to Admin role</li>
+                                            <li>Ban or suspend users</li>
+                                            <li>Cannot delete your own account</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-puzzle-piece"></i> Mod Management</h4>
+                                        <ul>
+                                            <li>Review and approve mod submissions</li>
+                                            <li>Edit or delete any mod</li>
+                                            <li>Manage mod categories</li>
+                                            <li>View mod statistics</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-cog"></i> System Settings</h4>
+                                        <ul>
+                                            <li>Configure site-wide settings</li>
+                                            <li>Manage announcements</li>
+                                            <li>View system statistics</li>
+                                            <li>Access logs and reports</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-shield-alt"></i> Security</h4>
+                                        <ul>
+                                            <li>Monitor security events</li>
+                                            <li>Manage API access</li>
+                                            <li>Configure rate limiting</li>
+                                            <li>Review audit logs</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../partials/footer') %>

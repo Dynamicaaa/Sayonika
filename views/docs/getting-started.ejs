@@ -1,0 +1,312 @@
+<%- include('../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link <%= currentPath === '/docs/getting-started' ? 'active' : '' %>">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link <%= currentPath === '/docs/first-run' ? 'active' : '' %>">First Run</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link <%= currentPath === '/docs/examples' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link <%= currentPath === '/docs/examples/javascript' ? 'active' : '' %>">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link <%= currentPath === '/docs/examples/python' ? 'active' : '' %>">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link <%= currentPath === '/docs/examples/php' ? 'active' : '' %>">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link <%= currentPath === '/docs/integration-guides' ? 'active' : '' %>">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link <%= currentPath === '/docs/webhooks' ? 'active' : '' %>">Webhooks</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link <%= currentPath === '/docs/deployment' ? 'active' : '' %>">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Getting Started Section -->
+                    <section class="docs-section" id="getting-started">
+                        <h2>Getting Started</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Welcome to Sayonika! This guide will help you get up and running with your own DDLC mod platform
+                                in just a few minutes. Follow these steps to set up your instance and start hosting mods.
+                            </p>
+
+                            <!-- Quick Start Steps -->
+                            <div class="steps-container">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h3>Prerequisites</h3>
+                                        <p>Before you begin, make sure you have the following installed on your system:</p>
+                                        <ul>
+                                            <li><strong>Node.js</strong> (version 16.0 or higher)</li>
+                                            <li><strong>npm</strong> (comes with Node.js)</li>
+                                            <li><strong>Git</strong> (for cloning the repository)</li>
+                                        </ul>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Check your versions</span>
+                                                <button class="copy-btn" data-copy="node --version
+npm --version
+git --version">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre><code>node --version
+npm --version
+git --version</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h3>Download Sayonika</h3>
+                                        <p>Clone the Sayonika repository from GitHub:</p>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Clone repository</span>
+                                                <button class="copy-btn" data-copy="git clone https://github.com/Dynamicaaa/Sayonika.git
+cd Sayonika">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre><code>git clone https://github.com/Dynamicaaa/Sayonika.git
+cd Sayonika</code></pre>
+                                        </div>
+                                        <div class="alert info">
+                                            <i class="fas fa-info-circle"></i>
+                                            <div>
+                                                <strong>Alternative:</strong> You can also download the ZIP file from the
+                                                <a href="https://github.com/Dynamicaaa/Sayonika/releases" target="_blank">releases page</a>
+                                                if you prefer not to use Git.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h3>Install Dependencies</h3>
+                                        <p>Install all required Node.js packages:</p>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Install packages</span>
+                                                <button class="copy-btn" data-copy="npm install">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre><code>npm install</code></pre>
+                                        </div>
+                                        <p>This will install all dependencies listed in <code>package.json</code>, including Express, SQLite, Passport, and other required packages.</p>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h3>Environment Configuration</h3>
+                                        <p>Create your environment configuration file:</p>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Create .env file</span>
+                                                <button class="copy-btn" data-copy="cp .env.example .env">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre><code>cp .env.example .env</code></pre>
+                                        </div>
+                                        <p>Edit the <code>.env</code> file with your preferred text editor and configure the basic settings:</p>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Basic .env configuration</span>
+                                                <button class="copy-btn" data-copy="PORT=3000
+SESSION_SECRET=your-secret-key-here
+WEBSITE_URL=http://localhost:3000">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre><code>PORT=3000
+SESSION_SECRET=your-secret-key-here
+WEBSITE_URL=http://localhost:3000</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">5</div>
+                                    <div class="step-content">
+                                        <h3>Initialize Database</h3>
+                                        <p>Set up the SQLite database with the required tables:</p>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Initialize database</span>
+                                                <button class="copy-btn" data-copy="npm run init-db">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre><code>npm run init-db</code></pre>
+                                        </div>
+                                        <p>This command will create the database file and run all necessary migrations to set up the schema.</p>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">6</div>
+                                    <div class="step-content">
+                                        <h3>Start the Server</h3>
+                                        <p>Launch your Sayonika instance:</p>
+                                        <div class="code-block">
+                                            <div class="code-header">
+                                                <span>Start development server</span>
+                                                <button class="copy-btn" data-copy="npm run dev">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre><code>npm run dev</code></pre>
+                                        </div>
+                                        <p>Your Sayonika instance will be available at <code>http://localhost:3000</code></p>
+                                        <div class="alert success">
+                                            <i class="fas fa-check-circle"></i>
+                                            <div>
+                                                <strong>Success!</strong> If you see the Sayonika homepage, your installation is complete.
+                                                The first user to register will automatically become the owner with admin privileges.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- What's Next -->
+                            <div class="next-steps">
+                                <h3>What's Next?</h3>
+                                <div class="next-steps-grid">
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-cog"></i>
+                                        </div>
+                                        <h4>Configure Your Instance</h4>
+                                        <p>Set up OAuth providers, email settings, and other advanced configurations.</p>
+                                        <a href="/docs/configuration" class="btn btn-outline">Configure Now</a>
+                                    </div>
+
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-user-plus"></i>
+                                        </div>
+                                        <h4>Create Your Account</h4>
+                                        <p>Register as the first user to become the owner and access admin features.</p>
+                                        <a href="/docs/first-run" class="btn btn-outline">First Run Guide</a>
+                                    </div>
+
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-code"></i>
+                                        </div>
+                                        <h4>Explore the API</h4>
+                                        <p>Learn about the REST API and start building integrations.</p>
+                                        <a href="/docs/api" class="btn btn-outline">API Reference</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Troubleshooting -->
+                            <div class="troubleshooting-section">
+                                <h3>Common Issues</h3>
+                                <div class="faq-item">
+                                    <h4>Port already in use</h4>
+                                    <p>If port 3000 is already in use, change the <code>PORT</code> value in your <code>.env</code> file to a different port number.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <h4>Database initialization fails</h4>
+                                    <p>Make sure you have write permissions in the project directory. The database file will be created in <code>database/sayonika.db</code>.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <h4>Module not found errors</h4>
+                                    <p>Run <code>npm install</code> again to ensure all dependencies are properly installed.</p>
+                                </div>
+
+                                <div class="help-link">
+                                    <p>
+                                        Need more help? Check our <a href="/docs/troubleshooting">troubleshooting guide</a> or
+                                        <a href="https://github.com/Dynamicaaa/Sayonika/issues" target="_blank">create an issue</a> on GitHub.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../partials/footer') %>

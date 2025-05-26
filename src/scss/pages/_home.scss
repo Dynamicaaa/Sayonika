@@ -1,0 +1,366 @@
+// Home page styles
+@use 'sass:color';
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.hero {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+
+  @include media-breakpoint-down(md) {
+    min-height: 50vh;
+  }
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/images/background.png') center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba($dark-bg, 0.3);
+  z-index: -1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  padding: 2rem;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: $font-weight-bold;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba($dark-bg, 0.5);
+
+  @include media-breakpoint-down(md) {
+    font-size: 2.5rem;
+  }
+
+  @include media-breakpoint-down(sm) {
+    font-size: 2rem;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  text-shadow: 1px 1px 2px rgba($dark-bg, 0.5);
+
+  @include media-breakpoint-down(md) {
+    font-size: 1.125rem;
+  }
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .btn {
+    min-width: 160px;
+  }
+}
+
+// Stats section
+.stats-section {
+  padding: 4rem 0;
+  background-color: $light-surface;
+
+  @include media-breakpoint-down(md) {
+    padding: 3rem 0;
+  }
+}
+
+// Dark theme stats section
+body.dark-theme .stats-section {
+  background-color: $dark-surface;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+
+  @include media-breakpoint-down(sm) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: $light-bg;
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-sm;
+  @include transition();
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $box-shadow;
+  }
+}
+
+// Dark theme stat item
+body.dark-theme .stat-item {
+  background-color: $dark-surface-light;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, $primary-pink, $primary-blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: $font-weight-bold;
+  color: $primary-pink;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+// Dark theme stat number
+body.dark-theme .stat-number {
+  color: $secondary-pink;
+}
+
+.stat-label {
+  color: $light-text-muted;
+  font-size: $font-size-sm;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Dark theme stat label
+body.dark-theme .stat-label {
+  color: $dark-text-muted;
+}
+
+// Section styles
+.section {
+  padding: 4rem 0;
+
+  @include media-breakpoint-down(md) {
+    padding: 3rem 0;
+  }
+}
+
+.featured-section {
+  @extend .section;
+  background-color: $light-bg;
+}
+
+// Dark theme featured section
+body.dark-theme .featured-section {
+  background-color: $dark-bg;
+}
+
+.recent-section {
+  @extend .section;
+  background-color: $light-surface;
+}
+
+// Dark theme recent section
+body.dark-theme .recent-section {
+  background-color: $dark-surface;
+}
+
+.categories-section {
+  @extend .section;
+  background-color: $light-bg;
+}
+
+// Dark theme categories section
+body.dark-theme .categories-section {
+  background-color: $dark-bg;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+
+  @include media-breakpoint-down(md) {
+    margin-bottom: 2rem;
+  }
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: $font-weight-bold;
+  color: $light-text;
+  margin-bottom: 1rem;
+
+  @include media-breakpoint-down(md) {
+    font-size: 2rem;
+  }
+}
+
+// Dark theme section title
+body.dark-theme .section-title {
+  color: $dark-text;
+}
+
+.section-subtitle {
+  font-size: 1.125rem;
+  color: $light-text-muted;
+  margin-bottom: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// Dark theme section subtitle
+body.dark-theme .section-subtitle {
+  color: $dark-text-muted;
+}
+
+.section-action {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: $primary-pink;
+  text-decoration: none;
+  font-weight: $font-weight-medium;
+  @include transition();
+
+  &:hover {
+    color: color.scale($primary-pink, $lightness: -15%);
+    text-decoration: none;
+  }
+
+  @include media-breakpoint-down(md) {
+    position: static;
+    display: inline-block;
+    margin-top: 1rem;
+  }
+}
+
+// Dark theme section action
+body.dark-theme .section-action {
+  color: $secondary-pink;
+
+  &:hover {
+    color: color.scale($secondary-pink, $lightness: 15%);
+  }
+}
+
+// Grid layouts
+.mods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+
+  @include media-breakpoint-down(md) {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @include media-breakpoint-down(sm) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+
+  @include media-breakpoint-down(sm) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+// CTA section
+.cta-section {
+  padding: 5rem 0;
+  background: linear-gradient(
+    135deg,
+    rgba($primary-pink, 0.1) 0%,
+    rgba($primary-blue, 0.1) 50%,
+    rgba($primary-purple, 0.1) 100%
+  );
+  text-align: center;
+
+  @include media-breakpoint-down(md) {
+    padding: 4rem 0;
+  }
+}
+
+.cta-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  font-size: 2.5rem;
+  font-weight: $font-weight-bold;
+  color: $light-text;
+  margin-bottom: 1rem;
+
+  @include media-breakpoint-down(md) {
+    font-size: 2rem;
+  }
+}
+
+// Dark theme CTA title
+body.dark-theme .cta-title {
+  color: $dark-text;
+}
+
+.cta-subtitle {
+  font-size: 1.125rem;
+  color: $light-text-muted;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+// Dark theme CTA subtitle
+body.dark-theme .cta-subtitle {
+  color: $dark-text-muted;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .btn {
+    min-width: 160px;
+  }
+}

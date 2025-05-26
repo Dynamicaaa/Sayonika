@@ -1,0 +1,338 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <div class="notifications-page">
+        <div class="page-header">
+            <h1><i class="fas fa-bell"></i> Notifications</h1>
+            <p>Stay updated with your mod reviews, achievements, and important announcements</p>
+        </div>
+
+        <div class="notifications-controls">
+            <div class="notifications-stats">
+                <div class="stat-item">
+                    <span class="stat-number"><%= notifications.length %></span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number"><%= unreadCount %></span>
+                    <span class="stat-label">Unread</span>
+                </div>
+            </div>
+
+            <div class="notifications-actions">
+                <% if (unreadCount > 0) { %>
+                    <button class="btn btn-outline" id="markAllReadBtn">
+                        <i class="fas fa-check-double"></i> Mark All as Read
+                    </button>
+                <% } %>
+                <button class="btn btn-outline" id="refreshNotificationsBtn">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="notifications-content">
+            <% if (notifications.length === 0) { %>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-bell-slash"></i>
+                    </div>
+                    <h3>No notifications yet</h3>
+                    <p>When you receive notifications about mod reviews, achievements, or other updates, they'll appear here.</p>
+                    <div class="empty-actions">
+                        <a href="/upload" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload Your First Mod
+                        </a>
+                        <a href="/browse" class="btn btn-outline">
+                            <i class="fas fa-search"></i> Browse Mods
+                        </a>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="notifications-list">
+                    <% notifications.forEach(notification => { %>
+                        <div class="notification-item <%= !notification.is_read ? 'unread' : '' %>" 
+                             data-id="<%= notification.id %>"
+                             data-type="<%= notification.type %>"
+                             data-related-id="<%= notification.related_id %>">
+                            <div class="notification-icon <%= notification.type %>">
+                                <% if (notification.type === 'achievement') { %>
+                                    <i class="fas fa-trophy"></i>
+                                <% } else if (notification.type === 'mod_approved') { %>
+                                    <i class="fas fa-check-circle"></i>
+                                <% } else if (notification.type === 'mod_rejected') { %>
+                                    <i class="fas fa-times-circle"></i>
+                                <% } else { %>
+                                    <i class="fas fa-info-circle"></i>
+                                <% } %>
+                            </div>
+
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <h4 class="notification-title"><%= notification.title %></h4>
+                                    <div class="notification-meta">
+                                        <span class="notification-time">
+                                            <%= new Date(notification.created_at).toLocaleDateString('en-US', { 
+                                                year: 'numeric', 
+                                                month: 'short', 
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            }) %>
+                                        </span>
+                                        <% if (!notification.is_read) { %>
+                                            <span class="unread-indicator">
+                                                <i class="fas fa-circle"></i> New
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <p class="notification-message"><%= notification.message %></p>
+                                
+                                <div class="notification-actions">
+                                    <% if (notification.type === 'achievement') { %>
+                                        <a href="/achievements" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-trophy"></i> View Achievements
+                                        </a>
+                                    <% } else if (notification.type === 'mod_approved' || notification.type === 'mod_rejected') { %>
+                                        <% if (notification.related_id) { %>
+                                            <a href="/mod/<%= notification.related_id %>" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i> View Mod
+                                            </a>
+                                        <% } %>
+                                        <a href="/profile" class="btn btn-sm btn-outline">
+                                            <i class="fas fa-user"></i> My Profile
+                                        </a>
+                                    <% } %>
+                                    
+                                    <% if (!notification.is_read) { %>
+                                        <button class="btn btn-sm btn-outline mark-read-btn" data-id="<%= notification.id %>">
+                                            <i class="fas fa-check"></i> Mark as Read
+                                        </button>
+                                    <% } %>
+                                    
+                                    <button class="btn btn-sm btn-outline btn-danger delete-notification-btn" data-id="<%= notification.id %>">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <% if (notifications.length >= 50) { %>
+                    <div class="notifications-pagination">
+                        <p class="pagination-info">
+                            Showing the most recent 50 notifications. Older notifications are automatically cleaned up.
+                        </p>
+                    </div>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<style>
+.notifications-page {
+    padding: 2rem 0;
+    min-height: 80vh;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.page-header p {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.notifications-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--surface-color);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.notifications-stats {
+    display: flex;
+    gap: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.notifications-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.notifications-content .notification-item {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+    transition: all 0.2s ease;
+}
+
+.notifications-content .notification-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notifications-content .notification-item.unread {
+    border-left: 4px solid var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.05);
+}
+
+.notifications-content .notification-icon {
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.notifications-content .notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.notification-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.notification-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.unread-indicator {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.notification-message {
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+.notification-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.notifications-pagination {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+    .notifications-controls {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .notifications-stats {
+        justify-content: center;
+    }
+
+    .notification-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .notification-actions {
+        justify-content: center;
+    }
+
+    .empty-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+
+<%- include('partials/footer', { scripts: ['/js/pages/notifications.js'] }) %>

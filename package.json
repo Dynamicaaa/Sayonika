@@ -1,0 +1,71 @@
+{
+  "name": "sayonika",
+  "version": "1.0.0",
+  "description": "Mod store for Doki Doki Mod Manager",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "dev:open": "node dev-start.js",
+    "kill": "node kill-server.js",
+    "build-css": "sass src/scss:public/css --watch",
+    "build-css-prod": "sass src/scss:public/css --style compressed",
+    "init-db": "node database/init.js",
+    "migrate": "node database/migrate.js migrate",
+    "migrate:status": "node database/migrate.js status",
+    "migrate:create": "node database/migrate.js create",
+    "migrate:rollback": "node database/migrate.js rollback",
+    "migrate:version": "node database/migrate.js version",
+    "db:init": "node database/init.js",
+    "db:migrate": "node database/migrate.js migrate",
+    "create-test-mod": "node scripts/create-test-mod.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "ddlc",
+    "mod",
+    "manager",
+    "store",
+    "doki",
+    "literature",
+    "club"
+  ],
+  "author": "Sayonika Team",
+  "license": "MIT",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "bcryptjs": "^3.0.2",
+    "compression": "^1.7.4",
+    "connect-sqlite3": "^0.9.15",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.1.5",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.0.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.0",
+    "nodemailer": "^7.0.3",
+    "passport": "^0.7.0",
+    "passport-discord": "^0.1.4",
+    "passport-github2": "^0.1.12",
+    "sharp": "^0.34.2",
+    "sqlite3": "^5.1.6",
+    "uuid": "^11.1.0",
+    "yauzl": "^3.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "open": "^10.1.2",
+    "sass": "^1.69.5",
+    "supertest": "^7.1.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

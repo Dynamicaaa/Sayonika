@@ -1,0 +1,304 @@
+// Modal component styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($dark-bg, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-index-modal;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.modal-dialog {
+  background-color: $light-surface;
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-lg;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  @include transition(transform);
+  transform: scale(0.9);
+  animation: modalShow 0.3s ease-out forwards;
+
+  &.modal-sm {
+    max-width: 300px;
+  }
+
+  &.modal-lg {
+    max-width: 800px;
+  }
+
+  &.modal-xl {
+    max-width: 1140px;
+  }
+}
+
+// Dark theme modal
+body.dark-theme .modal-dialog {
+  background-color: $dark-surface;
+}
+
+@keyframes modalShow {
+  to {
+    transform: scale(1);
+  }
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid $border-color;
+  background-color: rgba($light-text, 0.03);
+  @include border-top-radius($border-radius-lg);
+}
+
+// Dark theme modal header
+body.dark-theme .modal-header {
+  border-bottom-color: $dark-surface-light;
+  background-color: rgba($dark-text, 0.03);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: $font-weight-medium;
+  color: $light-text;
+}
+
+// Dark theme modal title
+body.dark-theme .modal-title {
+  color: $dark-text;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: $light-text-muted;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  @include transition();
+
+  &:hover {
+    background-color: rgba($danger, 0.1);
+    color: $danger;
+  }
+}
+
+// Dark theme modal close
+body.dark-theme .modal-close {
+  color: $dark-text-muted;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  color: $light-text;
+}
+
+// Dark theme modal body
+body.dark-theme .modal-body {
+  color: $dark-text;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid $border-color;
+  background-color: rgba($light-text, 0.03);
+  @include border-bottom-radius($border-radius-lg);
+}
+
+// Dark theme modal footer
+body.dark-theme .modal-footer {
+  border-top-color: $dark-surface-light;
+  background-color: rgba($dark-text, 0.03);
+}
+
+// Notification styles
+.notifications-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: $z-index-tooltip;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 400px;
+}
+
+.notification {
+  background-color: $light-surface;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  padding: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  animation: notificationSlide 0.3s ease-out;
+  @include transition();
+
+  &:hover {
+    transform: translateX(-4px);
+  }
+}
+
+// Dark theme notification
+body.dark-theme .notification {
+  background-color: $dark-surface;
+  border-color: $dark-surface-light;
+}
+
+@keyframes notificationSlide {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex: 1;
+
+  i {
+    margin-top: 0.125rem;
+    font-size: 1.125rem;
+  }
+
+  span {
+    color: $light-text;
+    line-height: 1.4;
+  }
+}
+
+// Dark theme notification content
+body.dark-theme .notification-content span {
+  color: $dark-text;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: $light-text-muted;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  @include transition();
+
+  &:hover {
+    background-color: rgba($light-text, 0.1);
+    color: $light-text;
+  }
+
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+// Dark theme notification close
+body.dark-theme .notification-close {
+  color: $dark-text-muted;
+
+  &:hover {
+    background-color: rgba($dark-text, 0.1);
+    color: $dark-text;
+  }
+}
+
+// Notification variants
+.notification-success {
+  border-left: 4px solid $success;
+
+  .notification-content i {
+    color: $success;
+  }
+}
+
+.notification-error {
+  border-left: 4px solid $danger;
+
+  .notification-content i {
+    color: $danger;
+  }
+}
+
+.notification-warning {
+  border-left: 4px solid $warning;
+
+  .notification-content i {
+    color: $warning;
+  }
+}
+
+.notification-info {
+  border-left: 4px solid $info;
+
+  .notification-content i {
+    color: $info;
+  }
+}
+
+// Tooltip styles
+.tooltip {
+  position: absolute;
+  z-index: $z-index-tooltip;
+  background-color: $dark-bg;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: $border-radius;
+  font-size: $font-size-sm;
+  white-space: nowrap;
+  box-shadow: $box-shadow;
+  pointer-events: none;
+  animation: tooltipShow 0.2s ease-out;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: $dark-bg;
+  }
+}
+
+@keyframes tooltipShow {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

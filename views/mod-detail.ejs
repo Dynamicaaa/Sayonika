@@ -1,0 +1,262 @@
+<%- include('partials/header', { title: title }) %>
+
+<div class="mod-detail-page">
+    <div class="container">
+        <!-- Preview Mode Indicator -->
+        <% if (typeof isPreview !== 'undefined' && isPreview) { %>
+            <div class="alert alert-info" style="margin-bottom: 20px;">
+                <i class="fas fa-eye"></i>
+                <strong>Preview Mode:</strong> You are viewing this mod in preview mode. This mod may not be published yet.
+            </div>
+        <% } %>
+
+        <!-- Mod Header -->
+        <div class="mod-header">
+            <div class="mod-header-content">
+                <div class="mod-thumbnail-container">
+                    <img src="<%= mod.thumbnail_url || '/images/default-mod-thumbnail.png' %>" alt="<%= mod.title %>" class="mod-thumbnail">
+                </div>
+
+                <div class="mod-info">
+                    <h1><%= mod.title %></h1>
+                    <p class="mod-author">
+                        by <a href="/user/<%= mod.author_username %>"><%= mod.author_display_name || mod.author_username %></a>
+                    </p>
+                    <p class="mod-description"><%= mod.description %></p>
+
+                    <div class="mod-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span class="meta-label">Category:</span>
+                            <span class="meta-value"><%= mod.category_name || 'Uncategorized' %></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-code-branch"></i>
+                            <span class="meta-label">Version:</span>
+                            <span class="meta-value">v<%= mod.version %></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-download"></i>
+                            <span class="meta-label">Downloads:</span>
+                            <span class="meta-value"><%= mod.download_count.toLocaleString() %></span>
+                        </div>
+                        <% if (mod.rating_average > 0) { %>
+                            <div class="meta-item">
+                                <i class="fas fa-star"></i>
+                                <span class="meta-label">Rating:</span>
+                                <span class="meta-value"><%= mod.rating_average.toFixed(1) %>/5 (<%= mod.rating_count %> reviews)</span>
+                            </div>
+                        <% } %>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span class="meta-label">Updated:</span>
+                            <span class="meta-value"><%= new Date(mod.updated_at).toLocaleDateString() %></span>
+                        </div>
+                        <% if (mod.file_size) { %>
+                            <div class="meta-item">
+                                <i class="fas fa-hdd"></i>
+                                <span class="meta-label">Size:</span>
+                                <span class="meta-value"><%= (mod.file_size / (1024 * 1024)).toFixed(1) %> MB</span>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="mod-actions">
+                        <a href="/api/mods/<%= mod.slug %>/download" class="btn btn-success btn-lg">
+                            <i class="fas fa-download"></i> Download Mod
+                        </a>
+                        <% if (user) { %>
+                            <button class="btn btn-outline" onclick="toggleFavorite()">
+                                <i class="fas fa-heart"></i> Add to Favorites
+                            </button>
+                        <% } %>
+                        <% if (user && (user.id === mod.author_id || user.is_admin)) { %>
+                            <a href="/mod/<%= mod.slug %>/edit" class="btn btn-outline">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mod Content -->
+        <div class="mod-content">
+            <div class="mod-main">
+                <!-- Screenshots -->
+                <% if (mod.screenshots && mod.screenshots.length > 0) { %>
+                    <div class="content-section">
+                        <h2>Screenshots</h2>
+                        <div class="screenshots-gallery">
+                            <% mod.screenshots.forEach(screenshot => { %>
+                                <img src="<%= screenshot %>" alt="Screenshot" class="screenshot" data-screenshot="<%= screenshot %>">
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- Description -->
+                <div class="content-section">
+                    <h2>Description</h2>
+                    <div class="mod-description-full">
+                        <%= mod.description %>
+                    </div>
+                </div>
+
+                <!-- Requirements -->
+                <% if (mod.requirements && Object.keys(mod.requirements).length > 0) { %>
+                    <div class="content-section">
+                        <h2>Requirements</h2>
+                        <ul class="requirements-list">
+                            <% Object.entries(mod.requirements).forEach(([key, value]) => { %>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <strong><%= key %>:</strong> <%= value %>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <!-- Changelog -->
+                <% if (mod.changelog) { %>
+                    <div class="content-section">
+                        <h2>Changelog</h2>
+                        <div class="changelog-content">
+                            <%= mod.changelog %>
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- Comments Section -->
+                <div class="content-section">
+                    <h2>Comments</h2>
+
+                    <!-- Comment Form -->
+                    <% if (user) { %>
+                        <div class="comment-form-container">
+                            <form id="commentForm" class="comment-form">
+                                <div class="form-group">
+                                    <textarea
+                                        id="commentContent"
+                                        name="content"
+                                        placeholder="Share your thoughts about this mod..."
+                                        rows="4"
+                                        maxlength="2000"
+                                        required
+                                    ></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-comment"></i> Post Comment
+                                    </button>
+                                    <span class="char-count">0/2000</span>
+                                </div>
+                            </form>
+                        </div>
+                    <% } else { %>
+                        <div class="login-prompt">
+                            <p>Please <a href="/login">login</a> to post a comment.</p>
+                        </div>
+                    <% } %>
+
+                    <!-- Comments List -->
+                    <div id="commentsList" class="comments-list">
+                        <div class="loading-comments">
+                            <i class="fas fa-spinner fa-spin"></i> Loading comments...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mod-sidebar">
+                <!-- Tags -->
+                <% if (mod.tags && mod.tags.length > 0) { %>
+                    <div class="sidebar-section">
+                        <h3>Tags</h3>
+                        <div class="mod-tags">
+                            <% mod.tags.forEach(tag => { %>
+                                <a href="/browse?search=<%= encodeURIComponent(tag) %>" class="tag"><%= tag %></a>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- Author Info -->
+                <div class="sidebar-section">
+                    <h3>Author</h3>
+                    <div class="author-info">
+                        <div class="author-avatar">
+                            <img src="<%= mod.author_avatar_url || 'https://picsum.photos/1024/1024' %>" alt="<%= mod.author_display_name || mod.author_username %>">
+                        </div>
+                        <div class="author-details">
+                            <h4><%= mod.author_display_name || mod.author_username %></h4>
+                            <p>Mod Creator</p>
+                            <a href="/user/<%= mod.author_username %>" class="btn btn-outline btn-sm">
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="sidebar-section">
+                    <h3>Statistics</h3>
+                    <div class="mod-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Downloads</span>
+                            <span class="stat-value"><%= mod.download_count.toLocaleString() %></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Views</span>
+                            <span class="stat-value">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Favorites</span>
+                            <span class="stat-value">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Created</span>
+                            <span class="stat-value"><%= new Date(mod.created_at).toLocaleDateString() %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report -->
+                <div class="sidebar-section">
+                    <h3>Report</h3>
+                    <p>Found an issue with this mod?</p>
+                    <button class="btn btn-outline btn-sm report-mod-btn">
+                        <i class="fas fa-flag"></i> Report Mod
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Screenshot Modal -->
+<div id="screenshotModal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Screenshot</h3>
+                <button class="modal-close screenshot-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="screenshotImage" src="" alt="Screenshot" style="width: 100%; height: auto;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="/css/comments.css">
+
+<script>
+// Set current user for JavaScript
+window.currentUser = <%-JSON.stringify(user)%>;
+</script>
+
+<%- include('partials/footer', { scripts: ['/js/pages/mod-detail.js'] }) %>

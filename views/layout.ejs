@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <!-- Meta tags -->
+    <meta name="description" content="Sayonika - The ultimate mod store for Doki Doki Literature Club">
+    <meta name="keywords" content="DDLC, Doki Doki Literature Club, mods, visual novel, sayonika">
+    <meta name="author" content="Sayonika Team">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="Discover and download amazing mods for Doki Doki Literature Club">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= process.env.BASE_URL || 'http://localhost:3000' %>">
+    <meta property="og:image" content="/images/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body class="<%= locals.bodyClass || '' %>">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <a href="/" class="brand-link">
+                    <img src="/images/logo.png" alt="Sayonika" class="brand-logo">
+                    <span class="brand-text">Sayonika</span>
+                </a>
+            </div>
+
+            <div class="navbar-menu">
+                <div class="navbar-nav">
+                    <a href="/" class="nav-link <%= currentPath === '/' ? 'active' : '' %>">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/browse" class="nav-link <%= currentPath === '/browse' ? 'active' : '' %>">
+                        <i class="fas fa-search"></i> Browse
+                    </a>
+                    <% if (user) { %>
+                        <a href="/upload" class="nav-link <%= currentPath === '/upload' ? 'active' : '' %>">
+                            <i class="fas fa-upload"></i> Upload
+                        </a>
+                    <% } %>
+                </div>
+
+                <div class="navbar-actions">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+
+                    <% if (user) { %>
+                        <div class="user-menu">
+                            <button class="user-menu-toggle" onclick="toggleUserMenu()">
+                                <img src="<%= user.avatar_url || 'https://picsum.photos/1024/1024' %>" alt="<%= user.display_name %>" class="user-avatar">
+                                <span class="user-name"><%= user.display_name %></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="user-menu-dropdown">
+                                <a href="/profile" class="dropdown-item">
+                                    <i class="fas fa-user"></i> Profile
+                                </a>
+                                <% if (user.is_admin) { %>
+                                    <a href="/admin" class="dropdown-item">
+                                        <i class="fas fa-cog"></i> Admin
+                                    </a>
+                                <% } %>
+                                <div class="dropdown-divider"></div>
+                                <button onclick="logout()" class="dropdown-item logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="auth-buttons">
+                            <a href="/login" class="btn btn-outline">Login</a>
+                            <a href="/register" class="btn btn-primary">Register</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Mobile menu toggle -->
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Sayonika</h4>
+                    <p>The ultimate mod store for Doki Doki Literature Club. Discover, download, and share amazing mods with the community.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/Dynamicaaa/Sayonika" target="_blank" class="social-link" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/browse">Browse Mods</a></li>
+                        <li><a href="/upload">Upload Mod</a></li>
+                        <li><a href="/api">API Documentation</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://ddlc.moe" target="_blank">DDLC Official</a></li>
+                        <li><a href="/guidelines">Mod Guidelines</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Dynamicaaa. Licensed under <a href="https://github.com/Dynamicaaa/Sayonika/blob/main/LICENSE" target="_blank">MIT License</a>. Not affiliated with Team Salvato.</p>
+                <p class="disclaimer">Doki Doki Literature Club is a trademark of Team Salvato.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/main.js"></script>
+
+    <!-- Page-specific scripts -->
+    <% if (locals.scripts) { %>
+        <% scripts.forEach(script => { %>
+            <script src="<%= script %>"></script>
+        <% }); %>
+    <% } %>
+</body>
+</html>

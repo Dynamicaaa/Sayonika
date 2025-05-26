@@ -1,0 +1,376 @@
+<%- include('partials/header', { title: title }) %>
+
+<div class="upload-page">
+    <div class="container">
+        <div class="upload-header">
+            <div class="upload-header-content">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h1>Upload Your Mod</h1>
+                <p>Share your creation with the DDLC community and let others experience your story</p>
+                <div class="upload-steps">
+                    <div class="step active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Basic Info</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Files</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Details</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Review</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-content">
+            <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
+                <!-- Progress indicator -->
+                <div class="form-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%"></div>
+                    </div>
+                    <span class="progress-text">Step 1 of 4</span>
+                </div>
+
+                <!-- Basic Information -->
+                <div class="form-section active" data-section="1">
+                    <div class="section-header">
+                        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+                        <p>Tell us about your mod and help users discover it</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="title" class="form-label">
+                                Mod Title *
+                                <span class="label-hint">Choose a memorable and descriptive title</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    class="form-control"
+                                    required
+                                    maxlength="255"
+                                    placeholder="Enter your mod's title"
+                                >
+                                <div class="input-feedback"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category_id" class="form-label">
+                                Category *
+                                <span class="label-hint">Select the most appropriate category</span>
+                            </label>
+                            <div class="select-wrapper">
+                                <select id="category_id" name="category_id" class="form-control" required>
+                                    <option value="">Choose a category...</option>
+                                    <% categories.forEach(category => { %>
+                                        <option value="<%= category.id %>"><%= category.name %></option>
+                                    <% }); %>
+                                </select>
+                                <i class="fas fa-chevron-down select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="short_description" class="form-label">
+                            Short Description *
+                            <span class="label-hint">This will appear in mod listings and search results</span>
+                        </label>
+                        <div class="textarea-wrapper">
+                            <textarea
+                                id="short_description"
+                                name="short_description"
+                                class="form-control"
+                                rows="3"
+                                required
+                                maxlength="500"
+                                placeholder="Write a compelling short description that captures the essence of your mod..."
+                            ></textarea>
+                            <div class="char-counter">
+                                <span class="char-count">0</span> / 500
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description" class="form-label">
+                            Full Description *
+                            <span class="label-hint">Provide detailed information about your mod's story, features, and content</span>
+                        </label>
+                        <div class="textarea-wrapper">
+                            <textarea
+                                id="description"
+                                name="description"
+                                class="form-control"
+                                rows="8"
+                                required
+                                placeholder="Describe your mod in detail. What's the story about? What new features does it include? What makes it special? Be as descriptive as possible to help users understand what they can expect..."
+                            ></textarea>
+                            <div class="formatting-help">
+                                <small><i class="fas fa-info-circle"></i> You can use line breaks to organize your description</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-primary next-section" data-next="2">
+                            Next: Upload Files <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mod File Upload -->
+                <div class="form-section" data-section="2">
+                    <div class="section-header">
+                        <h2><i class="fas fa-file-archive"></i> Upload Files</h2>
+                        <p>Upload your mod file and optional thumbnail image</p>
+                    </div>
+
+                    <div class="upload-grid">
+                        <div class="form-group file-upload-group">
+                            <label for="modFile" class="form-label">
+                                Mod Archive *
+                                <span class="label-hint">Your packaged mod file ready for distribution</span>
+                            </label>
+                            <div class="file-upload-area modern" id="fileUploadArea">
+                                <input type="file" id="modFile" name="modFile" accept=".zip,.rar,.7z" style="display: none;">
+                                <div class="upload-placeholder">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <div class="upload-text">
+                                        <h3>Drop your mod file here</h3>
+                                        <p>or <span class="upload-link">click to browse</span></p>
+                                        <div class="upload-specs">
+                                            <span class="spec-item"><i class="fas fa-file-archive"></i> ZIP, RAR, 7Z</span>
+                                            <span class="spec-item"><i class="fas fa-weight-hanging"></i> Max 100MB</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="upload-progress" style="display: none;">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill"></div>
+                                    </div>
+                                    <span class="progress-text">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group thumbnail-upload-group">
+                            <label for="thumbnail" class="form-label">
+                                Thumbnail Image
+                                <span class="label-hint">Optional preview image for your mod</span>
+                            </label>
+                            <div class="thumbnail-upload-area" id="thumbnailUploadArea">
+                                <input type="file" id="thumbnail" name="thumbnail" accept="image/*" style="display: none;">
+                                <div class="thumbnail-placeholder">
+                                    <div class="thumbnail-icon">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                    <p>Add Thumbnail</p>
+                                    <small>300x200px recommended</small>
+                                </div>
+                                <div class="thumbnail-preview" style="display: none;">
+                                    <img src="" alt="Thumbnail preview">
+                                    <div class="thumbnail-overlay">
+                                        <button type="button" class="btn btn-sm btn-danger remove-thumbnail">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group version-group">
+                        <label for="version" class="form-label">
+                            Version *
+                            <span class="label-hint">Semantic versioning recommended (e.g., 1.0.0)</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input
+                                type="text"
+                                id="version"
+                                name="version"
+                                class="form-control"
+                                required
+                                maxlength="20"
+                                placeholder="1.0.0"
+                                pattern="[0-9]+\.[0-9]+(\.[0-9]+)?"
+                                title="Version should be in format like 1.0.0"
+                            >
+                            <div class="input-feedback"></div>
+                        </div>
+                        <div class="version-examples">
+                            <small>
+                                <i class="fas fa-lightbulb"></i>
+                                Examples: 1.0.0 (initial release), 1.1.0 (new features), 1.0.1 (bug fixes)
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-outline prev-section" data-prev="1">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary next-section" data-next="3">
+                            Next: Additional Details <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="form-section" data-section="3">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tags"></i> Additional Details</h2>
+                        <p>Add tags, changelog, and content ratings to help users discover your mod</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags" class="form-label">
+                            Tags
+                            <span class="label-hint">Help users discover your mod with relevant keywords</span>
+                        </label>
+                        <div class="tags-input-wrapper">
+                            <input
+                                type="text"
+                                id="tags"
+                                name="tags"
+                                class="form-control"
+                                placeholder="Type tags and press Enter (e.g., romance, horror, comedy)"
+                            >
+                            <div class="tags-container" id="tagsContainer"></div>
+                            <div class="tags-suggestions">
+                                <small>
+                                    <i class="fas fa-lightbulb"></i>
+                                    Popular tags: romance, horror, comedy, drama, psychological, wholesome, yuri
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="changelog" class="form-label">
+                            Changelog
+                            <span class="label-hint">Describe what's new or changed in this version</span>
+                        </label>
+                        <div class="textarea-wrapper">
+                            <textarea
+                                id="changelog"
+                                name="changelog"
+                                class="form-control"
+                                rows="4"
+                                placeholder="What's new in this version? List new features, bug fixes, improvements, etc."
+                            ></textarea>
+                            <div class="formatting-help">
+                                <small><i class="fas fa-info-circle"></i> Use bullet points or numbered lists for better readability</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-rating-section">
+                        <h3>Content Rating</h3>
+                        <div class="rating-options">
+                            <div class="form-check rating-option">
+                                <input type="checkbox" id="is_nsfw" name="is_nsfw" class="form-check-input">
+                                <label for="is_nsfw" class="form-check-label">
+                                    <div class="rating-info">
+                                        <span class="rating-title">Mature/NSFW Content</span>
+                                        <span class="rating-desc">Contains adult themes, explicit content, or mature subject matter</span>
+                                    </div>
+                                    <i class="fas fa-exclamation-triangle rating-icon"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-outline prev-section" data-prev="2">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary next-section" data-next="4">
+                            Next: Screenshots & Review <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Screenshots & Review -->
+                <div class="form-section" data-section="4">
+                    <div class="section-header">
+                        <h2><i class="fas fa-images"></i> Screenshots & Final Review</h2>
+                        <p>Add screenshots to showcase your mod and review your submission</p>
+                    </div>
+
+                    <div class="screenshots-section">
+                        <h3>Screenshots (Optional)</h3>
+                        <p>Add up to 5 screenshots to help users preview your mod</p>
+
+                        <div class="screenshots-upload modern">
+                            <div class="screenshot-slots" id="screenshotSlots">
+                                <!-- Screenshot slots will be dynamically generated -->
+                            </div>
+                            <input type="file" id="screenshotInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>Review Your Submission</h3>
+                        <div class="submission-summary" id="submissionSummary">
+                            <!-- Summary will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-outline prev-section" data-prev="3">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-outline save-draft-btn">
+                            <i class="fas fa-save"></i> Save as Draft
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-upload"></i> Upload Mod
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Terms Agreement (Hidden but required) -->
+                <div class="form-group" style="display: none;">
+                    <div class="form-check">
+                        <input type="checkbox" id="terms" name="terms" class="form-check-input" checked>
+                        <label for="terms" class="form-check-label">
+                            I confirm that this mod is my original work or I have permission to distribute it,
+                            and it complies with the Community Guidelines
+                        </label>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Terms Notice -->
+            <div class="terms-notice">
+                <div class="terms-content">
+                    <i class="fas fa-info-circle"></i>
+                    <p>
+                        By uploading your mod, you confirm that it is your original work or you have permission to distribute it,
+                        and it complies with our <a href="/guidelines" target="_blank">Community Guidelines</a>.
+                        All uploads are subject to review before publication.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer', { scripts: ['/js/pages/upload.js'] }) %>

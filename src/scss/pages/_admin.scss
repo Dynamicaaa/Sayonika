@@ -1,0 +1,536 @@
+// Admin page styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.admin-page {
+  padding: 2rem 0;
+}
+
+.admin-header {
+  background: linear-gradient(
+    135deg,
+    rgba($danger, 0.1) 0%,
+    rgba($warning, 0.1) 100%
+  );
+  border-radius: $border-radius-lg;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  border: 2px solid rgba($danger, 0.2);
+
+  h1 {
+    color: $danger;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+
+    i {
+      font-size: 2rem;
+    }
+  }
+
+  p {
+    color: $light-text-muted;
+    margin: 0;
+    font-size: 1.125rem;
+  }
+}
+
+// Dark theme admin header
+body.dark-theme .admin-header {
+  p {
+    color: $dark-text-muted;
+  }
+}
+
+.admin-nav {
+  background-color: $light-surface;
+  border-radius: $border-radius-lg;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: $box-shadow-sm;
+
+  .nav-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: none;
+    flex-wrap: wrap;
+
+    .nav-tab {
+      background: none;
+      border: 1px solid transparent;
+      padding: 0.75rem 1.5rem;
+      border-radius: $border-radius;
+      color: $light-text-muted;
+      text-decoration: none;
+      @include transition();
+
+      &:hover {
+        background-color: rgba($primary-pink, 0.1);
+        color: $primary-pink;
+        text-decoration: none;
+      }
+
+      &.active {
+        background-color: $primary-pink;
+        color: white;
+        border-color: $primary-pink;
+      }
+
+      i {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+// Dark theme admin nav
+body.dark-theme .admin-nav {
+  background-color: $dark-surface;
+
+  .nav-tabs .nav-tab {
+    color: $dark-text-muted;
+
+    &:hover {
+      background-color: rgba($secondary-pink, 0.1);
+      color: $secondary-pink;
+    }
+
+    &.active {
+      background-color: $secondary-pink;
+      color: $dark-bg;
+      border-color: $secondary-pink;
+    }
+  }
+}
+
+.admin-content {
+  .content-section {
+    background-color: $light-surface;
+    border-radius: $border-radius-lg;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: $box-shadow-sm;
+
+    h2 {
+      color: $light-text;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid $primary-pink;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .section-actions {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-normal;
+        display: flex;
+        gap: 0.5rem;
+      }
+    }
+  }
+}
+
+// Dark theme admin content
+body.dark-theme .admin-content .content-section {
+  background-color: $dark-surface;
+
+  h2 {
+    color: $dark-text;
+    border-bottom-color: $secondary-pink;
+  }
+}
+
+// Admin stats grid
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .stat-card {
+    background-color: $light-bg;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-lg;
+    padding: 1.5rem;
+    text-align: center;
+    @include transition();
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $box-shadow;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: white;
+
+      &.users {
+        background: linear-gradient(135deg, $primary-blue, $primary-purple);
+      }
+
+      &.mods {
+        background: linear-gradient(135deg, $primary-pink, $primary-blue);
+      }
+
+      &.published {
+        background: linear-gradient(135deg, $success, #20c997);
+      }
+
+      &.downloads {
+        background: linear-gradient(135deg, $success, $primary-purple);
+      }
+
+      &.pending {
+        background: linear-gradient(135deg, $warning, $primary-yellow);
+      }
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: $font-weight-bold;
+      color: $light-text;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: $light-text-muted;
+      font-size: $font-size-sm;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// Dark theme admin stats
+body.dark-theme .admin-stats-grid .stat-card {
+  background-color: $dark-surface-light;
+  border-color: $dark-surface-light;
+
+  .stat-number {
+    color: $dark-text;
+  }
+
+  .stat-label {
+    color: $dark-text-muted;
+  }
+}
+
+// Pending mods table
+.pending-mods-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+
+  th,
+  td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid $border-color;
+  }
+
+  th {
+    background-color: rgba($light-text, 0.03);
+    font-weight: $font-weight-medium;
+    color: $light-text;
+  }
+
+  td {
+    color: $light-text;
+  }
+
+  .mod-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .mod-thumbnail {
+      width: 60px;
+      height: 45px;
+      object-fit: cover;
+      border-radius: $border-radius-sm;
+    }
+
+    .mod-details {
+      .mod-title {
+        font-weight: $font-weight-medium;
+        margin-bottom: 0.25rem;
+      }
+
+      .mod-author {
+        color: $light-text-muted;
+        font-size: $font-size-sm;
+      }
+    }
+  }
+
+  .mod-actions {
+    display: flex;
+    gap: 0.5rem;
+
+    .btn {
+      padding: 0.375rem 0.75rem;
+      font-size: $font-size-sm;
+    }
+  }
+}
+
+// Dark theme pending mods table
+body.dark-theme .pending-mods-table {
+  th,
+  td {
+    border-bottom-color: $dark-surface-light;
+  }
+
+  th {
+    background-color: rgba($dark-text, 0.03);
+    color: $dark-text;
+  }
+
+  td {
+    color: $dark-text;
+  }
+
+  .mod-info .mod-details .mod-author {
+    color: $dark-text-muted;
+  }
+}
+
+// User management table
+.users-table {
+  @extend .pending-mods-table;
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-details {
+      .user-name {
+        font-weight: $font-weight-medium;
+        margin-bottom: 0.25rem;
+      }
+
+      .user-email {
+        color: $light-text-muted;
+        font-size: $font-size-sm;
+      }
+    }
+  }
+
+  .user-status {
+    .status-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+
+      &.admin {
+        background-color: rgba($danger, 0.1);
+        color: $danger;
+      }
+
+      &.verified {
+        background-color: rgba($success, 0.1);
+        color: $success;
+      }
+
+      &.regular {
+        background-color: rgba($info, 0.1);
+        color: $info;
+      }
+    }
+  }
+}
+
+// Dark theme user info
+body.dark-theme .users-table .user-info .user-details .user-email {
+  color: $dark-text-muted;
+}
+
+// Admin filters
+.admin-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+      font-weight: $font-weight-medium;
+      color: $light-text;
+      white-space: nowrap;
+    }
+
+    select,
+    input {
+      min-width: 150px;
+    }
+  }
+
+  .filter-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// Dark theme admin filters
+body.dark-theme .admin-filters .filter-group label {
+  color: $dark-text;
+}
+
+// Bulk actions
+.bulk-actions {
+  background-color: rgba($warning, 0.1);
+  border: 1px solid rgba($warning, 0.3);
+  border-radius: $border-radius;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  .bulk-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .selected-count {
+      color: $warning;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  .bulk-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+// Activity log
+.activity-log {
+  max-height: 400px;
+  overflow-y: auto;
+
+  .log-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba($border-color, 0.3);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .log-time {
+      color: $light-text-muted;
+      font-size: $font-size-sm;
+      white-space: nowrap;
+      min-width: 120px;
+    }
+
+    .log-content {
+      flex: 1;
+
+      .log-action {
+        font-weight: $font-weight-medium;
+        color: $light-text;
+        margin-bottom: 0.25rem;
+      }
+
+      .log-details {
+        color: $light-text-muted;
+        font-size: $font-size-sm;
+      }
+    }
+
+    .log-user {
+      color: $primary-pink;
+      font-size: $font-size-sm;
+      white-space: nowrap;
+      min-width: 100px;
+    }
+  }
+}
+
+// Dark theme activity log
+body.dark-theme .activity-log .log-item {
+  border-bottom-color: rgba($dark-surface-light, 0.3);
+
+  .log-time {
+    color: $dark-text-muted;
+  }
+
+  .log-content {
+    .log-action {
+      color: $dark-text;
+    }
+
+    .log-details {
+      color: $dark-text-muted;
+    }
+  }
+
+  .log-user {
+    color: $secondary-pink;
+  }
+}
+
+// Responsive admin tables
+@include media-breakpoint-down(md) {
+  .pending-mods-table,
+  .users-table {
+    font-size: $font-size-sm;
+
+    th,
+    td {
+      padding: 0.75rem 0.5rem;
+    }
+
+    .mod-actions,
+    .user-actions {
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+  }
+
+  .admin-filters {
+    flex-direction: column;
+    align-items: stretch;
+
+    .filter-actions {
+      margin-left: 0;
+      margin-top: 1rem;
+    }
+  }
+}

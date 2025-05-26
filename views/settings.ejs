@@ -1,0 +1,310 @@
+<%- include('partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/email-settings.css">
+
+<div class="settings-page">
+    <div class="container">
+        <div class="settings-header">
+            <h1>Account Settings</h1>
+            <p>Manage your account preferences and connected services</p>
+        </div>
+
+        <div class="settings-content">
+            <div class="settings-nav">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-tab="profile">
+                        <i class="fas fa-user"></i> Profile
+                    </button>
+                    <button class="nav-tab" data-tab="security">
+                        <i class="fas fa-shield-alt"></i> Security
+                    </button>
+                    <button class="nav-tab" data-tab="connections">
+                        <i class="fas fa-link"></i> Connections
+                    </button>
+                    <button class="nav-tab" data-tab="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </button>
+                    <button class="nav-tab" data-tab="privacy">
+                        <i class="fas fa-eye"></i> Privacy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div id="profile-tab" class="tab-content active">
+                <div class="settings-section">
+                    <h2>Profile Information</h2>
+                    <form id="profileForm" class="settings-form">
+                        <div class="avatar-section">
+                            <div class="current-avatar">
+                                <img src="<%= user.avatar_url || 'https://picsum.photos/1024/1024' %>" alt="Avatar" id="avatarPreview" data-original-src="<%= user.avatar_url || 'https://picsum.photos/1024/1024' %>">
+                            </div>
+                            <div class="avatar-actions">
+                                <input type="file" id="avatarFile" accept="image/*" style="display: none;">
+                                <button type="button" class="btn btn-outline" id="changeAvatarBtn">
+                                    <i class="fas fa-camera"></i> Change Avatar
+                                </button>
+                                <% if (hasDefaultAvatar) { %>
+                                    <button type="button" class="btn btn-outline btn-disabled" id="removeAvatarBtn" disabled title="Cannot remove default profile picture">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                <% } else { %>
+                                    <button type="button" class="btn btn-outline" id="removeAvatarBtn">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" id="username" name="username" class="form-control" value="<%= user.username %>" readonly>
+                                <small class="form-text">Username cannot be changed</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" readonly>
+                                <small class="form-text">Contact support to change your email</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="displayName" class="form-label">Display Name</label>
+                            <input type="text" id="displayName" name="display_name" class="form-control" value="<%= user.display_name || '' %>" maxlength="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea id="bio" name="bio" class="form-control" rows="4" maxlength="1000" placeholder="Tell us about yourself..."><%= user.bio || '' %></textarea>
+                            <small class="form-text"><span id="bioCount">0</span>/1000 characters</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Security Tab -->
+            <div id="security-tab" class="tab-content">
+                <div class="settings-section">
+                    <h2>Password & Security</h2>
+
+                    <div class="security-status">
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="status-content">
+                                <h4>Password</h4>
+                                <p id="passwordStatus">Loading...</p>
+                            </div>
+                            <div class="status-action">
+                                <button class="btn btn-outline" id="changePasswordBtn">
+                                    <i class="fas fa-edit"></i> Change
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="passwordForm" class="settings-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" class="form-control" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Password</button>
+                            <button type="button" class="btn btn-outline" id="cancelPasswordBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Connections Tab -->
+            <div id="connections-tab" class="tab-content">
+                <div class="settings-section">
+                    <h2>Connected Accounts</h2>
+                    <p>Link your social accounts for easier sign-in and enhanced features.</p>
+
+                    <div class="connections-list">
+                        <!-- GitHub Connection -->
+                        <div class="connection-item">
+                            <div class="connection-info">
+                                <div class="connection-icon github">
+                                    <i class="fab fa-github"></i>
+                                </div>
+                                <div class="connection-details">
+                                    <h4>GitHub</h4>
+                                    <p id="githubStatus">Loading...</p>
+                                </div>
+                            </div>
+                            <div class="connection-actions">
+                                <button id="githubAction" class="btn btn-outline">
+                                    <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                                    <span>Loading...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Discord Connection -->
+                        <div class="connection-item">
+                            <div class="connection-info">
+                                <div class="connection-icon discord">
+                                    <i class="fab fa-discord"></i>
+                                </div>
+                                <div class="connection-details">
+                                    <h4>Discord</h4>
+                                    <p id="discordStatus">Loading...</p>
+                                </div>
+                            </div>
+                            <div class="connection-actions">
+                                <button id="discordAction" class="btn btn-outline">
+                                    <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                                    <span>Loading...</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="connection-warning">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Important:</strong> Make sure you have at least one way to sign in (password or connected account) before disconnecting any accounts.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div id="notifications-tab" class="tab-content">
+                <div class="settings-section">
+                    <h2>Notification Preferences</h2>
+
+                    <!-- Email Verification Status -->
+                    <div class="email-status-card">
+                        <div class="email-status-header">
+                            <h4><i class="fas fa-envelope"></i> Email Status</h4>
+                            <% if (user.email_verified) { %>
+                                <span class="status-badge verified">
+                                    <i class="fas fa-check-circle"></i> Verified
+                                </span>
+                            <% } else { %>
+                                <span class="status-badge unverified">
+                                    <i class="fas fa-exclamation-triangle"></i> Unverified
+                                </span>
+                            <% } %>
+                        </div>
+                        <p class="email-address"><%= user.email %></p>
+                        <% if (!user.email_verified) { %>
+                            <div class="verification-notice">
+                                <p><strong>Please verify your email address to receive email notifications.</strong></p>
+                                <button type="button" class="btn btn-sm btn-primary" id="resendVerificationBtn">
+                                    <i class="fas fa-paper-plane"></i> Resend Verification Email
+                                </button>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <form id="notificationsForm" class="settings-form">
+                        <div class="notification-group">
+                            <h4>Email Notifications</h4>
+                            <% if (!user.email_verified) { %>
+                                <div class="disabled-notice">
+                                    <i class="fas fa-info-circle"></i>
+                                    Email notifications are disabled until you verify your email address.
+                                </div>
+                            <% } %>
+
+                            <div class="form-check">
+                                <input type="checkbox" id="emailNotificationsEnabled" name="email_notifications_enabled"
+                                       class="form-check-input" <%= user.email_verified ? 'checked' : 'disabled' %>>
+                                <label for="emailNotificationsEnabled" class="form-check-label">
+                                    Enable email notifications
+                                </label>
+                            </div>
+
+                            <div class="email-options" <%= !user.email_verified ? 'style="opacity: 0.5; pointer-events: none;"' : '' %>>
+                                <div class="form-check">
+                                    <input type="checkbox" id="emailModApproved" name="email_mod_approved"
+                                           class="form-check-input" <%= user.email_verified ? 'checked' : 'disabled' %>>
+                                    <label for="emailModApproved" class="form-check-label">
+                                        Mod approval and rejection notifications
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="emailAchievements" name="email_achievements"
+                                           class="form-check-input" <%= user.email_verified ? 'checked' : 'disabled' %>>
+                                    <label for="emailAchievements" class="form-check-label">
+                                        Achievement unlocks
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="emailComments" name="email_comments"
+                                           class="form-check-input" <%= user.email_verified ? 'checked' : 'disabled' %>>
+                                    <label for="emailComments" class="form-check-label">
+                                        Comments on your mods
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" <%= !user.email_verified ? 'disabled' : '' %>>
+                            <i class="fas fa-save"></i> Save Preferences
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Privacy Tab -->
+            <div id="privacy-tab" class="tab-content">
+                <div class="settings-section">
+                    <h2>Privacy Settings</h2>
+                    <form id="privacyForm" class="settings-form">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" id="profilePublic" name="profile_public" class="form-check-input" checked>
+                                <label for="profilePublic" class="form-check-label">Make my profile public</label>
+                                <small class="form-text">Allow others to view your profile and mod history</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" id="showEmail" name="show_email" class="form-check-input">
+                                <label for="showEmail" class="form-check-label">Show email on profile</label>
+                                <small class="form-text">Display your email address on your public profile</small>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </form>
+
+                    <div class="danger-zone">
+                        <h3>Danger Zone</h3>
+                        <div class="danger-actions">
+                            <button class="btn btn-danger" id="deleteAccountBtn">
+                                <i class="fas fa-trash"></i> Delete Account
+                            </button>
+                        </div>
+                        <p class="danger-warning">
+                            <strong>Warning:</strong> This action cannot be undone. All your mods and data will be permanently deleted.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer', { scripts: ['/js/pages/settings.js'] }) %>

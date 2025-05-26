@@ -1,0 +1,176 @@
+<%- include('partials/header', { title: title }) %>
+
+<div class="browse-page">
+    <div class="container">
+        <!-- Browse Header -->
+        <div class="browse-header">
+            <h1>Browse Mods</h1>
+            <p>Discover amazing mods created by our community</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="browse-filters">
+            <form method="GET" action="/browse" class="filters-form">
+                <div class="filters-row">
+                    <div class="search-group">
+                        <input
+                            type="text"
+                            name="search"
+                            class="form-control search-input"
+                            placeholder="Search mods..."
+                            value="<%= searchQuery || '' %>"
+                        >
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+
+                    <div class="filter-group">
+                        <select name="category" class="form-control">
+                            <option value="">All Categories</option>
+                            <% categories.forEach(category => { %>
+                                <option value="<%= category.id %>" <%= currentCategory == category.id ? 'selected' : '' %>>
+                                    <%= category.name %>
+                                </option>
+                            <% }); %>
+                        </select>
+
+                        <select name="sort" class="form-control sort-select">
+                            <option value="newest">Newest</option>
+                            <option value="popular">Most Popular</option>
+                            <option value="downloads">Most Downloaded</option>
+                            <option value="rating">Highest Rated</option>
+                        </select>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        <div class="browse-results">
+            <div class="results-header">
+                <div class="results-count">
+                    Found <span class="count"><%= mods.length %></span> mod<%= mods.length !== 1 ? 's' : '' %>
+                    <% if (searchQuery) { %>
+                        for "<%= searchQuery %>"
+                    <% } %>
+                </div>
+
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Filters -->
+            <% if (currentCategory || searchQuery) { %>
+                <div class="active-filters">
+                    <% if (currentCategory) { %>
+                        <% const selectedCategory = categories.find(c => c.id == currentCategory); %>
+                        <% if (selectedCategory) { %>
+                            <span class="filter-tag">
+                                Category: <%= selectedCategory.name %>
+                                <button class="remove-filter" data-filter-type="category">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </span>
+                        <% } %>
+                    <% } %>
+                    <% if (searchQuery) { %>
+                        <span class="filter-tag">
+                            Search: "<%= searchQuery %>"
+                            <button class="remove-filter" data-filter-type="search">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </span>
+                    <% } %>
+                </div>
+            <% } %>
+
+            <!-- Mods Grid -->
+            <% if (mods.length > 0) { %>
+                <div class="mods-grid-view" id="modsContainer">
+                    <% mods.forEach(mod => { %>
+                        <div class="mod-card">
+                            <div class="mod-card-image">
+                                <img src="<%= mod.thumbnail_url || '/images/default-mod-thumbnail.png' %>" alt="<%= mod.title %>">
+                                <div class="mod-card-overlay">
+                                    <div class="mod-card-actions">
+                                        <a href="/mod/<%= mod.slug %>" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        <a href="/api/mods/<%= mod.slug %>/download" class="btn btn-success btn-sm">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                    </div>
+                                </div>
+                                <% if (mod.is_featured) { %>
+                                    <div class="mod-card-badge">
+                                        <i class="fas fa-star"></i> Featured
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="mod-card-content">
+                                <h3 class="mod-card-title">
+                                    <a href="/mod/<%= mod.slug %>"><%= mod.title %></a>
+                                </h3>
+                                <p class="mod-card-author">by <%= mod.author_display_name || mod.author_username %></p>
+                                <p class="mod-card-description"><%= mod.short_description %></p>
+                                <div class="mod-card-meta">
+                                    <% if (mod.category_name) { %>
+                                        <span class="mod-category" style="background-color: <%= mod.category_color %>">
+                                            <%= mod.category_name %>
+                                        </span>
+                                    <% } %>
+                                    <span class="mod-downloads">
+                                        <i class="fas fa-download"></i> <%= mod.download_count %>
+                                    </span>
+                                    <span class="mod-version">
+                                        v<%= mod.version %>
+                                    </span>
+                                    <% if (mod.rating_average > 0) { %>
+                                        <span class="mod-rating">
+                                            <i class="fas fa-star"></i> <%= mod.rating_average.toFixed(1) %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>No mods found</h3>
+                    <p>
+                        <% if (searchQuery || currentCategory) { %>
+                            Try adjusting your search criteria or browse all mods.
+                        <% } else { %>
+                            Be the first to upload a mod to our community!
+                        <% } %>
+                    </p>
+                    <% if (searchQuery || currentCategory) { %>
+                        <a href="/browse" class="btn btn-primary">
+                            <i class="fas fa-list"></i> Browse All Mods
+                        </a>
+                    <% } else if (user) { %>
+                        <a href="/upload" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload First Mod
+                        </a>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer', { scripts: ['/js/pages/browse.js'] }) %>

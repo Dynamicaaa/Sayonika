@@ -1,0 +1,349 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- Pass user data via meta tag for CSP compliance -->
+<meta name="current-user" content="<%- encodeURIComponent(JSON.stringify(user)) %>">
+
+<div class="admin-page">
+    <div class="container">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <h1>
+                <i class="fas fa-shield-alt"></i>
+                Admin Dashboard
+            </h1>
+            <p>Manage the Sayonika community and moderate content</p>
+        </div>
+
+        <!-- Admin Navigation -->
+        <div class="admin-nav">
+            <div class="nav-tabs">
+                <a href="#overview" class="nav-tab active" data-tab="overview">
+                    <i class="fas fa-chart-bar"></i> Overview
+                </a>
+                <a href="#all-mods" class="nav-tab" data-tab="all-mods">
+                    <i class="fas fa-puzzle-piece"></i> All Mods
+                </a>
+                <a href="#pending-mods" class="nav-tab" data-tab="pending-mods">
+                    <i class="fas fa-clock"></i> Pending Mods
+                    <% if (pendingMods.length > 0) { %>
+                        <span class="badge"><%= pendingMods.length %></span>
+                    <% } %>
+                </a>
+                <a href="#users" class="nav-tab" data-tab="users">
+                    <i class="fas fa-users"></i> Users
+                </a>
+                <a href="#reports" class="nav-tab" data-tab="reports">
+                    <i class="fas fa-flag"></i> Reports
+                </a>
+                <a href="#settings" class="nav-tab" data-tab="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+        </div>
+
+        <!-- Admin Content -->
+        <div class="admin-content">
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content active">
+                <!-- Stats Grid -->
+                <div class="admin-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon mods">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <div class="stat-number"><%= stats.totalMods %></div>
+                        <div class="stat-label">Total Mods</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon published">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-number"><%= stats.publishedMods %></div>
+                        <div class="stat-label">Published Mods</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number"><%= stats.totalUsers %></div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon downloads">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="stat-number"><%= stats.totalDownloads %></div>
+                        <div class="stat-label">Total Downloads</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-number"><%= stats.pendingMods %></div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="content-section">
+                    <h2>Recent Activity</h2>
+                    <div class="activity-log">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>No recent activity</h3>
+                            <p>Activity will appear here as users interact with the site.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Mods Tab -->
+            <div id="all-mods-tab" class="tab-content">
+                <div class="content-section">
+                    <h2>
+                        All Mods Management
+                        <div class="section-actions">
+                            <button class="btn btn-sm btn-outline" id="refreshAllModsBtn">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                    </h2>
+
+                    <!-- Filters -->
+                    <div class="admin-filters">
+                        <div class="filter-group">
+                            <label>Search:</label>
+                            <input type="text" class="form-control" placeholder="Search mods..." id="modSearch">
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <select class="form-control" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="published">Published</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Featured:</label>
+                            <select class="form-control" id="featuredFilter">
+                                <option value="">All</option>
+                                <option value="true">Featured</option>
+                                <option value="false">Not Featured</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Sort by:</label>
+                            <select class="form-control" id="sortByFilter">
+                                <option value="created_at">Date Created</option>
+                                <option value="title">Title</option>
+                                <option value="download_count">Downloads</option>
+                                <option value="rating_average">Rating</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-primary search-mods-btn">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            <button class="btn btn-outline clear-filters-btn">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mods Table Container -->
+                    <div id="allModsTableContainer">
+                        <!-- Mods table will be loaded here -->
+                        <div class="loading-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading mods...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Mods Tab -->
+            <div id="pending-mods-tab" class="tab-content">
+                <div class="content-section">
+                    <h2>
+                        Pending Mod Reviews
+                        <div class="section-actions">
+                            <button class="btn btn-sm btn-outline" id="refreshPendingModsBtn">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                    </h2>
+
+                    <% if (pendingMods.length > 0) { %>
+                        <!-- Bulk Actions -->
+                        <div class="bulk-actions" id="bulkActions">
+                            <div class="bulk-info">
+                                <span class="selected-count">0 mods selected</span>
+                                <button class="btn btn-sm btn-outline clear-selection-btn">Clear Selection</button>
+                            </div>
+                            <div class="bulk-buttons">
+                                <button class="btn btn-sm btn-success bulk-approve-btn">
+                                    <i class="fas fa-check"></i> Approve Selected
+                                </button>
+                                <button class="btn btn-sm btn-danger bulk-reject-btn">
+                                    <i class="fas fa-times"></i> Reject Selected
+                                </button>
+                            </div>
+                        </div>
+
+                        <table class="pending-mods-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAll">
+                                    </th>
+                                    <th>Mod</th>
+                                    <th>Author</th>
+                                    <th>Category</th>
+                                    <th>Submitted</th>
+                                    <th>Size</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% pendingMods.forEach(mod => { %>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="mod-checkbox" value="<%= mod.id %>">
+                                        </td>
+                                        <td>
+                                            <div class="mod-info">
+                                                <img src="<%= mod.thumbnail_url || '/images/default-mod-thumbnail.png' %>" alt="<%= mod.title %>" class="mod-thumbnail">
+                                                <div class="mod-details">
+                                                    <div class="mod-title"><%= mod.title %></div>
+                                                    <div class="mod-author">v<%= mod.version %></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><%= mod.author_username %></td>
+                                        <td><%= mod.category_name || 'Uncategorized' %></td>
+                                        <td><%= new Date(mod.created_at).toLocaleDateString() %></td>
+                                        <td><%= mod.file_size ? (mod.file_size / (1024 * 1024)).toFixed(1) + ' MB' : 'N/A' %></td>
+                                        <td>
+                                            <div class="mod-actions">
+                                                <button class="btn btn-sm btn-outline preview-mod-btn" data-mod-id="<%= mod.id %>">
+                                                    <i class="fas fa-eye"></i> Preview
+                                                </button>
+                                                <a href="/api/mods/<%= mod.id %>/download" class="btn btn-sm btn-outline" target="_blank">
+                                                    <i class="fas fa-download"></i> Download
+                                                </a>
+                                                <button class="btn btn-sm btn-success approve-mod-btn" data-mod-id="<%= mod.id %>">
+                                                    <i class="fas fa-check"></i> Approve
+                                                </button>
+                                                <button class="btn btn-sm btn-danger reject-mod-btn" data-mod-id="<%= mod.id %>">
+                                                    <i class="fas fa-times"></i> Reject
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3>All caught up!</h3>
+                            <p>No mods are currently pending review.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="users-tab" class="tab-content">
+                <div class="content-section">
+                    <h2>User Management</h2>
+
+                    <div class="admin-filters">
+                        <div class="filter-group">
+                            <label>Search:</label>
+                            <input type="text" class="form-control" placeholder="Search users..." id="userSearch">
+                        </div>
+                        <div class="filter-group">
+                            <label>Role:</label>
+                            <select class="form-control" id="roleFilter">
+                                <option value="">All Roles</option>
+                                <option value="admin">Admins</option>
+                                <option value="verified">Verified</option>
+                                <option value="regular">Regular</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-primary search-users-btn">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="usersTableContainer">
+                        <!-- Users table will be loaded here -->
+                        <div class="loading-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading users...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reports-tab" class="tab-content">
+                <div class="content-section">
+                    <h2>Reports & Moderation</h2>
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <h3>No reports</h3>
+                        <p>No content has been reported recently.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="content-section">
+                    <h2>Site Settings</h2>
+                    <form id="settingsForm">
+                        <div class="form-group">
+                            <label class="form-label">Site Maintenance Mode</label>
+                            <div class="form-check">
+                                <input type="checkbox" id="maintenanceMode" class="form-check-input">
+                                <label for="maintenanceMode" class="form-check-label">
+                                    Enable maintenance mode (prevents new uploads and registrations)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxFileSize" class="form-label">Maximum File Size (MB)</label>
+                            <input type="number" id="maxFileSize" class="form-control" value="100" min="1" max="500">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="featuredModsCount" class="form-label">Featured Mods Count</label>
+                            <input type="number" id="featuredModsCount" class="form-control" value="6" min="1" max="20">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer', { scripts: ['/js/pages/admin-dashboard.js', '/js/admin-users.js', '/js/admin-mods.js'] }) %>

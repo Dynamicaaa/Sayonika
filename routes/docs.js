@@ -1,0 +1,146 @@
+const express = require('express');
+const router = express.Router();
+
+// Documentation home page
+router.get('/', (req, res) => {
+    res.render('docs/index', {
+        title: 'Documentation - Sayonika',
+        user: req.user,
+        currentPath: req.path
+    });
+});
+
+// Helper function to handle missing templates
+function renderDocPage(req, res, templatePath, title, pageTitle) {
+    // Try to render the actual template first
+    res.render(templatePath, {
+        title: title,
+        user: req.user,
+        currentPath: req.path,
+        pageTitle: pageTitle
+    }, (err, html) => {
+        if (err) {
+            // If template doesn't exist, render coming soon page
+            res.render('docs/coming-soon', {
+                title: title,
+                user: req.user,
+                currentPath: req.path,
+                pageTitle: pageTitle || title.replace(' - Sayonika Documentation', '').replace(' - API Reference', '')
+            });
+        } else {
+            // Template exists, send the rendered HTML
+            res.send(html);
+        }
+    });
+}
+
+// Getting Started section
+router.get('/getting-started', (req, res) => {
+    renderDocPage(req, res, 'docs/getting-started', 'Getting Started - Sayonika Documentation', 'Getting Started');
+});
+
+router.get('/installation', (req, res) => {
+    res.render('docs/installation', {
+        title: 'Installation - Sayonika Documentation',
+        user: req.user,
+        currentPath: req.path
+    });
+});
+
+router.get('/configuration', (req, res) => {
+    renderDocPage(req, res, 'docs/configuration', 'Configuration - Sayonika Documentation', 'Configuration');
+});
+
+router.get('/first-run', (req, res) => {
+    renderDocPage(req, res, 'docs/first-run', 'First Run - Sayonika Documentation', 'First Run');
+});
+
+// API Reference section
+router.get('/api', (req, res) => {
+    res.render('docs/api/index', {
+        title: 'API Reference - Sayonika Documentation',
+        user: req.user,
+        currentPath: req.path
+    });
+});
+
+router.get('/api/authentication', (req, res) => {
+    renderDocPage(req, res, 'docs/api/authentication', 'Authentication - API Reference', 'Authentication');
+});
+
+router.get('/api/rate-limiting', (req, res) => {
+    renderDocPage(req, res, 'docs/api/rate-limiting', 'Rate Limiting - API Reference', 'Rate Limiting');
+});
+
+router.get('/api/response-format', (req, res) => {
+    renderDocPage(req, res, 'docs/api/response-format', 'Response Format - API Reference', 'Response Format');
+});
+
+router.get('/api/error-handling', (req, res) => {
+    renderDocPage(req, res, 'docs/api/error-handling', 'Error Handling - API Reference', 'Error Handling');
+});
+
+// API Endpoints section
+router.get('/api/endpoints', (req, res) => {
+    renderDocPage(req, res, 'docs/api/endpoints/index', 'API Endpoints - Sayonika Documentation', 'API Endpoints');
+});
+
+router.get('/api/endpoints/auth', (req, res) => {
+    renderDocPage(req, res, 'docs/api/endpoints/auth', 'Authentication Endpoints - API Reference', 'Authentication Endpoints');
+});
+
+router.get('/api/endpoints/mods', (req, res) => {
+    renderDocPage(req, res, 'docs/api/endpoints/mods', 'Mod Endpoints - API Reference', 'Mod Endpoints');
+});
+
+router.get('/api/endpoints/users', (req, res) => {
+    renderDocPage(req, res, 'docs/api/endpoints/users', 'User Endpoints - API Reference', 'User Endpoints');
+});
+
+router.get('/api/endpoints/admin', (req, res) => {
+    renderDocPage(req, res, 'docs/api/endpoints/admin', 'Admin Endpoints - API Reference', 'Admin Endpoints');
+});
+
+router.get('/api/endpoints/categories', (req, res) => {
+    renderDocPage(req, res, 'docs/api/endpoints/categories', 'Category Endpoints - API Reference', 'Category Endpoints');
+});
+
+// Examples section
+router.get('/examples', (req, res) => {
+    renderDocPage(req, res, 'docs/examples/index', 'Code Examples - Sayonika Documentation', 'Code Examples');
+});
+
+router.get('/examples/javascript', (req, res) => {
+    renderDocPage(req, res, 'docs/examples/javascript', 'JavaScript Examples - Sayonika Documentation', 'JavaScript Examples');
+});
+
+router.get('/examples/python', (req, res) => {
+    renderDocPage(req, res, 'docs/examples/python', 'Python Examples - Sayonika Documentation', 'Python Examples');
+});
+
+router.get('/examples/php', (req, res) => {
+    renderDocPage(req, res, 'docs/examples/php', 'PHP Examples - Sayonika Documentation', 'PHP Examples');
+});
+
+router.get('/integration-guides', (req, res) => {
+    renderDocPage(req, res, 'docs/integration-guides', 'Integration Guides - Sayonika Documentation', 'Integration Guides');
+});
+
+router.get('/webhooks', (req, res) => {
+    renderDocPage(req, res, 'docs/webhooks', 'Webhooks - Sayonika Documentation', 'Webhooks');
+});
+
+// Advanced section
+router.get('/deployment', (req, res) => {
+    renderDocPage(req, res, 'docs/deployment', 'Deployment - Sayonika Documentation', 'Deployment');
+});
+
+router.get('/customization', (req, res) => {
+    renderDocPage(req, res, 'docs/customization', 'Customization - Sayonika Documentation', 'Customization');
+});
+
+router.get('/troubleshooting', (req, res) => {
+    renderDocPage(req, res, 'docs/troubleshooting', 'Troubleshooting - Sayonika Documentation', 'Troubleshooting');
+});
+
+module.exports = router;

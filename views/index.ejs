@@ -1,0 +1,216 @@
+<%- include('partials/header', { title: title }) %>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-background">
+        <div class="hero-overlay"></div>
+    </div>
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to Sayonika</h1>
+            <p class="hero-subtitle">Discover amazing mods for Doki Doki Literature Club</p>
+            <div class="hero-actions">
+                <a href="/browse" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search"></i> Browse Mods
+                </a>
+                <% if (user) { %>
+                    <a href="/upload" class="btn btn-outline btn-lg">
+                        <i class="fas fa-upload"></i> Upload Mod
+                    </a>
+                <% } else { %>
+                    <a href="/register" class="btn btn-outline btn-lg">
+                        <i class="fas fa-user-plus"></i> Join Community
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="<%= recentMods.length %>">0</h3>
+                    <p class="stat-label">Total Mods</p>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="<%= recentMods.reduce((sum, mod) => sum + mod.download_count, 0) %>">0</h3>
+                    <p class="stat-label">Downloads</p>
+                </div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="<%= featuredMods.length %>">0</h3>
+                    <p class="stat-label">Featured Mods</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Mods Section -->
+<% if (featuredMods.length > 0) { %>
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Mods</h2>
+            <p class="section-subtitle">Hand-picked mods that showcase the best of our community</p>
+        </div>
+
+        <div class="mods-grid">
+            <% featuredMods.forEach(mod => { %>
+                <div class="mod-card featured">
+                    <div class="mod-card-image">
+                        <img src="<%= mod.thumbnail_url || '/images/default-mod-thumbnail.png' %>" alt="<%= mod.title %>">
+                        <div class="mod-card-overlay">
+                            <div class="mod-card-actions">
+                                <a href="/mod/<%= mod.slug %>" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="/api/mods/<%= mod.slug %>/download" class="btn btn-success btn-sm">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                        <div class="mod-card-badge">
+                            <i class="fas fa-star"></i> Featured
+                        </div>
+                    </div>
+                    <div class="mod-card-content">
+                        <h3 class="mod-card-title">
+                            <a href="/mod/<%= mod.slug %>"><%= mod.title %></a>
+                        </h3>
+                        <p class="mod-card-author">by <%= mod.author_display_name || mod.author_username %></p>
+                        <p class="mod-card-description"><%= mod.short_description %></p>
+                        <div class="mod-card-meta">
+                            <span class="mod-category" style="background-color: <%= mod.category_color %>">
+                                <%= mod.category_name %>
+                            </span>
+                            <span class="mod-downloads">
+                                <i class="fas fa-download"></i> <%= mod.download_count %>
+                            </span>
+                            <span class="mod-rating">
+                                <i class="fas fa-star"></i> <%= mod.rating_average || 'N/A' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<!-- Recent Mods Section -->
+<section class="recent-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Recent Mods</h2>
+            <p class="section-subtitle">Latest additions to our mod library</p>
+            <a href="/browse" class="section-action">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="mods-grid">
+            <% recentMods.forEach(mod => { %>
+                <div class="mod-card">
+                    <div class="mod-card-image">
+                        <img src="<%= mod.thumbnail_url || '/images/default-mod-thumbnail.png' %>" alt="<%= mod.title %>">
+                        <div class="mod-card-overlay">
+                            <div class="mod-card-actions">
+                                <a href="/mod/<%= mod.slug %>" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="/api/mods/<%= mod.slug %>/download" class="btn btn-success btn-sm">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mod-card-content">
+                        <h3 class="mod-card-title">
+                            <a href="/mod/<%= mod.slug %>"><%= mod.title %></a>
+                        </h3>
+                        <p class="mod-card-author">by <%= mod.author_display_name || mod.author_username %></p>
+                        <p class="mod-card-description"><%= mod.short_description %></p>
+                        <div class="mod-card-meta">
+                            <span class="mod-category" style="background-color: <%= mod.category_color %>">
+                                <%= mod.category_name %>
+                            </span>
+                            <span class="mod-downloads">
+                                <i class="fas fa-download"></i> <%= mod.download_count %>
+                            </span>
+                            <span class="mod-version">
+                                v<%= mod.version %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Browse by Category</h2>
+            <p class="section-subtitle">Find mods that match your interests</p>
+        </div>
+
+        <div class="categories-grid">
+            <% categories.forEach(category => { %>
+                <a href="/browse?category=<%= category.id %>" class="category-card">
+                    <div class="category-icon" style="background-color: <%= category.color %>">
+                        <i class="<%= category.icon %>"></i>
+                    </div>
+                    <h3 class="category-name"><%= category.name %></h3>
+                    <p class="category-description"><%= category.description %></p>
+                </a>
+            <% }); %>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Share Your Creation?</h2>
+            <p class="cta-subtitle">Join our community of mod creators and share your amazing work with thousands of DDLC fans worldwide.</p>
+            <% if (user) { %>
+                <a href="/upload" class="btn btn-primary btn-lg">
+                    <i class="fas fa-upload"></i> Upload Your Mod
+                </a>
+            <% } else { %>
+                <div class="cta-actions">
+                    <a href="/register" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus"></i> Join Community
+                    </a>
+                    <a href="/login" class="btn btn-outline btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer', { scripts: ['/js/pages/index.js'] }) %>

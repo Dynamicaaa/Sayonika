@@ -1,0 +1,341 @@
+<%- include('../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link <%= currentPath === '/docs/getting-started' ? 'active' : '' %>">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link <%= currentPath === '/docs/first-run' ? 'active' : '' %>">First Run</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link <%= currentPath === '/docs/examples' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link <%= currentPath === '/docs/examples/javascript' ? 'active' : '' %>">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link <%= currentPath === '/docs/examples/python' ? 'active' : '' %>">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link <%= currentPath === '/docs/examples/php' ? 'active' : '' %>">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link <%= currentPath === '/docs/integration-guides' ? 'active' : '' %>">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link <%= currentPath === '/docs/webhooks' ? 'active' : '' %>">Webhooks</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link <%= currentPath === '/docs/deployment' ? 'active' : '' %>">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Installation Guide -->
+                    <section class="docs-section" id="installation">
+                        <h2>Installation</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Get Sayonika up and running on your system with our comprehensive installation guide.
+                                Choose from Docker (recommended), manual installation, or development setup.
+                            </p>
+
+        <!-- Installation Methods -->
+        <div class="installation-tabs">
+            <div class="tab-buttons">
+                <button class="tab-button" data-tab="docker-install">
+                    <i class="fab fa-docker"></i>
+                    Docker (Recommended)
+                </button>
+                <button class="tab-button" data-tab="manual-install">
+                    <i class="fas fa-cogs"></i>
+                    Manual Installation
+                </button>
+                <button class="tab-button" data-tab="dev-install">
+                    <i class="fas fa-code"></i>
+                    Development Setup
+                </button>
+            </div>
+
+            <!-- Docker Installation -->
+            <div class="tab-content" id="docker-install">
+                <h3>Docker Installation</h3>
+                <p>The easiest way to get Sayonika running is with Docker. This method handles all dependencies automatically.</p>
+
+                <div class="alert info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Prerequisites:</strong> Make sure you have Docker and Docker Compose installed on your system.
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Clone the Repository</h4>
+                            <div class="code-block">
+                                <pre><code>git clone https://github.com/Dynamicaaa/Sayonika.git
+cd Sayonika</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Configure Environment</h4>
+                            <p>Copy the example environment file and configure your settings:</p>
+                            <div class="code-block">
+                                <pre><code>cp .env.example .env
+nano .env</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Start with Docker Compose</h4>
+                            <div class="code-block">
+                                <pre><code>docker-compose up -d</code></pre>
+                            </div>
+                            <p>This will start Sayonika on <code>http://localhost:3000</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual Installation -->
+            <div class="tab-content" id="manual-install">
+                <h3>Manual Installation</h3>
+                <p>For more control over your installation, you can set up Sayonika manually.</p>
+
+                <div class="requirements">
+                    <h4>System Requirements</h4>
+                    <ul>
+                        <li>Node.js 16.0 or higher</li>
+                        <li>npm or yarn package manager</li>
+                        <li>Git</li>
+                        <li>512MB+ RAM</li>
+                        <li>1GB+ free disk space</li>
+                    </ul>
+                </div>
+
+                <div class="step-by-step">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Install Node.js</h4>
+                            <p>Download and install Node.js from <a href="https://nodejs.org" target="_blank">nodejs.org</a> or use a package manager:</p>
+                            <div class="code-block">
+                                <pre><code># Ubuntu/Debian
+sudo apt update
+sudo apt install nodejs npm
+
+# macOS with Homebrew
+brew install node
+
+# Windows with Chocolatey
+choco install nodejs</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Clone and Setup</h4>
+                            <div class="code-block">
+                                <pre><code>git clone https://github.com/Dynamicaaa/Sayonika.git
+cd Sayonika
+npm install</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Configure Environment</h4>
+                            <div class="code-block">
+                                <pre><code>cp .env.example .env
+# Edit .env with your preferred editor</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Initialize Database</h4>
+                            <div class="code-block">
+                                <pre><code>npm run migrate</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Start the Server</h4>
+                            <div class="code-block">
+                                <pre><code>npm start</code></pre>
+                            </div>
+                            <p>Sayonika will be available at <code>http://localhost:3000</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Development Setup -->
+            <div class="tab-content" id="dev-install">
+                <h3>Development Setup</h3>
+                <p>Set up Sayonika for development with hot reloading and debugging tools.</p>
+
+                <div class="step-by-step">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Fork and Clone</h4>
+                            <p>Fork the repository on GitHub, then clone your fork:</p>
+                            <div class="code-block">
+                                <pre><code>git clone https://github.com/YOUR_USERNAME/Sayonika.git
+cd Sayonika
+git remote add upstream https://github.com/Dynamicaaa/Sayonika.git</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Install Dependencies</h4>
+                            <div class="code-block">
+                                <pre><code>npm install
+# or
+yarn install</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Development Environment</h4>
+                            <div class="code-block">
+                                <pre><code>cp .env.example .env.development
+# Configure development settings</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Start Development Server</h4>
+                            <div class="code-block">
+                                <pre><code>npm run dev</code></pre>
+                            </div>
+                            <p>This starts the server with hot reloading and debugging enabled.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dev-tips">
+                    <h4>Development Tips</h4>
+                    <ul>
+                        <li>Use <code>npm run lint</code> to check code style</li>
+                        <li>Run <code>npm test</code> to execute the test suite</li>
+                        <li>Use <code>npm run migrate:dev</code> for development database migrations</li>
+                        <li>Enable debug mode by setting <code>DEBUG=sayonika:*</code> in your environment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+                            <!-- Next Steps -->
+                            <div class="quick-links">
+                                <h3>Next Steps</h3>
+                                <div class="link-grid">
+                                    <a href="/docs/configuration" class="quick-link">
+                                        <i class="fas fa-cog"></i>
+                                        <div>
+                                            <h4>Configuration</h4>
+                                            <p>Configure your Sayonika instance</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/first-run" class="quick-link">
+                                        <i class="fas fa-play"></i>
+                                        <div>
+                                            <h4>First Run</h4>
+                                            <p>Complete the initial setup</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../partials/footer') %>

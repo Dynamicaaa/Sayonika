@@ -1,0 +1,333 @@
+<%- include('../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link active">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Authentication Guide -->
+                    <section class="docs-section" id="authentication">
+                        <h2>Authentication</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Sayonika API supports multiple authentication methods to secure your requests and protect user data.
+                                Choose the method that best fits your application's needs.
+                            </p>
+
+                            <!-- Authentication Methods -->
+                            <h3>Authentication Methods</h3>
+
+                            <!-- JWT Authentication -->
+                            <div class="auth-method">
+                                <h4><i class="fas fa-key"></i> JWT Token Authentication</h4>
+                                <p>JSON Web Tokens (JWT) are the primary authentication method for API access.</p>
+
+                                <h5>Getting a JWT Token</h5>
+                                <p>Obtain a JWT token by logging in through the API:</p>
+
+                                <div class="code-block">
+                                    <pre><code>POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "your_password"
+}</code></pre>
+                                </div>
+
+                                <p><strong>Response:</strong></p>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "username": "example_user",
+    "email": "user@example.com",
+    "role": "user"
+  }
+}</code></pre>
+                                </div>
+
+                                <h5>Using JWT Tokens</h5>
+                                <p>Include the JWT token in the Authorization header of your requests:</p>
+
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- OAuth Authentication -->
+                            <div class="auth-method">
+                                <h4><i class="fab fa-github"></i> OAuth Authentication</h4>
+                                <p>Sayonika supports OAuth authentication with GitHub and Discord for seamless user login.</p>
+
+                                <h5>Supported Providers</h5>
+                                <ul>
+                                    <li><strong>GitHub:</strong> <code>/api/auth/github</code></li>
+                                    <li><strong>Discord:</strong> <code>/api/auth/discord</code></li>
+                                </ul>
+
+                                <h5>OAuth Flow</h5>
+                                <ol>
+                                    <li>Redirect users to the OAuth provider endpoint</li>
+                                    <li>User authorizes your application</li>
+                                    <li>Provider redirects back with authorization code</li>
+                                    <li>Exchange code for access token</li>
+                                    <li>Use token to access protected resources</li>
+                                </ol>
+                            </div>
+
+                            <!-- API Key Authentication -->
+                            <div class="auth-method">
+                                <h4><i class="fas fa-fingerprint"></i> API Key Authentication</h4>
+                                <p>For server-to-server communication, you can use API keys.</p>
+
+                                <div class="alert warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <div>
+                                        <strong>Security Note:</strong> API keys should be kept secure and never exposed in client-side code.
+                                    </div>
+                                </div>
+
+                                <p>Include your API key in the request header:</p>
+                                <div class="code-block">
+                                    <pre><code>X-API-Key: your_api_key_here</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Authentication Examples -->
+                            <h3>Code Examples</h3>
+
+                            <div class="language-tabs">
+                                <div class="tab-buttons">
+                                    <button class="tab-button active" data-tab="js-auth">JavaScript</button>
+                                    <button class="tab-button" data-tab="python-auth">Python</button>
+                                    <button class="tab-button" data-tab="curl-auth">cURL</button>
+                                </div>
+
+                                <div class="tab-content active" id="js-auth">
+                                    <div class="code-block">
+                                        <pre><code>// Login and get JWT token
+async function login(email, password) {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await response.json();
+
+  if (data.success) {
+    // Store token for future requests
+    localStorage.setItem('token', data.token);
+    return data.token;
+  }
+
+  throw new Error(data.error);
+}
+
+// Make authenticated request
+async function makeAuthenticatedRequest(url) {
+  const token = localStorage.getItem('token');
+
+  const response = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  return response.json();
+}</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="python-auth">
+                                    <div class="code-block">
+                                        <pre><code>import requests
+
+# Login and get JWT token
+def login(email, password):
+    response = requests.post('/api/auth/login', json={
+        'email': email,
+        'password': password
+    })
+
+    data = response.json()
+
+    if data['success']:
+        return data['token']
+
+    raise Exception(data['error'])
+
+# Make authenticated request
+def make_authenticated_request(url, token):
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.get(url, headers=headers)
+    return response.json()
+
+# Example usage
+token = login('user@example.com', 'password')
+user_data = make_authenticated_request('/api/users/me', token)</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="curl-auth">
+                                    <div class="code-block">
+                                        <pre><code># Login and get token
+curl -X POST "/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "your_password"
+  }'
+
+# Use token in subsequent requests
+curl -X GET "/api/users/me" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json"</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Token Management -->
+                            <h3>Token Management</h3>
+
+                            <h4>Token Expiration</h4>
+                            <p>JWT tokens have a limited lifespan for security. When a token expires, you'll receive a 401 Unauthorized response.</p>
+
+                            <h4>Refreshing Tokens</h4>
+                            <p>Use the refresh endpoint to get a new token:</p>
+                            <div class="code-block">
+                                <pre><code>POST /api/auth/refresh
+Authorization: Bearer YOUR_EXPIRED_TOKEN</code></pre>
+                            </div>
+
+                            <h4>Logout</h4>
+                            <p>Invalidate your token by calling the logout endpoint:</p>
+                            <div class="code-block">
+                                <pre><code>POST /api/auth/logout
+Authorization: Bearer YOUR_TOKEN</code></pre>
+                            </div>
+
+                            <!-- Security Best Practices -->
+                            <h3>Security Best Practices</h3>
+
+                            <div class="security-tips">
+                                <div class="tip">
+                                    <h4><i class="fas fa-shield-alt"></i> Store Tokens Securely</h4>
+                                    <p>Never store tokens in localStorage for production applications. Use secure, httpOnly cookies or secure storage mechanisms.</p>
+                                </div>
+
+                                <div class="tip">
+                                    <h4><i class="fas fa-clock"></i> Handle Token Expiration</h4>
+                                    <p>Implement automatic token refresh logic to maintain user sessions seamlessly.</p>
+                                </div>
+
+                                <div class="tip">
+                                    <h4><i class="fas fa-lock"></i> Use HTTPS</h4>
+                                    <p>Always use HTTPS in production to protect tokens during transmission.</p>
+                                </div>
+
+                                <div class="tip">
+                                    <h4><i class="fas fa-eye-slash"></i> Don't Log Tokens</h4>
+                                    <p>Never log authentication tokens or include them in error messages.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../partials/footer') %>

@@ -1,0 +1,222 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-question-circle"></i> Help Center</h1>
+        <p>Find answers to common questions and get help with using Sayonika</p>
+    </div>
+
+    <div class="help-content">
+        <!-- Search Bar -->
+        <div class="help-search">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="help-search" placeholder="Search for help topics..." class="search-input">
+            </div>
+            <p class="search-hint">Try searching for "upload", "download", "account", or "mod"</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="help-section">
+            <h2><i class="fas fa-bolt"></i> Quick Start</h2>
+            <div class="quick-links-grid">
+                <a href="#getting-started" class="quick-link-card">
+                    <div class="card-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Getting Started</h3>
+                        <p>New to Sayonika? Learn the basics</p>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+                <a href="#uploading-mods" class="quick-link-card">
+                    <div class="card-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Uploading Mods</h3>
+                        <p>How to share your creations</p>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+                <a href="#downloading-mods" class="quick-link-card">
+                    <div class="card-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Downloading Mods</h3>
+                        <p>Installing and playing mods</p>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+                <a href="#account-help" class="quick-link-card">
+                    <div class="card-icon">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Account Help</h3>
+                        <p>Managing your account settings</p>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="help-section" id="getting-started">
+            <h2><i class="fas fa-rocket"></i> Getting Started</h2>
+            <div class="faq-item">
+                <h3>What is Sayonika?</h3>
+                <p>Sayonika is a community-driven mod store for Doki Doki Literature Club (DDLC). It provides a platform for creators to share their mods and for players to discover and download new content.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Do I need an account to download mods?</h3>
+                <p>No, you can browse and download mods without an account. However, creating an account allows you to upload your own mods, leave reviews, and manage your downloads.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Is Sayonika free to use?</h3>
+                <p>Yes, Sayonika is completely free to use for both downloading and uploading mods.</p>
+            </div>
+        </div>
+
+        <!-- Uploading Mods -->
+        <div class="help-section" id="uploading-mods">
+            <h2><i class="fas fa-upload"></i> Uploading Mods</h2>
+            <div class="faq-item">
+                <h3>How do I upload a mod?</h3>
+                <p>To upload a mod, you need to:</p>
+                <ol>
+                    <li>Create an account and log in</li>
+                    <li>Click the "Upload" button in the navigation</li>
+                    <li>Fill out the mod information form</li>
+                    <li>Upload your mod files (ZIP format recommended)</li>
+                    <li>Add screenshots and descriptions</li>
+                    <li>Submit for review</li>
+                </ol>
+            </div>
+            <div class="faq-item">
+                <h3>What file formats are supported?</h3>
+                <p>We accept ZIP, RAR, and 7Z archives. Your mod should be packaged so that users can easily extract and install it.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How long does mod review take?</h3>
+                <p>Mod reviews typically take 1-3 business days. We review mods to ensure they meet our community guidelines and are safe to download.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Can I update my mod after uploading?</h3>
+                <p>Yes, you can update your mod at any time from your profile page. Updates will also go through the review process.</p>
+            </div>
+        </div>
+
+        <!-- Downloading Mods -->
+        <div class="help-section" id="downloading-mods">
+            <h2><i class="fas fa-download"></i> Downloading Mods</h2>
+            <div class="faq-item">
+                <h3>How do I install a downloaded mod?</h3>
+                <p>Installation steps vary by mod, but generally:</p>
+                <ol>
+                    <li>Download the mod file</li>
+                    <li>Extract the archive to a temporary folder</li>
+                    <li>Follow the mod's installation instructions (usually included in a README file)</li>
+                    <li>Most mods go in your DDLC game directory</li>
+                </ol>
+            </div>
+            <div class="faq-item">
+                <h3>Where is my DDLC installation folder?</h3>
+                <p>Common locations include:</p>
+                <ul>
+                    <li><strong>Steam:</strong> Steam/steamapps/common/Doki Doki Literature Club</li>
+                    <li><strong>itch.io:</strong> Where you extracted the game files</li>
+                    <li><strong>Official site:</strong> Where you extracted the downloaded ZIP</li>
+                </ul>
+            </div>
+            <div class="faq-item">
+                <h3>Are the mods safe to download?</h3>
+                <p>All mods go through a review process to ensure they're safe. However, always scan downloads with antivirus software and only download from trusted sources.</p>
+            </div>
+        </div>
+
+        <!-- Account Help -->
+        <div class="help-section" id="account-help">
+            <h2><i class="fas fa-user-cog"></i> Account Help</h2>
+            <div class="faq-item">
+                <h3>How do I create an account?</h3>
+                <p>You can create an account by clicking "Register" in the top navigation, or by logging in with GitHub or Discord.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Can I link multiple OAuth accounts?</h3>
+                <p>Yes, you can link both GitHub and Discord accounts to your Sayonika account from the Settings page.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How do I change my username or display name?</h3>
+                <p>You can update your display name from the Settings page. Usernames cannot be changed after account creation.</p>
+            </div>
+            <div class="faq-item">
+                <h3>I forgot my password, what do I do?</h3>
+                <p>If you have OAuth accounts linked (GitHub/Discord), you can log in using those. Otherwise, please contact support for assistance.</p>
+            </div>
+        </div>
+
+        <!-- Technical Issues -->
+        <div class="help-section">
+            <h2><i class="fas fa-wrench"></i> Technical Issues</h2>
+            <div class="faq-item">
+                <h3>The website isn't loading properly</h3>
+                <p>Try these troubleshooting steps:</p>
+                <ul>
+                    <li>Clear your browser cache and cookies</li>
+                    <li>Disable browser extensions temporarily</li>
+                    <li>Try a different browser</li>
+                    <li>Check if JavaScript is enabled</li>
+                </ul>
+            </div>
+            <div class="faq-item">
+                <h3>Upload is failing or timing out</h3>
+                <p>Large file uploads may take time. Ensure:</p>
+                <ul>
+                    <li>Your internet connection is stable</li>
+                    <li>The file size is under the limit (check upload page)</li>
+                    <li>The file format is supported</li>
+                    <li>Try uploading during off-peak hours</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Community Guidelines -->
+        <div class="help-section">
+            <h2><i class="fas fa-users"></i> Community Guidelines</h2>
+            <div class="faq-item">
+                <h3>What content is allowed?</h3>
+                <p>We welcome all DDLC mods that follow our <a href="/guidelines">Community Guidelines</a>. Content should be appropriate and respect the original game's themes.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How do I report inappropriate content?</h3>
+                <p>If you find content that violates our guidelines, please <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank">create a GitHub issue</a> with details about the content and why it violates our guidelines.</p>
+            </div>
+        </div>
+
+        <!-- Still Need Help -->
+        <div class="help-section help-contact">
+            <h2><i class="fas fa-life-ring"></i> Still Need Help?</h2>
+            <p>If you couldn't find the answer to your question, we're here to help!</p>
+            <div class="contact-options">
+                <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank" class="btn btn-primary">
+                    <i class="fab fa-github"></i> Create GitHub Issue
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script src="/js/help.js"></script>

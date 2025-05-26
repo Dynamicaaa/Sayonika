@@ -1,0 +1,313 @@
+<%- include('../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+<% if (locals.isOwner) { %>
+<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+<style>
+.edit-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.edit-mode .docs-content {
+    border: 2px dashed var(--primary-color);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.editable-section {
+    position: relative;
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.edit-mode .editable-section:hover {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+}
+
+.section-edit-controls {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.edit-mode .editable-section:hover .section-edit-controls {
+    opacity: 1;
+}
+
+.edit-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    display: none;
+}
+
+.edit-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 2001;
+    display: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.edit-modal h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.edit-modal .form-group {
+    margin-bottom: 20px;
+}
+
+.edit-modal label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.edit-modal input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+#editor {
+    height: 300px;
+    background: var(--bg-secondary);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+</style>
+<% } %>
+
+<!-- Owner Edit Controls -->
+<% if (locals.isOwner) { %>
+<div class="edit-controls">
+    <button class="btn btn-sm btn-primary" id="toggleEditMode">
+        <i class="fas fa-edit"></i> Edit Mode
+    </button>
+    <button class="btn btn-sm btn-success" id="addSection" style="display: none;">
+        <i class="fas fa-plus"></i> Add Section
+    </button>
+</div>
+<% } %>
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Hero Section (only on main docs page) -->
+    <% if (currentPath === '/docs' || currentPath === '/docs/') { %>
+    <section class="docs-hero">
+        <div class="container">
+            <div class="docs-hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-book"></i>
+                    <span>Documentation</span>
+                </div>
+                <h1 class="hero-title">Sayonika Documentation</h1>
+                <p class="hero-subtitle">
+                    Complete guide to setting up, using, and developing with Sayonika - the ultimate DDLC mod platform
+                </p>
+                <div class="hero-meta">
+                    <div class="version-info">
+                        <span class="version-badge">v2.0</span>
+                        <span class="last-updated">Last updated: January 2025</span>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="/docs/installation" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i>
+                            Quick Start
+                        </a>
+                        <a href="/docs/api" class="btn btn-outline">
+                            <i class="fas fa-code"></i>
+                            API Reference
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="hero-features">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Quick Setup</h3>
+                    <p>Get Sayonika running in minutes with our step-by-step guide</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>REST API</h3>
+                    <p>Powerful API with comprehensive endpoints and examples</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure</h3>
+                    <p>Built-in authentication, rate limiting, and security features</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-icon">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <h3>Extensible</h3>
+                    <p>Modular design for easy customization and integration</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <% } %>
+
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link <%= currentPath === '/docs/getting-started' ? 'active' : '' %>">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link <%= currentPath === '/docs/first-run' ? 'active' : '' %>">First Run</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link <%= currentPath === '/docs/examples' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link <%= currentPath === '/docs/examples/javascript' ? 'active' : '' %>">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link <%= currentPath === '/docs/examples/python' ? 'active' : '' %>">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link <%= currentPath === '/docs/examples/php' ? 'active' : '' %>">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link <%= currentPath === '/docs/integration-guides' ? 'active' : '' %>">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link <%= currentPath === '/docs/webhooks' ? 'active' : '' %>">Webhooks</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link <%= currentPath === '/docs/deployment' ? 'active' : '' %>">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Content will be injected here by individual pages -->
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Edit Modal (Owner only) -->
+<% if (locals.isOwner) { %>
+<div class="edit-overlay" id="editOverlay"></div>
+<div class="edit-modal" id="editModal">
+    <h3 id="modalTitle">Edit Section</h3>
+    <form id="editForm">
+        <div class="form-group">
+            <label for="sectionTitle">Title</label>
+            <input type="text" id="sectionTitle" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="editor">Content</label>
+            <div id="editor"></div>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+<% } %>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<% if (locals.isOwner) { %>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script src="/js/docs-editor.js"></script>
+<% } %>
+<%- include('../partials/footer') %>

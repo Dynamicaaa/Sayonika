@@ -1,0 +1,417 @@
+// Mod detail page styles
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.mod-detail-page {
+  padding: 2rem 0;
+}
+
+.mod-header {
+  background-color: $light-surface;
+  border-radius: $border-radius-lg;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: $box-shadow-sm;
+}
+
+// Dark theme mod header
+body.dark-theme .mod-header {
+  background-color: $dark-surface;
+}
+
+.mod-header-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  align-items: start;
+
+  @include media-breakpoint-down(md) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.mod-thumbnail {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+}
+
+.mod-info {
+  h1 {
+    color: $light-text;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+  }
+
+  .mod-author {
+    color: $light-text-muted;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+
+    a {
+      color: $primary-pink;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .mod-description {
+    color: $light-text;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Dark theme mod info
+body.dark-theme .mod-info {
+  h1 {
+    color: $dark-text;
+  }
+
+  .mod-author {
+    color: $dark-text-muted;
+
+    a {
+      color: $secondary-pink;
+    }
+  }
+
+  .mod-description {
+    color: $dark-text;
+  }
+}
+
+.mod-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $light-text-muted;
+  font-size: $font-size-sm;
+
+  i {
+    color: $primary-pink;
+  }
+
+  .meta-value {
+    font-weight: $font-weight-medium;
+    color: $light-text;
+  }
+}
+
+// Dark theme meta item
+body.dark-theme .meta-item {
+  color: $dark-text-muted;
+
+  i {
+    color: $secondary-pink;
+  }
+
+  .meta-value {
+    color: $dark-text;
+  }
+}
+
+.mod-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mod-content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+
+  @include media-breakpoint-down(lg) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mod-main {
+  .content-section {
+    background-color: $light-surface;
+    border-radius: $border-radius-lg;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: $box-shadow-sm;
+
+    h2 {
+      color: $light-text;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid $primary-pink;
+    }
+  }
+}
+
+// Dark theme mod main
+body.dark-theme .mod-main .content-section {
+  background-color: $dark-surface;
+
+  h2 {
+    color: $dark-text;
+    border-bottom-color: $secondary-pink;
+  }
+}
+
+.mod-sidebar {
+  .sidebar-section {
+    background-color: $light-surface;
+    border-radius: $border-radius-lg;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: $box-shadow-sm;
+
+    h3 {
+      color: $light-text;
+      margin-bottom: 1rem;
+      font-size: 1.125rem;
+    }
+  }
+}
+
+// Dark theme mod sidebar
+body.dark-theme .mod-sidebar .sidebar-section {
+  background-color: $dark-surface;
+
+  h3 {
+    color: $dark-text;
+  }
+}
+
+// Screenshots gallery
+.screenshots-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+
+  .screenshot {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: $border-radius;
+    cursor: pointer;
+    @include transition();
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: $box-shadow;
+    }
+  }
+}
+
+// Tags
+.mod-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  .tag {
+    background-color: rgba($primary-blue, 0.1);
+    color: $primary-blue;
+    padding: 0.25rem 0.75rem;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    text-decoration: none;
+
+    &:hover {
+      background-color: $primary-blue;
+      color: white;
+      text-decoration: none;
+    }
+  }
+}
+
+// Dark theme tags
+body.dark-theme .mod-tags .tag {
+  background-color: rgba($primary-blue, 0.2);
+
+  &:hover {
+    background-color: $primary-blue;
+    color: white;
+  }
+}
+
+// Requirements
+.requirements-list {
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba($border-color, 0.5);
+    color: $light-text;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    i {
+      color: $success;
+      width: 16px;
+    }
+  }
+}
+
+// Dark theme requirements
+body.dark-theme .requirements-list li {
+  border-bottom-color: rgba($dark-surface-light, 0.5);
+  color: $dark-text;
+}
+
+// Version history
+.version-history {
+  .version-item {
+    padding: 1rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    margin-bottom: 1rem;
+
+    &.current-version {
+      border-color: $primary-pink;
+      background-color: rgba($primary-pink, 0.05);
+    }
+
+    .version-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+
+      .version-number {
+        font-weight: $font-weight-bold;
+        color: $primary-pink;
+      }
+
+      .version-date {
+        color: $light-text-muted;
+        font-size: $font-size-sm;
+      }
+    }
+
+    .version-changelog {
+      color: $light-text;
+      line-height: 1.5;
+    }
+  }
+}
+
+// Dark theme version history
+body.dark-theme .version-history .version-item {
+  border-color: $dark-surface-light;
+
+  &.current-version {
+    border-color: $secondary-pink;
+    background-color: rgba($secondary-pink, 0.05);
+  }
+
+  .version-header {
+    .version-number {
+      color: $secondary-pink;
+    }
+
+    .version-date {
+      color: $dark-text-muted;
+    }
+  }
+
+  .version-changelog {
+    color: $dark-text;
+  }
+}
+
+// Reviews section
+.reviews-section {
+  .review-item {
+    padding: 1.5rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    margin-bottom: 1rem;
+    background-color: $light-bg;
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      .reviewer-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .reviewer-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .reviewer-name {
+          font-weight: $font-weight-medium;
+          color: $light-text;
+        }
+      }
+
+      .review-rating {
+        display: flex;
+        gap: 0.25rem;
+
+        .star {
+          color: $warning;
+          font-size: 1.125rem;
+
+          &.empty {
+            color: $light-text-muted;
+          }
+        }
+      }
+    }
+
+    .review-content {
+      color: $light-text;
+      line-height: 1.6;
+    }
+  }
+}
+
+// Dark theme reviews
+body.dark-theme .reviews-section .review-item {
+  border-color: $dark-surface-light;
+  background-color: $dark-surface;
+
+  .review-header .reviewer-info .reviewer-name {
+    color: $dark-text;
+  }
+
+  .review-header .review-rating .star.empty {
+    color: $dark-text-muted;
+  }
+
+  .review-content {
+    color: $dark-text;
+  }
+}
+
+// Related mods
+.related-mods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}

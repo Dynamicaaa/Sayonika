@@ -1,0 +1,281 @@
+<%- include('partials/header', { title: title }) %>
+
+<div class="achievements-page">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-trophy"></i> Achievements</h1>
+            <p class="page-subtitle">Unlock achievements by participating in the Sayonika community!</p>
+            
+            <% if (user) { %>
+                <div class="user-achievement-stats">
+                    <div class="stat-card">
+                        <div class="stat-number"><%= userAchievements.length %></div>
+                        <div class="stat-label">Achievements Earned</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= userAchievements.reduce((sum, ua) => sum + ua.points, 0) %></div>
+                        <div class="stat-label">Total Points</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= user.user_level %></div>
+                        <div class="stat-label">Level</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title"><%= user.user_title %></div>
+                        <div class="stat-label">Current Title</div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="achievements-content">
+            <% Object.entries(achievementsByCategory).forEach(([category, achievements]) => { %>
+                <div class="achievement-category">
+                    <h2 class="category-title">
+                        <% if (category === 'upload') { %>
+                            <i class="fas fa-upload"></i> Upload Achievements
+                        <% } else if (category === 'download') { %>
+                            <i class="fas fa-download"></i> Download Achievements
+                        <% } else if (category === 'community') { %>
+                            <i class="fas fa-users"></i> Community Achievements
+                        <% } else if (category === 'special') { %>
+                            <i class="fas fa-star"></i> Special Achievements
+                        <% } else { %>
+                            <i class="fas fa-trophy"></i> General Achievements
+                        <% } %>
+                    </h2>
+                    
+                    <div class="achievements-grid">
+                        <% achievements.forEach(achievement => { %>
+                            <div class="achievement-card <%= earnedAchievementIds.has(achievement.id) ? 'earned' : 'locked' %>">
+                                <div class="achievement-icon">
+                                    <i class="<%= achievement.icon %>"></i>
+                                </div>
+                                <div class="achievement-info">
+                                    <h3 class="achievement-name"><%= achievement.name %></h3>
+                                    <p class="achievement-description"><%= achievement.description %></p>
+                                    <div class="achievement-meta">
+                                        <span class="achievement-points">
+                                            <i class="fas fa-star"></i> <%= achievement.points %> points
+                                        </span>
+                                        <% if (earnedAchievementIds.has(achievement.id)) { %>
+                                            <% const userAchievement = userAchievements.find(ua => ua.id === achievement.id) %>
+                                            <span class="achievement-earned">
+                                                <i class="fas fa-check"></i> 
+                                                Earned <%= new Date(userAchievement.earned_at).toLocaleDateString() %>
+                                            </span>
+                                        <% } else { %>
+                                            <span class="achievement-progress">
+                                                <i class="fas fa-lock"></i> Not earned yet
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <% if (!user) { %>
+            <div class="login-cta">
+                <h3>Start Your Achievement Journey!</h3>
+                <p>Create an account to start earning achievements and tracking your progress.</p>
+                <div class="cta-actions">
+                    <a href="/register" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </a>
+                    <a href="/login" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+.achievements-page {
+    padding: 2rem 0;
+    min-height: 80vh;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.user-achievement-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+.achievement-category {
+    margin-bottom: 3rem;
+}
+
+.category-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.achievement-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-card.earned {
+    border-color: var(--success-color);
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(40, 167, 69, 0.1) 100%);
+}
+
+.achievement-card.locked {
+    opacity: 0.7;
+}
+
+.achievement-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.achievement-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.achievement-card.earned .achievement-icon {
+    color: var(--success-color);
+}
+
+.achievement-name {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.achievement-description {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.achievement-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.achievement-points {
+    color: var(--warning-color);
+    font-weight: 500;
+}
+
+.achievement-earned {
+    color: var(--success-color);
+    font-size: 0.9rem;
+}
+
+.achievement-progress {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.login-cta {
+    text-align: center;
+    padding: 3rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-top: 3rem;
+}
+
+.login-cta h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.cta-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .user-achievement-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .achievement-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+
+<%- include('partials/footer') %>

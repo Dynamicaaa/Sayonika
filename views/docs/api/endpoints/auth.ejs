@@ -1,0 +1,532 @@
+<%- include('../../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link active">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Authentication Endpoints -->
+                    <section class="docs-section" id="auth-endpoints">
+                        <h2>Authentication Endpoints</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Authentication endpoints handle user registration, login, logout, and OAuth integration.
+                                These endpoints manage JWT tokens and user sessions.
+                            </p>
+
+                            <!-- Register -->
+                            <div class="endpoint">
+                                <h3 id="register">
+                                    <span class="method post">POST</span>
+                                    <code>/api/auth/register</code>
+                                </h3>
+                                <p>Register a new user account.</p>
+
+                                <h4>Request Body</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "username": "string",
+  "email": "string",
+  "password": "string",
+  "display_name": "string" // optional
+}</code></pre>
+                                </div>
+
+                                <h4>Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Field</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>username</code></td>
+                                            <td>string</td>
+                                            <td>✅ Yes</td>
+                                            <td>Unique username (3-20 characters, alphanumeric + underscore)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>email</code></td>
+                                            <td>string</td>
+                                            <td>✅ Yes</td>
+                                            <td>Valid email address</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>password</code></td>
+                                            <td>string</td>
+                                            <td>✅ Yes</td>
+                                            <td>Password (minimum 8 characters)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>display_name</code></td>
+                                            <td>string</td>
+                                            <td>❌ No</td>
+                                            <td>Display name (defaults to username)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 123,
+      "username": "newuser",
+      "email": "user@example.com",
+      "display_name": "New User",
+      "role": "user",
+      "created_at": "2024-01-15T10:30:00Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X POST "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "newuser",
+    "email": "user@example.com",
+    "password": "securepassword123",
+    "display_name": "New User"
+  }'</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Login -->
+                            <div class="endpoint">
+                                <h3 id="login">
+                                    <span class="method post">POST</span>
+                                    <code>/api/auth/login</code>
+                                </h3>
+                                <p>Login with email and password to receive a JWT token.</p>
+
+                                <h4>Request Body</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "email": "string",
+  "password": "string",
+  "remember_me": "boolean" // optional
+}</code></pre>
+                                </div>
+
+                                <h4>Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Field</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>email</code></td>
+                                            <td>string</td>
+                                            <td>✅ Yes</td>
+                                            <td>User's email address</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>password</code></td>
+                                            <td>string</td>
+                                            <td>✅ Yes</td>
+                                            <td>User's password</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>remember_me</code></td>
+                                            <td>boolean</td>
+                                            <td>❌ No</td>
+                                            <td>Extend token expiration (default: false)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 123,
+      "username": "existinguser",
+      "email": "user@example.com",
+      "display_name": "Existing User",
+      "role": "user",
+      "avatar_url": "https://example.com/avatars/user.jpg"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expires_at": "2024-01-16T10:30:00Z"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X POST "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword123",
+    "remember_me": true
+  }'</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Logout -->
+                            <div class="endpoint">
+                                <h3 id="logout">
+                                    <span class="method post">POST</span>
+                                    <code>/api/auth/logout</code>
+                                </h3>
+                                <p>Logout and invalidate the current JWT token.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_JWT_TOKEN</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "message": "Successfully logged out"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X POST "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/auth/logout" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Refresh Token -->
+                            <div class="endpoint">
+                                <h3 id="refresh">
+                                    <span class="method post">POST</span>
+                                    <code>/api/auth/refresh</code>
+                                </h3>
+                                <p>Refresh an expired or soon-to-expire JWT token.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_JWT_TOKEN</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expires_at": "2024-01-16T10:30:00Z"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X POST "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/auth/refresh" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- GitHub OAuth -->
+                            <div class="endpoint">
+                                <h3 id="github-oauth">
+                                    <span class="method get">GET</span>
+                                    <code>/api/auth/github</code>
+                                </h3>
+                                <p>Initiate GitHub OAuth authentication flow.</p>
+
+                                <h4>Query Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>redirect_uri</code></td>
+                                            <td>string</td>
+                                            <td>❌ No</td>
+                                            <td>URL to redirect after authentication</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>state</code></td>
+                                            <td>string</td>
+                                            <td>❌ No</td>
+                                            <td>State parameter for security</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <p>Redirects to GitHub OAuth authorization page.</p>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code># Direct browser to this URL
+<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/auth/github?redirect_uri=https://yourapp.com/callback</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Discord OAuth -->
+                            <div class="endpoint">
+                                <h3 id="discord-oauth">
+                                    <span class="method get">GET</span>
+                                    <code>/api/auth/discord</code>
+                                </h3>
+                                <p>Initiate Discord OAuth authentication flow.</p>
+
+                                <h4>Query Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>redirect_uri</code></td>
+                                            <td>string</td>
+                                            <td>❌ No</td>
+                                            <td>URL to redirect after authentication</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>state</code></td>
+                                            <td>string</td>
+                                            <td>❌ No</td>
+                                            <td>State parameter for security</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <p>Redirects to Discord OAuth authorization page.</p>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code># Direct browser to this URL
+<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/auth/discord?redirect_uri=https://yourapp.com/callback</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Error Responses -->
+                            <h3>Common Error Responses</h3>
+
+                            <h4>Invalid Credentials (401)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVALID_CREDENTIALS",
+    "message": "Invalid email or password"
+  }
+}</code></pre>
+                            </div>
+
+                            <h4>User Already Exists (409)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "USER_ALREADY_EXISTS",
+    "message": "A user with this email or username already exists",
+    "details": {
+      "field": "email"
+    }
+  }
+}</code></pre>
+                            </div>
+
+                            <h4>Validation Error (422)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": {
+      "fields": {
+        "email": "Invalid email format",
+        "password": "Password must be at least 8 characters"
+      }
+    }
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Rate Limits -->
+                            <h3>Rate Limits</h3>
+                            <p>Authentication endpoints have specific rate limits to prevent abuse:</p>
+
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Endpoint</th>
+                                        <th>Rate Limit</th>
+                                        <th>Window</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>POST /auth/register</code></td>
+                                        <td>3 requests</td>
+                                        <td>Per hour per IP</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>POST /auth/login</code></td>
+                                        <td>10 requests</td>
+                                        <td>Per hour per IP</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>POST /auth/logout</code></td>
+                                        <td>No limit</td>
+                                        <td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>POST /auth/refresh</code></td>
+                                        <td>60 requests</td>
+                                        <td>Per hour per user</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Next Steps</h3>
+                                <div class="link-grid">
+                                    <a href="/docs/api/endpoints/mods" class="quick-link">
+                                        <i class="fas fa-puzzle-piece"></i>
+                                        <div>
+                                            <h4>Mod Endpoints</h4>
+                                            <p>Browse and manage mods</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/api/endpoints/users" class="quick-link">
+                                        <i class="fas fa-users"></i>
+                                        <div>
+                                            <h4>User Endpoints</h4>
+                                            <p>Manage user profiles</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/examples/javascript" class="quick-link">
+                                        <i class="fas fa-code"></i>
+                                        <div>
+                                            <h4>JavaScript Examples</h4>
+                                            <p>Working authentication examples</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../../partials/footer') %>

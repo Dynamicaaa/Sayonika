@@ -1,0 +1,309 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1><i class="fas fa-envelope-check"></i> Email Verification</h1>
+            </div>
+
+            <div class="auth-content">
+                <% if (typeof success !== 'undefined' && success) { %>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Success!</strong> <%= message %>
+                    </div>
+                    
+                    <div class="verification-success">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3>Email Verified Successfully!</h3>
+                        <p>Your email address has been verified. You can now receive email notifications for:</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Mod approval and rejection notifications</li>
+                            <li><i class="fas fa-trophy"></i> Achievement unlocks</li>
+                            <li><i class="fas fa-comments"></i> Comments on your mods</li>
+                            <li><i class="fas fa-bell"></i> Important announcements</li>
+                        </ul>
+                        
+                        <div class="action-buttons">
+                            <% if (user) { %>
+                                <a href="/settings" class="btn btn-primary">
+                                    <i class="fas fa-cog"></i> Manage Email Preferences
+                                </a>
+                                <a href="/profile" class="btn btn-outline">
+                                    <i class="fas fa-user"></i> Go to Profile
+                                </a>
+                            <% } else { %>
+                                <a href="/login" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt"></i> Sign In
+                                </a>
+                                <a href="/" class="btn btn-outline">
+                                    <i class="fas fa-home"></i> Go Home
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Verification Failed</strong>
+                        <p><%= error %></p>
+                    </div>
+                    
+                    <div class="verification-failed">
+                        <div class="error-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <h3>Email Verification Failed</h3>
+                        <p>The verification link may have expired or is invalid. Here's what you can do:</p>
+                        
+                        <div class="help-options">
+                            <div class="help-option">
+                                <i class="fas fa-redo"></i>
+                                <h4>Request New Link</h4>
+                                <p>If you're logged in, you can request a new verification email from your settings.</p>
+                            </div>
+                            <div class="help-option">
+                                <i class="fas fa-clock"></i>
+                                <h4>Check Timing</h4>
+                                <p>Verification links expire after 24 hours. Make sure you're using a recent email.</p>
+                            </div>
+                            <div class="help-option">
+                                <i class="fas fa-envelope"></i>
+                                <h4>Check Email</h4>
+                                <p>Make sure you clicked the correct link from your email.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <% if (user) { %>
+                                <a href="/settings" class="btn btn-primary">
+                                    <i class="fas fa-cog"></i> Go to Settings
+                                </a>
+                                <a href="/profile" class="btn btn-outline">
+                                    <i class="fas fa-user"></i> My Profile
+                                </a>
+                            <% } else { %>
+                                <a href="/login" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt"></i> Sign In
+                                </a>
+                                <a href="/register" class="btn btn-outline">
+                                    <i class="fas fa-user-plus"></i> Create Account
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.auth-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.auth-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.auth-header i {
+    margin-right: 0.5rem;
+}
+
+.auth-content {
+    padding: 2rem;
+}
+
+.verification-success, .verification-failed {
+    text-align: center;
+}
+
+.success-icon, .error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.success-icon {
+    color: #28a745;
+}
+
+.error-icon {
+    color: #dc3545;
+}
+
+.verification-success h3, .verification-failed h3 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.feature-list {
+    text-align: left;
+    max-width: 400px;
+    margin: 1.5rem auto;
+    padding: 0;
+    list-style: none;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+}
+
+.feature-list i {
+    color: #28a745;
+    margin-right: 0.75rem;
+    width: 16px;
+}
+
+.help-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.help-option {
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.help-option i {
+    color: #007bff;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.help-option h4 {
+    margin: 0.5rem 0;
+    color: #333;
+    font-size: 1rem;
+}
+
+.help-option p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.action-buttons {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border: 2px solid #007bff;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #007bff;
+    border: 2px solid #007bff;
+}
+
+.btn-outline:hover {
+    background: #007bff;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.alert i {
+    margin-right: 0.75rem;
+    margin-top: 0.1rem;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .help-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %>

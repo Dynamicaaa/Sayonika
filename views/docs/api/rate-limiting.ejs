@@ -1,0 +1,442 @@
+<%- include('../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
+                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link active">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link">Error Handling</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Examples</h4>
+                            <ul>
+                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
+                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
+                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
+                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
+                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="nav-section">
+                            <h4>Advanced</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Rate Limiting Guide -->
+                    <section class="docs-section" id="rate-limiting">
+                        <h2>Rate Limiting</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                To ensure fair usage and maintain service quality, the Sayonika API implements rate limiting.
+                                This guide explains how rate limits work and how to handle them in your applications.
+                            </p>
+
+                            <!-- Rate Limit Overview -->
+                            <h3>Rate Limit Overview</h3>
+                            <p>
+                                Rate limits are applied per user (for authenticated requests) or per IP address (for anonymous requests).
+                                Different endpoints may have different rate limits based on their resource intensity.
+                            </p>
+
+                            <!-- Rate Limit Tiers -->
+                            <h3>Rate Limit Tiers</h3>
+                            
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>User Type</th>
+                                        <th>Requests per Hour</th>
+                                        <th>Burst Limit</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="badge info">Anonymous</span></td>
+                                        <td>100</td>
+                                        <td>10/min</td>
+                                        <td>Unauthenticated requests</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge success">Authenticated</span></td>
+                                        <td>1,000</td>
+                                        <td>50/min</td>
+                                        <td>Logged-in users</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge warning">Premium</span></td>
+                                        <td>5,000</td>
+                                        <td>100/min</td>
+                                        <td>Premium users</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge danger">Admin</span></td>
+                                        <td>10,000</td>
+                                        <td>200/min</td>
+                                        <td>Administrative users</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Rate Limit Headers -->
+                            <h3>Rate Limit Headers</h3>
+                            <p>Every API response includes headers that provide information about your current rate limit status:</p>
+
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Header</th>
+                                        <th>Description</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>X-RateLimit-Limit</code></td>
+                                        <td>Maximum requests allowed per hour</td>
+                                        <td><code>1000</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>X-RateLimit-Remaining</code></td>
+                                        <td>Requests remaining in current window</td>
+                                        <td><code>999</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>X-RateLimit-Reset</code></td>
+                                        <td>Unix timestamp when limit resets</td>
+                                        <td><code>1640995200</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>X-RateLimit-Used</code></td>
+                                        <td>Requests used in current window</td>
+                                        <td><code>1</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Example Response -->
+                            <h4>Example Response Headers</h4>
+                            <div class="code-block">
+                                <pre><code>HTTP/1.1 200 OK
+Content-Type: application/json
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+X-RateLimit-Used: 1
+
+{
+  "success": true,
+  "data": { ... }
+}</code></pre>
+                            </div>
+
+                            <!-- Rate Limit Exceeded -->
+                            <h3>Rate Limit Exceeded</h3>
+                            <p>When you exceed the rate limit, the API will return a <code>429 Too Many Requests</code> status code:</p>
+
+                            <div class="code-block">
+                                <pre><code>HTTP/1.1 429 Too Many Requests
+Content-Type: application/json
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1640995200
+Retry-After: 3600
+
+{
+  "error": "Rate limit exceeded",
+  "message": "You have exceeded the rate limit. Please try again later.",
+  "retry_after": 3600
+}</code></pre>
+                            </div>
+
+                            <!-- Handling Rate Limits -->
+                            <h3>Handling Rate Limits</h3>
+                            
+                            <h4>Best Practices</h4>
+                            <ul>
+                                <li><strong>Monitor Headers:</strong> Always check rate limit headers in responses</li>
+                                <li><strong>Implement Backoff:</strong> Use exponential backoff when rate limited</li>
+                                <li><strong>Cache Responses:</strong> Cache API responses to reduce unnecessary requests</li>
+                                <li><strong>Batch Requests:</strong> Combine multiple operations into single requests when possible</li>
+                            </ul>
+
+                            <!-- Code Examples -->
+                            <h3>Code Examples</h3>
+                            
+                            <div class="language-tabs">
+                                <div class="tab-buttons">
+                                    <button class="tab-button active" data-tab="js-rate">JavaScript</button>
+                                    <button class="tab-button" data-tab="python-rate">Python</button>
+                                    <button class="tab-button" data-tab="curl-rate">cURL</button>
+                                </div>
+
+                                <div class="tab-content active" id="js-rate">
+                                    <div class="code-block">
+                                        <pre><code>class APIClient {
+  constructor(baseURL, token) {
+    this.baseURL = baseURL;
+    this.token = token;
+    this.rateLimitRemaining = null;
+    this.rateLimitReset = null;
+  }
+
+  async makeRequest(endpoint, options = {}) {
+    const url = `${this.baseURL}${endpoint}`;
+    const headers = {
+      'Authorization': `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+
+    try {
+      const response = await fetch(url, { ...options, headers });
+      
+      // Update rate limit info
+      this.rateLimitRemaining = parseInt(response.headers.get('X-RateLimit-Remaining'));
+      this.rateLimitReset = parseInt(response.headers.get('X-RateLimit-Reset'));
+      
+      if (response.status === 429) {
+        const retryAfter = parseInt(response.headers.get('Retry-After'));
+        throw new RateLimitError(`Rate limit exceeded. Retry after ${retryAfter} seconds.`, retryAfter);
+      }
+      
+      return response.json();
+    } catch (error) {
+      if (error instanceof RateLimitError) {
+        // Wait and retry
+        await this.sleep(error.retryAfter * 1000);
+        return this.makeRequest(endpoint, options);
+      }
+      throw error;
+    }
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  getRateLimitStatus() {
+    return {
+      remaining: this.rateLimitRemaining,
+      resetTime: new Date(this.rateLimitReset * 1000)
+    };
+  }
+}
+
+class RateLimitError extends Error {
+  constructor(message, retryAfter) {
+    super(message);
+    this.retryAfter = retryAfter;
+  }
+}</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="python-rate">
+                                    <div class="code-block">
+                                        <pre><code>import requests
+import time
+from datetime import datetime
+
+class APIClient:
+    def __init__(self, base_url, token):
+        self.base_url = base_url
+        self.token = token
+        self.rate_limit_remaining = None
+        self.rate_limit_reset = None
+        
+    def make_request(self, endpoint, method='GET', **kwargs):
+        url = f"{self.base_url}{endpoint}"
+        headers = {
+            'Authorization': f'Bearer {self.token}',
+            'Content-Type': 'application/json'
+        }
+        headers.update(kwargs.get('headers', {}))
+        
+        response = requests.request(method, url, headers=headers, **kwargs)
+        
+        # Update rate limit info
+        self.rate_limit_remaining = int(response.headers.get('X-RateLimit-Remaining', 0))
+        self.rate_limit_reset = int(response.headers.get('X-RateLimit-Reset', 0))
+        
+        if response.status_code == 429:
+            retry_after = int(response.headers.get('Retry-After', 60))
+            print(f"Rate limit exceeded. Waiting {retry_after} seconds...")
+            time.sleep(retry_after)
+            return self.make_request(endpoint, method, **kwargs)
+        
+        response.raise_for_status()
+        return response.json()
+    
+    def get_rate_limit_status(self):
+        return {
+            'remaining': self.rate_limit_remaining,
+            'reset_time': datetime.fromtimestamp(self.rate_limit_reset) if self.rate_limit_reset else None
+        }
+
+# Usage example
+client = APIClient('https://your-domain.com/api', 'your_token')
+mods = client.make_request('/mods')
+print(f"Rate limit status: {client.get_rate_limit_status()}")</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="curl-rate">
+                                    <div class="code-block">
+                                        <pre><code>#!/bin/bash
+
+# Function to make API request with rate limit handling
+make_api_request() {
+    local endpoint=$1
+    local response=$(curl -s -w "\n%{http_code}\n%{header_json}" \
+        -H "Authorization: Bearer $TOKEN" \
+        -H "Content-Type: application/json" \
+        "$BASE_URL$endpoint")
+    
+    local body=$(echo "$response" | head -n -2)
+    local status_code=$(echo "$response" | tail -n 2 | head -n 1)
+    local headers=$(echo "$response" | tail -n 1)
+    
+    if [ "$status_code" = "429" ]; then
+        local retry_after=$(echo "$headers" | jq -r '.["retry-after"] // 60')
+        echo "Rate limit exceeded. Waiting $retry_after seconds..."
+        sleep "$retry_after"
+        make_api_request "$endpoint"
+    else
+        echo "$body"
+        
+        # Extract rate limit info
+        local remaining=$(echo "$headers" | jq -r '.["x-ratelimit-remaining"] // "unknown"')
+        local reset=$(echo "$headers" | jq -r '.["x-ratelimit-reset"] // "unknown"')
+        echo "Rate limit remaining: $remaining, resets at: $(date -d @$reset 2>/dev/null || echo $reset)" >&2
+    fi
+}
+
+# Usage
+BASE_URL="https://your-domain.com/api"
+TOKEN="your_jwt_token"
+
+make_api_request "/mods"</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Endpoint-Specific Limits -->
+                            <h3>Endpoint-Specific Limits</h3>
+                            <p>Some endpoints have additional rate limits due to their resource-intensive nature:</p>
+
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Endpoint</th>
+                                        <th>Additional Limit</th>
+                                        <th>Reason</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>POST /api/mods</code></td>
+                                        <td>5 per hour</td>
+                                        <td>Prevent spam uploads</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>POST /api/auth/register</code></td>
+                                        <td>3 per hour per IP</td>
+                                        <td>Prevent account spam</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>POST /api/auth/login</code></td>
+                                        <td>10 per hour per IP</td>
+                                        <td>Prevent brute force attacks</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>GET /api/search</code></td>
+                                        <td>100 per hour</td>
+                                        <td>Expensive search operations</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Increasing Rate Limits -->
+                            <h3>Increasing Rate Limits</h3>
+                            <div class="alert info">
+                                <i class="fas fa-info-circle"></i>
+                                <div>
+                                    <strong>Need Higher Limits?</strong> If you need higher rate limits for your application,
+                                    please <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank">contact us</a>
+                                    with details about your use case.
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../partials/footer') %>

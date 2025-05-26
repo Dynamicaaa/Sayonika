@@ -1,0 +1,106 @@
+<%- include('partials/header', { title: title }) %>
+
+<div class="merge-accounts-page">
+    <div class="container">
+        <div class="merge-accounts-container">
+            <div class="merge-accounts-header">
+                <div class="merge-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <h1>Merge Accounts</h1>
+                <p>You're already signed in. Would you like to connect your <%= provider === 'github' ? 'GitHub' : 'Discord' %> account to your existing account?</p>
+            </div>
+
+            <div class="accounts-comparison">
+                <!-- Current Account -->
+                <div class="account-card current">
+                    <div class="account-header">
+                        <h3>Current Account</h3>
+                        <span class="account-badge current">Signed In</span>
+                    </div>
+                    <div class="account-info">
+                        <img src="<%= user.avatar_url || 'https://picsum.photos/1024/1024' %>" alt="<%= user.display_name || user.username %>" class="account-avatar">
+                        <div class="account-details">
+                            <h4><%= user.display_name || user.username %></h4>
+                            <p class="account-username">@<%= user.username %></p>
+                            <p class="account-email"><%= user.email %></p>
+                            <div class="account-connections">
+                                <% if (user.github_id) { %>
+                                    <span class="connection-badge github">
+                                        <i class="fab fa-github"></i> GitHub
+                                    </span>
+                                <% } %>
+                                <% if (user.discord_id) { %>
+                                    <span class="connection-badge discord">
+                                        <i class="fab fa-discord"></i> Discord
+                                    </span>
+                                <% } %>
+                                <% if (user.password_hash) { %>
+                                    <span class="connection-badge password">
+                                        <i class="fas fa-key"></i> Password
+                                    </span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Merge Arrow -->
+                <div class="merge-arrow">
+                    <i class="fas fa-plus"></i>
+                </div>
+
+                <!-- OAuth Account -->
+                <div class="account-card oauth">
+                    <div class="account-header">
+                        <h3><%= provider === 'github' ? 'GitHub' : 'Discord' %> Account</h3>
+                        <span class="account-badge oauth">To Connect</span>
+                    </div>
+                    <div class="account-info">
+                        <div class="oauth-icon <%= provider %>">
+                            <i class="fab fa-<%= provider %>"></i>
+                        </div>
+                        <div class="account-details">
+                            <h4>Connect your <%= provider === 'github' ? 'GitHub' : 'Discord' %> account</h4>
+                            <p>This will link your <%= provider === 'github' ? 'GitHub' : 'Discord' %> account to your existing Sayonika account.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="merge-benefits">
+                <h3>Benefits of connecting your <%= provider === 'github' ? 'GitHub' : 'Discord' %> account:</h3>
+                <ul>
+                    <li><i class="fas fa-check"></i> Sign in with multiple methods</li>
+                    <li><i class="fas fa-check"></i> Enhanced security with multiple authentication options</li>
+                    <li><i class="fas fa-check"></i> Keep all your mods and data in one account</li>
+                    <% if (provider === 'github') { %>
+                        <li><i class="fas fa-check"></i> Showcase your GitHub projects</li>
+                    <% } else { %>
+                        <li><i class="fas fa-check"></i> Connect with the DDLC community on Discord</li>
+                    <% } %>
+                </ul>
+            </div>
+
+            <div class="merge-actions" data-provider="<%= provider %>">
+                <button id="confirmMergeBtn" class="btn btn-primary btn-lg">
+                    <i class="fab fa-<%= provider %>"></i>
+                    Connect <%= provider === 'github' ? 'GitHub' : 'Discord' %> Account
+                </button>
+                <button id="cancelMergeBtn" class="btn btn-outline btn-lg">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+            </div>
+
+            <div class="merge-warning">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Note:</strong> This will connect your <%= provider === 'github' ? 'GitHub' : 'Discord' %> account to your current Sayonika account. You'll remain signed in as <strong><%= user.display_name || user.username %></strong>.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer', { scripts: ['/js/pages/merge-accounts.js'] }) %>
