@@ -6,6 +6,7 @@ const { body, validationResult, query } = require('express-validator');
 const Database = require('../database/database');
 const { authenticateToken, requireAuth, requireAdmin, requireOwner, optionalAuth } = require('../middleware/auth');
 const { deleteAvatarFile, generateDefaultThumbnail } = require('../utils/helpers');
+const emailService = require('../utils/emailService');
 
 const router = express.Router();
 const db = new Database();
@@ -1168,6 +1169,165 @@ router.delete('/comments/:commentId', requireAuth, async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Delete comment error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Support ticket routes
+router.post('/support/ticket', [
+    body('name').isLength({ min: 1, max: 255 }).withMessage('Name is required and must be less than 255 characters'),
+    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+    body('subject').isLength({ min: 1, max: 255 }).withMessage('Subject is required and must be less than 255 characters'),
+    body('message').isLength({ min: 1, max: 5000 }).withMessage('Message is required and must be less than 5000 characters'),
+    body('priority').optional().isIn(['low', 'medium', 'high', 'urgent']).withMessage('Invalid priority level')
+], requireAuth, async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { name, email, subject, message, priority = 'medium' } = req.body;
+
+        // Create ticket data using authenticated user's information
+        const ticketData = {
+            user_id: req.user.id,
+            name: name || req.user.display_name || req.user.username,
+            email: email || req.user.email,
+            subject,
+            message,
+            priority
+        };
+
+        // Create the support ticket
+        const result = await db.createSupportTicket(ticketData);
+        const ticketId = result.id;
+
+        console.log(`[API] Support ticket created: ID ${ticketId}, Subject: ${subject}`);
+
+        // Get admin emails
+        const adminEmails = await db.getAdminEmails();
+
+        if (adminEmails.length > 0) {
+            // Prepare email data
+            const emailData = {
+                ticketId,
+                name: ticketData.name,
+                email: ticketData.email,
+                subject,
+                message,
+                priority,
+                username: req.user.username
+            };
+
+            // Send consolidated email to all admins
+            const emailResult = await emailService.sendSupportTicketEmail(adminEmails, emailData);
+
+            if (emailResult.success) {
+                console.log(`[API] Support ticket email sent to ${adminEmails.length} admins`);
+            } else {
+                console.error(`[API] Failed to send support ticket email:`, emailResult.error);
+            }
+        } else {
+            console.warn(`[API] No admin emails found for support ticket notification`);
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'Support ticket created successfully',
+            ticketId: ticketId
+        });
+    } catch (error) {
+        console.error('Create support ticket error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin: Get support tickets
+router.get('/admin/support/tickets', [
+    query('status').optional().isIn(['open', 'in_progress', 'resolved', 'closed']).withMessage('Invalid status filter'),
+    query('priority').optional().isIn(['low', 'medium', 'high', 'urgent']).withMessage('Invalid priority filter'),
+    query('search').optional().isLength({ max: 100 }).withMessage('Search term too long'),
+    query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100')
+], requireAuth, requireAdmin, async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const filters = {
+            status: req.query.status,
+            priority: req.query.priority,
+            search: req.query.search,
+            limit: parseInt(req.query.limit) || 50
+        };
+
+        const tickets = await db.getSupportTickets(filters);
+        res.json(tickets);
+    } catch (error) {
+        console.error('Get support tickets error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin: Get specific support ticket
+router.get('/admin/support/tickets/:id', requireAuth, requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ticket = await db.getSupportTicketById(parseInt(id));
+
+        if (!ticket) {
+            return res.status(404).json({ error: 'Support ticket not found' });
+        }
+
+        res.json(ticket);
+    } catch (error) {
+        console.error('Get support ticket error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin: Update support ticket status
+router.patch('/admin/support/tickets/:id/status', [
+    body('status').isIn(['open', 'in_progress', 'resolved', 'closed']).withMessage('Invalid status')
+], requireAuth, requireAdmin, async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const result = await db.updateSupportTicketStatus(parseInt(id), status);
+
+        if (result.changes === 0) {
+            return res.status(404).json({ error: 'Support ticket not found' });
+        }
+
+        res.json({ message: 'Support ticket status updated successfully' });
+    } catch (error) {
+        console.error('Update support ticket status error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin: Delete support ticket
+router.delete('/admin/support/tickets/:id', requireAuth, requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await db.deleteSupportTicket(parseInt(id));
+
+        if (result.changes === 0) {
+            return res.status(404).json({ error: 'Support ticket not found' });
+        }
+
+        res.json({ message: 'Support ticket deleted successfully' });
+    } catch (error) {
+        console.error('Delete support ticket error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

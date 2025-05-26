@@ -3,34 +3,115 @@
 <div class="container">
     <div class="page-header">
         <h1><i class="fas fa-headset"></i> Get Support</h1>
-        <p>Need help with Sayonika? Report issues, request features, or get assistance from our community</p>
+        <p>Need help with Sayonika? Choose the best way to get assistance from our team</p>
     </div>
 
     <div class="contact-content">
-        <!-- Primary Support -->
-        <div class="contact-section primary-support">
-            <div class="support-hero">
-                <div class="support-hero-content">
-                    <h2><i class="fab fa-github"></i> Official Support</h2>
-                    <p>For technical issues, bug reports, feature requests, or any Sayonika-related questions, please create an issue on our GitHub repository.</p>
+        <!-- Support Options -->
+        <div class="support-options">
+            <div class="support-option github-option">
+                <div class="option-header">
+                    <div class="option-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <h2>GitHub Issues</h2>
+                    <p>Best for bug reports, feature requests, and technical issues</p>
+                </div>
+                <div class="option-content">
+                    <ul class="option-benefits">
+                        <li><i class="fas fa-check"></i> Public tracking and transparency</li>
+                        <li><i class="fas fa-check"></i> Community collaboration</li>
+                        <li><i class="fas fa-check"></i> Fastest response time</li>
+                        <li><i class="fas fa-check"></i> Perfect for developers</li>
+                    </ul>
                     <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank" class="btn btn-primary btn-lg">
                         <i class="fab fa-github"></i> Create GitHub Issue
                     </a>
-                    <p class="support-note">
-                        <i class="fas fa-info-circle"></i>
-                        This is the fastest way to get help and ensures your issue is tracked properly
-                    </p>
                 </div>
-                <div class="support-hero-graphic">
-                    <div class="floating-icons">
-                        <i class="fas fa-bug"></i>
-                        <i class="fas fa-lightbulb"></i>
-                        <i class="fas fa-question-circle"></i>
-                        <i class="fas fa-tools"></i>
+            </div>
+
+            <div class="support-option ticket-option">
+                <div class="option-header">
+                    <div class="option-icon">
+                        <i class="fas fa-ticket-alt"></i>
                     </div>
+                    <h2>Support Ticket</h2>
+                    <p>Best for private inquiries, account issues, and general support</p>
+                </div>
+                <div class="option-content">
+                    <ul class="option-benefits">
+                        <li><i class="fas fa-check"></i> Private and confidential</li>
+                        <li><i class="fas fa-check"></i> Direct admin contact</li>
+                        <li><i class="fas fa-check"></i> Account-specific help</li>
+                        <li><i class="fas fa-check"></i> Email notifications</li>
+                    </ul>
+                    <% if (user) { %>
+                        <button class="btn btn-secondary btn-lg" onclick="showTicketForm()">
+                            <i class="fas fa-ticket-alt"></i> Create Support Ticket
+                        </button>
+                    <% } else { %>
+                        <a href="/login?redirect=/contact" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Login to Create Ticket
+                        </a>
+                        <p class="login-note">
+                            <i class="fas fa-info-circle"></i>
+                            You must be logged in to create a support ticket
+                        </p>
+                    <% } %>
                 </div>
             </div>
         </div>
+
+        <!-- Support Ticket Form (Hidden by default) -->
+        <% if (user) { %>
+        <div id="ticketForm" class="ticket-form-container" style="display: none;">
+            <div class="ticket-form">
+                <div class="form-header">
+                    <h3><i class="fas fa-ticket-alt"></i> Create Support Ticket</h3>
+                    <button class="close-btn" onclick="hideTicketForm()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="supportTicketForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ticketName">Name</label>
+                            <input type="text" id="ticketName" name="name" value="<%= user.display_name || user.username %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ticketEmail">Email</label>
+                            <input type="email" id="ticketEmail" name="email" value="<%= user.email || '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ticketSubject">Subject</label>
+                            <input type="text" id="ticketSubject" name="subject" placeholder="Brief description of your issue" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ticketPriority">Priority</label>
+                            <select id="ticketPriority" name="priority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketMessage">Message</label>
+                        <textarea id="ticketMessage" name="message" rows="6" placeholder="Please describe your issue in detail..." required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="hideTicketForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <% } %>
 
         <!-- Issue Types -->
         <div class="contact-section">
@@ -163,13 +244,105 @@
                     <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank" class="btn btn-primary btn-lg">
                         <i class="fab fa-github"></i> Create GitHub Issue
                     </a>
-                    <a href="/help" class="btn btn-outline btn-lg">
-                        <i class="fas fa-question-circle"></i> Browse Help Center
-                    </a>
+                    <% if (user) { %>
+                        <button class="btn btn-secondary btn-lg" onclick="showTicketForm()">
+                            <i class="fas fa-ticket-alt"></i> Create Support Ticket
+                        </button>
+                    <% } else { %>
+                        <a href="/login?redirect=/contact" class="btn btn-outline btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Login for Support Ticket
+                        </a>
+                    <% } %>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Success/Error Messages -->
+<div id="messageContainer" class="message-container" style="display: none;">
+    <div id="messageContent" class="message-content">
+        <span id="messageText"></span>
+        <button class="message-close" onclick="hideMessage()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+function showTicketForm() {
+    document.getElementById('ticketForm').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function hideTicketForm() {
+    document.getElementById('ticketForm').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    // Reset form
+    document.getElementById('supportTicketForm').reset();
+    // Restore user data
+    <% if (user) { %>
+    document.getElementById('ticketName').value = '<%= user.display_name || user.username %>';
+    document.getElementById('ticketEmail').value = '<%= user.email || '' %>';
+    <% } %>
+}
+
+function showMessage(text, type = 'success') {
+    const container = document.getElementById('messageContainer');
+    const content = document.getElementById('messageContent');
+    const textElement = document.getElementById('messageText');
+
+    textElement.textContent = text;
+    content.className = `message-content ${type}`;
+    container.style.display = 'flex';
+
+    // Auto-hide after 5 seconds
+    setTimeout(hideMessage, 5000);
+}
+
+function hideMessage() {
+    document.getElementById('messageContainer').style.display = 'none';
+}
+
+// Handle form submission
+<% if (user) { %>
+document.getElementById('supportTicketForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch('/api/support/ticket', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            hideTicketForm();
+            showMessage(`Support ticket #${result.ticketId} created successfully! You'll receive email updates.`, 'success');
+        } else {
+            showMessage(result.error || 'Failed to create support ticket', 'error');
+        }
+    } catch (error) {
+        console.error('Error creating support ticket:', error);
+        showMessage('An error occurred while creating the support ticket', 'error');
+    }
+});
+<% } %>
+
+// Close form when clicking outside
+document.getElementById('ticketForm')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideTicketForm();
+    }
+});
+</script>
 
 <%- include('partials/footer') %>
