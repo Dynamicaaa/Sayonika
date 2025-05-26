@@ -255,6 +255,8 @@ app.use((req, res, next) => {
     res.locals.user = req.user;
     res.locals.currentPath = req.path;
     res.locals.helpers = helpers;
+    res.locals.maintenanceMode = req.maintenanceMode || false;
+    res.locals.maintenanceMessage = req.maintenanceMessage || '';
 
     // Debug logging for authentication status
     if (isDevelopment && req.get('host') && (req.get('host').includes('192.168.') || req.get('host').includes('67.183.50.4'))) {

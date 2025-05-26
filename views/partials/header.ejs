@@ -127,16 +127,17 @@
         </div>
     </nav>
 
-    <!-- Maintenance Mode Warning -->
-    <% if (locals.maintenanceMode && !user?.is_admin) { %>
-        <div class="maintenance-warning">
+    <!-- Maintenance Warning Banner -->
+    <% if (maintenanceMode && !user?.is_admin) { %>
+        <div class="maintenance-banner">
             <div class="container">
-                <div class="maintenance-warning-content">
+                <div class="maintenance-banner-content">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <div class="maintenance-warning-text">
-                        <strong>Maintenance Mode:</strong> <%= locals.maintenanceMessage || 'The site is currently undergoing maintenance. Some features may be limited.' %>
+                    <div class="maintenance-banner-text">
+                        <strong>Maintenance Notice:</strong>
+                        <%= maintenanceMessage || 'Sayonika is currently undergoing maintenance. Some features may be unavailable.' %>
                     </div>
-                    <button class="maintenance-warning-close" onclick="this.parentElement.parentElement.parentElement.style.display='none'">
+                    <button class="maintenance-banner-close" onclick="this.parentElement.parentElement.parentElement.style.display='none'">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
