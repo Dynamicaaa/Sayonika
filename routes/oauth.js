@@ -27,27 +27,41 @@ router.get('/github', optionalAuth, async (req, res, next) => {
     // Store linking information if this is a link request
     if (req.query.link === 'true') {
         console.log('GitHub OAuth link request detected');
-        console.log('Current session linkUserId:', req.session.linkUserId);
-        console.log('Current session linkProvider:', req.session.linkProvider);
 
-        // Ensure the session data is preserved
-        if (!req.session.linkUserId || !req.session.linkProvider) {
-            console.log('Warning: Link session data missing, this might be a session persistence issue');
-            return res.redirect('/profile?error=session_lost');
-        }
+        // Check for link token in query params
+        if (req.query.token) {
+            try {
+                const decoded = jwt.verify(req.query.token, process.env.JWT_SECRET || 'your-secret-key');
+                console.log('Valid link token found:', {
+                    linkUserId: decoded.linkUserId,
+                    linkProvider: decoded.linkProvider,
+                    timestamp: decoded.timestamp
+                });
 
-        // Save session before OAuth redirect to ensure persistence
-        return req.session.save((err) => {
-            if (err) {
-                console.error('Session save error before GitHub OAuth:', err);
-                return res.redirect('/profile?error=session_save_failed');
+                // Store in session for the OAuth callback
+                req.session.linkUserId = decoded.linkUserId;
+                req.session.linkProvider = decoded.linkProvider;
+
+                // Save session before OAuth redirect
+                return req.session.save((err) => {
+                    if (err) {
+                        console.error('Session save error before GitHub OAuth:', err);
+                        return res.redirect('/profile?error=session_save_failed');
+                    }
+
+                    console.log('Link data stored in session, proceeding with GitHub OAuth');
+                    passport.authenticate('github', {
+                        scope: ['user:email']
+                    })(req, res, next);
+                });
+            } catch (error) {
+                console.error('Invalid link token:', error);
+                return res.redirect('/profile?error=invalid_link_token');
             }
-
-            console.log('Session saved before GitHub OAuth redirect');
-            passport.authenticate('github', {
-                scope: ['user:email']
-            })(req, res, next);
-        });
+        } else {
+            console.log('Warning: Link request without token');
+            return res.redirect('/profile?error=missing_link_token');
+        }
     }
 
     passport.authenticate('github', {
@@ -167,7 +181,13 @@ router.get('/discord', optionalAuth, async (req, res, next) => {
     console.log('Discord OAuth initiated with Client ID:', process.env.DISCORD_CLIENT_ID);
     console.log('Discord Callback URL:', process.env.DISCORD_CALLBACK_URL);
     console.log('Request query params:', req.query);
+    console.log('Session ID:', req.sessionID);
     console.log('Session before Discord OAuth:', req.session);
+    console.log('Session linking data check:', {
+        linkUserId: req.session.linkUserId,
+        linkProvider: req.session.linkProvider,
+        hasUser: !!req.session.user
+    });
 
     // Check if user is already logged in and this is not a linking request
     if (req.user && req.query.link !== 'true') {
@@ -186,25 +206,39 @@ router.get('/discord', optionalAuth, async (req, res, next) => {
     // Store linking information if this is a link request
     if (req.query.link === 'true') {
         console.log('Discord OAuth link request detected');
-        console.log('Current session linkUserId:', req.session.linkUserId);
-        console.log('Current session linkProvider:', req.session.linkProvider);
 
-        // Ensure the session data is preserved
-        if (!req.session.linkUserId || !req.session.linkProvider) {
-            console.log('Warning: Link session data missing, this might be a session persistence issue');
-            return res.redirect('/profile?error=session_lost');
-        }
+        // Check for link token in query params
+        if (req.query.token) {
+            try {
+                const decoded = jwt.verify(req.query.token, process.env.JWT_SECRET || 'your-secret-key');
+                console.log('Valid link token found:', {
+                    linkUserId: decoded.linkUserId,
+                    linkProvider: decoded.linkProvider,
+                    timestamp: decoded.timestamp
+                });
 
-        // Save session before OAuth redirect to ensure persistence
-        return req.session.save((err) => {
-            if (err) {
-                console.error('Session save error before Discord OAuth:', err);
-                return res.redirect('/profile?error=session_save_failed');
+                // Store in session for the OAuth callback
+                req.session.linkUserId = decoded.linkUserId;
+                req.session.linkProvider = decoded.linkProvider;
+
+                // Save session before OAuth redirect
+                return req.session.save((err) => {
+                    if (err) {
+                        console.error('Session save error before Discord OAuth:', err);
+                        return res.redirect('/profile?error=session_save_failed');
+                    }
+
+                    console.log('Link data stored in session, proceeding with Discord OAuth');
+                    passport.authenticate('discord')(req, res, next);
+                });
+            } catch (error) {
+                console.error('Invalid link token:', error);
+                return res.redirect('/profile?error=invalid_link_token');
             }
-
-            console.log('Session saved before Discord OAuth redirect');
-            passport.authenticate('discord')(req, res, next);
-        });
+        } else {
+            console.log('Warning: Link request without token');
+            return res.redirect('/profile?error=missing_link_token');
+        }
     }
 
     passport.authenticate('discord')(req, res, next);
@@ -319,53 +353,53 @@ router.get('/discord/callback', (req, res, next) => {
 
 // Link existing account with OAuth provider
 router.post('/link/github', requireAuth, async (req, res) => {
+    try {
+        // Create a temporary JWT token to store linking information
+        const linkToken = jwt.sign(
+            {
+                linkUserId: req.user.id,
+                linkProvider: 'github',
+                timestamp: Date.now()
+            },
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn: '10m' } // 10 minutes should be enough for OAuth flow
+        );
 
-    // Store user ID in session for linking
-    req.session.linkUserId = req.user.id;
-    req.session.linkProvider = 'github';
-
-    // Ensure session is saved before responding
-    req.session.save((err) => {
-        if (err) {
-            console.error('Session save error:', err);
-            return res.status(500).json({ error: 'Session save failed' });
-        }
-
-        console.log('GitHub link session saved:', {
-            linkUserId: req.session.linkUserId,
-            linkProvider: req.session.linkProvider
-        });
+        console.log('Created GitHub link token for user:', req.user.id);
 
         res.json({
             success: true,
-            redirectUrl: '/auth/github?link=true'
+            redirectUrl: `/auth/github?link=true&token=${linkToken}`
         });
-    });
+    } catch (error) {
+        console.error('GitHub link token creation error:', error);
+        res.status(500).json({ error: 'Failed to create link token' });
+    }
 });
 
 router.post('/link/discord', requireAuth, async (req, res) => {
+    try {
+        // Create a temporary JWT token to store linking information
+        const linkToken = jwt.sign(
+            {
+                linkUserId: req.user.id,
+                linkProvider: 'discord',
+                timestamp: Date.now()
+            },
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn: '10m' } // 10 minutes should be enough for OAuth flow
+        );
 
-    // Store user ID in session for linking
-    req.session.linkUserId = req.user.id;
-    req.session.linkProvider = 'discord';
-
-    // Ensure session is saved before responding
-    req.session.save((err) => {
-        if (err) {
-            console.error('Session save error:', err);
-            return res.status(500).json({ error: 'Session save failed' });
-        }
-
-        console.log('Discord link session saved:', {
-            linkUserId: req.session.linkUserId,
-            linkProvider: req.session.linkProvider
-        });
+        console.log('Created Discord link token for user:', req.user.id);
 
         res.json({
             success: true,
-            redirectUrl: '/auth/discord?link=true'
+            redirectUrl: `/auth/discord?link=true&token=${linkToken}`
         });
-    });
+    } catch (error) {
+        console.error('Discord link token creation error:', error);
+        res.status(500).json({ error: 'Failed to create link token' });
+    }
 });
 
 // Unlink OAuth provider
