@@ -85,11 +85,7 @@ const checkMaintenanceMode = async (req, res, next) => {
         }
 
         if (isAllowedPath) {
-            // Add maintenance flag to show warning banner on allowed pages
-            req.maintenanceMode = true;
-            const maintenanceMessage = await db.getSiteSetting('maintenance_message') ||
-                'Sayonika is currently undergoing maintenance. Some features may be unavailable.';
-            req.maintenanceMessage = maintenanceMessage;
+            // Allow access to this path without any maintenance indicators
             return next();
         }
 
