@@ -122,7 +122,7 @@ sayonika/
 
 For comprehensive documentation including API reference, installation guides, and examples, visit:
 
-**📚 [Complete Documentation](http://localhost:3000/docs)**
+**📚 [Complete Documentation](https://sayonika.reconvial.dev/docs)**
 
 ### Quick API Reference
 - **Authentication**: `/api/auth/*` - User registration, login, and profile management
@@ -130,7 +130,7 @@ For comprehensive documentation including API reference, installation guides, an
 - **Admin**: `/api/admin/*` - Administrative functions and mod review
 - **Categories**: `/api/categories` - Mod categories and tags
 
-For detailed endpoint documentation with examples, see the [API Reference](http://localhost:3000/docs/api) section.
+For detailed endpoint documentation with examples, see the [API Reference](https://sayonika.reconvial.dev/docs/api) section.
 
 ## Database Schema
 

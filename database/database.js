@@ -1254,6 +1254,11 @@ class Database {
         return await this.run(sql, [status, id]);
     }
 
+    async updateSupportTicketPriority(id, priority) {
+        const sql = 'UPDATE support_tickets SET priority = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
+        return await this.run(sql, [priority, id]);
+    }
+
     async deleteSupportTicket(id) {
         const sql = 'DELETE FROM support_tickets WHERE id = ?';
         return await this.run(sql, [id]);

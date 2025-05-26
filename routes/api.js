@@ -1314,6 +1314,32 @@ router.patch('/admin/support/tickets/:id/status', [
     }
 });
 
+// Admin: Update support ticket priority
+router.patch('/admin/support/tickets/:id/priority', [
+    body('priority').isIn(['low', 'medium', 'high', 'urgent']).withMessage('Invalid priority')
+], requireAuth, requireAdmin, async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { id } = req.params;
+        const { priority } = req.body;
+
+        const result = await db.updateSupportTicketPriority(parseInt(id), priority);
+
+        if (result.changes === 0) {
+            return res.status(404).json({ error: 'Support ticket not found' });
+        }
+
+        res.json({ message: 'Support ticket priority updated successfully' });
+    } catch (error) {
+        console.error('Update support ticket priority error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Admin: Delete support ticket
 router.delete('/admin/support/tickets/:id', requireAuth, requireAdmin, async (req, res) => {
     try {

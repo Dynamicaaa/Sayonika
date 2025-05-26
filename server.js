@@ -365,9 +365,6 @@ initializeServer().then(() => {
                 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
                 console.log(`Base URL: ${process.env.BASE_URL || `https://localhost:${PORT}`}`);
                 console.log(`Visit: https://localhost:${PORT}`);
-                if (process.env.EXTERNAL_URL) {
-                    console.log(`External access: ${process.env.EXTERNAL_URL}`);
-                }
                 console.log(`SSL Key: ${sslKeyPath}`);
                 console.log(`SSL Cert: ${sslCertPath}`);
             });
@@ -389,9 +386,6 @@ initializeServer().then(() => {
             console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`Base URL: ${process.env.BASE_URL || `http://localhost:${PORT}`}`);
             console.log(`Visit: http://localhost:${PORT}`);
-            if (process.env.EXTERNAL_URL) {
-                console.log(`External access: ${process.env.EXTERNAL_URL}`);
-            }
         });
     }
 });

@@ -501,10 +501,477 @@ body.dark-theme .activity-log .log-item {
   }
 }
 
+// Support tickets table
+.tickets-table {
+  @extend .pending-mods-table;
+
+  .ticket-id {
+    font-weight: $font-weight-bold;
+    color: $primary-pink;
+  }
+
+  .ticket-subject {
+    .ticket-link {
+      color: $light-text;
+      text-decoration: none;
+      font-weight: $font-weight-medium;
+
+      &:hover {
+        color: $primary-pink;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .ticket-from {
+    .from-name {
+      font-weight: $font-weight-medium;
+      margin-bottom: 0.25rem;
+    }
+
+    .from-email {
+      color: $light-text-muted;
+      font-size: $font-size-sm;
+      margin-bottom: 0.125rem;
+    }
+
+    .from-username {
+      color: $primary-pink;
+      font-size: $font-size-sm;
+    }
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &.status-open {
+      background-color: rgba($warning, 0.1);
+      color: $warning;
+    }
+
+    &.status-in-progress {
+      background-color: rgba($info, 0.1);
+      color: $info;
+    }
+
+    &.status-resolved {
+      background-color: rgba($success, 0.1);
+      color: $success;
+    }
+
+    &.status-closed {
+      background-color: rgba($light-text-muted, 0.1);
+      color: $light-text-muted;
+    }
+  }
+
+  .priority-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &.priority-low {
+      background-color: rgba($success, 0.1);
+      color: $success;
+    }
+
+    &.priority-medium {
+      background-color: rgba($info, 0.1);
+      color: $info;
+    }
+
+    &.priority-high {
+      background-color: rgba($warning, 0.1);
+      color: $warning;
+    }
+
+    &.priority-urgent {
+      background-color: rgba($danger, 0.1);
+      color: $danger;
+    }
+  }
+
+  .ticket-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .btn {
+      padding: 0.375rem 0.75rem;
+      font-size: $font-size-sm;
+    }
+  }
+}
+
+// Dark theme tickets table
+body.dark-theme .tickets-table {
+  .ticket-subject .ticket-link {
+    color: $dark-text;
+
+    &:hover {
+      color: $secondary-pink;
+    }
+  }
+
+  .ticket-from {
+    .from-email {
+      color: $dark-text-muted;
+    }
+
+    .from-username {
+      color: $secondary-pink;
+    }
+  }
+}
+
+// Ticket detail page styles
+.ticket-detail-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: $font-size-sm;
+
+  .breadcrumb-link {
+    color: $primary-pink;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .breadcrumb-separator {
+    color: $light-text-muted;
+  }
+
+  .breadcrumb-current {
+    color: $light-text-muted;
+  }
+}
+
+// Dark theme breadcrumb
+body.dark-theme .breadcrumb {
+  .breadcrumb-link {
+    color: $secondary-pink;
+  }
+
+  .breadcrumb-separator,
+  .breadcrumb-current {
+    color: $dark-text-muted;
+  }
+}
+
+.ticket-header {
+  background-color: $light-surface;
+  border-radius: $border-radius-lg;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: $box-shadow-sm;
+
+  .ticket-subject {
+    color: $light-text;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: $font-weight-bold;
+  }
+
+  .ticket-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        color: $primary-pink;
+        width: 16px;
+      }
+
+      .meta-label {
+        font-weight: $font-weight-medium;
+        color: $light-text;
+      }
+
+      .meta-value {
+        color: $light-text-muted;
+
+        a {
+          color: $primary-pink;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark theme ticket header
+body.dark-theme .ticket-header {
+  background-color: $dark-surface;
+
+  .ticket-subject {
+    color: $dark-text;
+  }
+
+  .ticket-meta .meta-item {
+    i {
+      color: $secondary-pink;
+    }
+
+    .meta-label {
+      color: $dark-text;
+    }
+
+    .meta-value {
+      color: $dark-text-muted;
+
+      a {
+        color: $secondary-pink;
+      }
+    }
+  }
+}
+
+.ticket-status-section {
+  .status-priority-row {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+
+    .status-group,
+    .priority-group {
+      flex: 1;
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: $font-weight-medium;
+        color: $light-text;
+      }
+
+      .form-control {
+        width: 100%;
+      }
+    }
+  }
+
+  .badges-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+}
+
+// Dark theme ticket status section
+body.dark-theme .ticket-status-section {
+  .status-group .form-label,
+  .priority-group .form-label {
+    color: $dark-text;
+  }
+}
+
+.ticket-message-section {
+  background-color: $light-surface;
+  border-radius: $border-radius-lg;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: $box-shadow-sm;
+
+  h3 {
+    color: $light-text;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid $primary-pink;
+  }
+
+  .ticket-message {
+    color: $light-text;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    background-color: rgba($light-text, 0.02);
+    padding: 1.5rem;
+    border-radius: $border-radius;
+    border-left: 4px solid $primary-pink;
+  }
+}
+
+// Dark theme ticket message section
+body.dark-theme .ticket-message-section {
+  background-color: $dark-surface;
+
+  h3 {
+    color: $dark-text;
+    border-bottom-color: $secondary-pink;
+  }
+
+  .ticket-message {
+    color: $dark-text;
+    background-color: rgba($dark-text, 0.02);
+    border-left-color: $secondary-pink;
+  }
+}
+
+.admin-actions-section {
+  background-color: $light-surface;
+  border-radius: $border-radius-lg;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: $box-shadow-sm;
+
+  h3 {
+    color: $light-text;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid $primary-pink;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+}
+
+// Dark theme admin actions section
+body.dark-theme .admin-actions-section {
+  background-color: $dark-surface;
+
+  h3 {
+    color: $dark-text;
+    border-bottom-color: $secondary-pink;
+  }
+}
+
+.navigation-section {
+  text-align: center;
+}
+
+// Message container for ticket pages
+.message-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+
+  .alert {
+    padding: 1rem;
+    border-radius: $border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: $box-shadow;
+
+    &.alert-success {
+      background-color: rgba($success, 0.1);
+      color: $success;
+      border: 1px solid rgba($success, 0.2);
+    }
+
+    &.alert-error {
+      background-color: rgba($danger, 0.1);
+      color: $danger;
+      border: 1px solid rgba($danger, 0.2);
+    }
+
+    &.alert-info {
+      background-color: rgba($info, 0.1);
+      color: $info;
+      border: 1px solid rgba($info, 0.2);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 1rem;
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
+// Admin message container for dashboard
+.admin-message-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+
+  .alert {
+    padding: 1rem;
+    border-radius: $border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: $box-shadow;
+
+    &.alert-success {
+      background-color: rgba($success, 0.1);
+      color: $success;
+      border: 1px solid rgba($success, 0.2);
+    }
+
+    &.alert-error {
+      background-color: rgba($danger, 0.1);
+      color: $danger;
+      border: 1px solid rgba($danger, 0.2);
+    }
+
+    &.alert-info {
+      background-color: rgba($info, 0.1);
+      color: $info;
+      border: 1px solid rgba($info, 0.2);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 1rem;
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
 // Responsive admin tables
 @include media-breakpoint-down(md) {
   .pending-mods-table,
-  .users-table {
+  .users-table,
+  .tickets-table {
     font-size: $font-size-sm;
 
     th,
@@ -513,7 +980,8 @@ body.dark-theme .activity-log .log-item {
     }
 
     .mod-actions,
-    .user-actions {
+    .user-actions,
+    .ticket-actions {
       flex-direction: column;
       gap: 0.25rem;
 
@@ -532,5 +1000,18 @@ body.dark-theme .activity-log .log-item {
       margin-left: 0;
       margin-top: 1rem;
     }
+  }
+
+  .ticket-header .ticket-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-status-section .status-priority-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .admin-actions-section .action-buttons {
+    flex-direction: column;
   }
 }
