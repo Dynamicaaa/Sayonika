@@ -17,6 +17,7 @@ const passport = require('./config/passport');
 
 const Database = require('./database/database');
 const { optionalAuth } = require('./middleware/auth');
+const { checkMaintenanceMode } = require('./middleware/maintenance');
 const helpers = require('./utils/helpers');
 
 // Import routes
@@ -245,6 +246,9 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Apply authentication middleware globally - AFTER static files
 app.use(optionalAuth);
+
+// Apply maintenance mode middleware - AFTER authentication
+app.use(checkMaintenanceMode);
 
 // Make user and helpers available in all templates
 app.use((req, res, next) => {

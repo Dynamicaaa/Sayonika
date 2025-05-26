@@ -304,6 +304,29 @@ router.get('/admin', async (req, res) => {
     }
 });
 
+// Maintenance page route
+router.get('/maintenance', async (req, res) => {
+    try {
+        const maintenanceMessage = await db.getSiteSetting('maintenance_message') ||
+            'Sayonika is currently undergoing maintenance. Please check back later!';
+
+        res.render('maintenance', {
+            title: 'Maintenance Mode - Sayonika',
+            message: maintenanceMessage,
+            user: req.user,
+            currentPath: req.path
+        });
+    } catch (error) {
+        console.error('Error loading maintenance page:', error);
+        res.render('maintenance', {
+            title: 'Maintenance Mode - Sayonika',
+            message: 'Sayonika is currently undergoing maintenance. Please check back later!',
+            user: req.user,
+            currentPath: req.path
+        });
+    }
+});
+
 // Settings page
 router.get('/settings', (req, res) => {
     if (!req.user) {

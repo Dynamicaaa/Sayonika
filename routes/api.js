@@ -812,6 +812,54 @@ router.get('/admin/stats', requireAuth, requireAdmin, async (req, res) => {
     }
 });
 
+// Admin: Get site settings
+router.get('/admin/settings', requireAuth, requireAdmin, async (req, res) => {
+    try {
+        const settings = await db.getAllSiteSettings();
+        res.json(settings);
+    } catch (error) {
+        console.error('Get site settings error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin: Update site settings
+router.put('/admin/settings', requireAuth, requireAdmin, async (req, res) => {
+    try {
+        const { settings } = req.body;
+
+        if (!settings || typeof settings !== 'object') {
+            return res.status(400).json({ error: 'Settings object is required' });
+        }
+
+        // Update each setting
+        for (const [key, value] of Object.entries(settings)) {
+            let type = 'string';
+
+            // Determine type based on value
+            if (typeof value === 'boolean') {
+                type = 'boolean';
+            } else if (typeof value === 'number') {
+                type = 'number';
+            } else if (typeof value === 'object') {
+                type = 'json';
+            }
+
+            await db.setSiteSetting(key, value, type);
+        }
+
+        // Log maintenance mode changes
+        if ('maintenance_mode' in settings) {
+            console.log(`[Admin] Maintenance mode ${settings.maintenance_mode ? 'enabled' : 'disabled'} by admin ${req.user.username}`);
+        }
+
+        res.json({ message: 'Settings updated successfully' });
+    } catch (error) {
+        console.error('Update site settings error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Admin: Get users
 router.get('/admin/users', [
     query('search').optional().isLength({ max: 100 }).withMessage('Search term too long'),

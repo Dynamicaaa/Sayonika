@@ -12,6 +12,17 @@
                 Admin Dashboard
             </h1>
             <p>Manage the Sayonika community and moderate content</p>
+
+            <!-- Maintenance Mode Indicator -->
+            <div id="maintenanceIndicator" class="maintenance-indicator" style="display: none;">
+                <div class="alert alert-warning">
+                    <i class="fas fa-tools"></i>
+                    <strong>Maintenance Mode Active</strong> - New uploads and registrations are currently blocked.
+                    <a href="#settings" class="btn btn-sm btn-outline-warning ms-2" onclick="switchTab('settings')">
+                        Manage Settings
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Admin Navigation -->

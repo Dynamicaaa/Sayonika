@@ -249,6 +249,24 @@ INSERT OR IGNORE INTO categories (name, description, color, icon) VALUES
 ('Tools & Utilities', 'Development tools and utility modifications', '#FFEAA7', 'fas fa-tools'),
 ('Misc', 'Other modifications that do not fit into specific categories', '#DDA0DD', 'fas fa-puzzle-piece');
 
+-- Site settings table
+CREATE TABLE IF NOT EXISTS site_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    setting_key VARCHAR(100) UNIQUE NOT NULL,
+    setting_value TEXT,
+    setting_type VARCHAR(20) DEFAULT 'string', -- 'string', 'boolean', 'number', 'json'
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default site settings
+INSERT OR IGNORE INTO site_settings (setting_key, setting_value, setting_type, description) VALUES
+('maintenance_mode', 'false', 'boolean', 'Enable maintenance mode to prevent new uploads and registrations'),
+('max_file_size_mb', '100', 'number', 'Maximum file size for mod uploads in megabytes'),
+('featured_mods_count', '6', 'number', 'Number of featured mods to display on the homepage'),
+('maintenance_message', 'Sayonika is currently undergoing maintenance. Please check back later!', 'string', 'Message displayed to users during maintenance mode');
+
 -- Insert default achievements
 INSERT OR IGNORE INTO achievements (name, description, icon, points, category, requirement_type, requirement_value, is_hidden) VALUES
 -- Upload achievements

@@ -125,17 +125,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Search users functionality is now handled by admin-users.js
 
+    // Load site settings when page loads
+    loadSiteSettings();
+
     // Settings form
     const settingsForm = document.getElementById('settingsForm');
     if (settingsForm) {
         serverLog('debug', 'Found settings form, adding event listener');
-        settingsForm.addEventListener('submit', function(e) {
+        settingsForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             serverLog('info', 'Settings form submitted');
-            if (window.S && window.S.notify) {
-                window.S.notify.success('Settings saved successfully!');
-            } else {
-                alert('Settings saved successfully!');
+            await saveSiteSettings();
+        });
+    }
+
+    // Maintenance mode toggle handler
+    const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
+    if (maintenanceModeCheckbox) {
+        maintenanceModeCheckbox.addEventListener('change', function() {
+            const isEnabled = this.checked;
+            const label = document.querySelector('label[for="maintenanceMode"]');
+            if (label) {
+                if (isEnabled) {
+                    label.innerHTML = '<strong>Maintenance mode is ENABLED</strong> - New uploads and registrations are blocked';
+                    label.style.color = '#dc3545';
+                } else {
+                    label.innerHTML = 'Enable maintenance mode (prevents new uploads and registrations)';
+                    label.style.color = '';
+                }
             }
         });
     }
@@ -501,3 +518,148 @@ function updatePendingModsCount() {
 }
 
 // User management functionality is now handled by admin-users.js
+
+// Load site settings from server
+async function loadSiteSettings() {
+    try {
+        const response = await fetch('/api/admin/settings', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const settings = await response.json();
+
+        // Update form fields with current settings
+        const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
+        const maxFileSizeInput = document.getElementById('maxFileSize');
+        const featuredModsCountInput = document.getElementById('featuredModsCount');
+
+        if (maintenanceModeCheckbox && 'maintenance_mode' in settings) {
+            maintenanceModeCheckbox.checked = settings.maintenance_mode;
+            // Trigger change event to update label
+            maintenanceModeCheckbox.dispatchEvent(new Event('change'));
+
+            // Update maintenance indicator
+            updateMaintenanceIndicator(settings.maintenance_mode);
+        }
+
+        if (maxFileSizeInput && 'max_file_size_mb' in settings) {
+            maxFileSizeInput.value = settings.max_file_size_mb;
+        }
+
+        if (featuredModsCountInput && 'featured_mods_count' in settings) {
+            featuredModsCountInput.value = settings.featured_mods_count;
+        }
+
+        serverLog('info', 'Site settings loaded successfully');
+    } catch (error) {
+        console.error('Failed to load site settings:', error);
+        serverLog('error', `Failed to load site settings: ${error.message}`);
+
+        if (window.S && window.S.notify) {
+            window.S.notify.error('Failed to load site settings');
+        }
+    }
+}
+
+// Save site settings to server
+async function saveSiteSettings() {
+    try {
+        const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
+        const maxFileSizeInput = document.getElementById('maxFileSize');
+        const featuredModsCountInput = document.getElementById('featuredModsCount');
+
+        const settings = {};
+
+        if (maintenanceModeCheckbox) {
+            settings.maintenance_mode = maintenanceModeCheckbox.checked;
+        }
+
+        if (maxFileSizeInput) {
+            settings.max_file_size_mb = parseInt(maxFileSizeInput.value);
+        }
+
+        if (featuredModsCountInput) {
+            settings.featured_mods_count = parseInt(featuredModsCountInput.value);
+        }
+
+        const response = await fetch('/api/admin/settings', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ settings })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        serverLog('info', 'Site settings saved successfully');
+
+        if (window.S && window.S.notify) {
+            window.S.notify.success('Settings saved successfully!');
+        } else {
+            alert('Settings saved successfully!');
+        }
+
+        // Show special message if maintenance mode was toggled
+        if ('maintenance_mode' in settings) {
+            const message = settings.maintenance_mode
+                ? 'Maintenance mode has been enabled. New uploads and registrations are now blocked.'
+                : 'Maintenance mode has been disabled. The site is now fully operational.';
+
+            if (window.S && window.S.notify) {
+                window.S.notify.info(message);
+            }
+
+            // Update maintenance indicator
+            updateMaintenanceIndicator(settings.maintenance_mode);
+        }
+
+    } catch (error) {
+        console.error('Failed to save site settings:', error);
+        serverLog('error', `Failed to save site settings: ${error.message}`);
+
+        if (window.S && window.S.notify) {
+            window.S.notify.error(`Failed to save settings: ${error.message}`);
+        } else {
+            alert(`Failed to save settings: ${error.message}`);
+        }
+    }
+}
+
+// Update maintenance mode indicator
+function updateMaintenanceIndicator(isMaintenanceMode) {
+    const indicator = document.getElementById('maintenanceIndicator');
+    if (indicator) {
+        if (isMaintenanceMode) {
+            indicator.style.display = 'block';
+        } else {
+            indicator.style.display = 'none';
+        }
+    }
+}
+
+// Function to switch tabs (used by maintenance indicator)
+function switchTab(tabName) {
+    // Remove active class from all tabs and content
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    // Add active class to selected tab and content
+    const selectedTab = document.querySelector(`[data-tab="${tabName}"]`);
+    const selectedContent = document.getElementById(`${tabName}-tab`);
+
+    if (selectedTab) selectedTab.classList.add('active');
+    if (selectedContent) selectedContent.classList.add('active');
+}

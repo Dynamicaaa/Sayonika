@@ -1192,6 +1192,92 @@ class Database {
         return await this.get(sql, [userId]);
     }
 
+    // Site settings methods
+    async getSiteSetting(key) {
+        const sql = 'SELECT setting_value, setting_type FROM site_settings WHERE setting_key = ?';
+        const result = await this.get(sql, [key]);
+
+        if (!result) {
+            return null;
+        }
+
+        // Convert value based on type
+        switch (result.setting_type) {
+            case 'boolean':
+                return result.setting_value === 'true';
+            case 'number':
+                return parseFloat(result.setting_value);
+            case 'json':
+                try {
+                    return JSON.parse(result.setting_value);
+                } catch (e) {
+                    return result.setting_value;
+                }
+            default:
+                return result.setting_value;
+        }
+    }
+
+    async setSiteSetting(key, value, type = 'string') {
+        let stringValue;
+
+        // Convert value to string based on type
+        switch (type) {
+            case 'boolean':
+                stringValue = value ? 'true' : 'false';
+                break;
+            case 'number':
+                stringValue = value.toString();
+                break;
+            case 'json':
+                stringValue = JSON.stringify(value);
+                break;
+            default:
+                stringValue = value.toString();
+        }
+
+        const sql = `
+            INSERT OR REPLACE INTO site_settings (setting_key, setting_value, setting_type, updated_at)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        `;
+
+        return await this.run(sql, [key, stringValue, type]);
+    }
+
+    async getAllSiteSettings() {
+        const sql = 'SELECT setting_key, setting_value, setting_type, description FROM site_settings ORDER BY setting_key';
+        const results = await this.all(sql);
+
+        const settings = {};
+        for (const result of results) {
+            // Convert value based on type
+            switch (result.setting_type) {
+                case 'boolean':
+                    settings[result.setting_key] = result.setting_value === 'true';
+                    break;
+                case 'number':
+                    settings[result.setting_key] = parseFloat(result.setting_value);
+                    break;
+                case 'json':
+                    try {
+                        settings[result.setting_key] = JSON.parse(result.setting_value);
+                    } catch (e) {
+                        settings[result.setting_key] = result.setting_value;
+                    }
+                    break;
+                default:
+                    settings[result.setting_key] = result.setting_value;
+            }
+        }
+
+        return settings;
+    }
+
+    async isMaintenanceMode() {
+        const maintenanceMode = await this.getSiteSetting('maintenance_mode');
+        return maintenanceMode === true;
+    }
+
 
 }
 

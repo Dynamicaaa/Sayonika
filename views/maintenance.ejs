@@ -1,0 +1,178 @@
+<%- include('partials/header', { title: title || 'Maintenance Mode - Sayonika' }) %>
+
+<div class="maintenance-page">
+    <div class="container">
+        <div class="maintenance-content">
+            <div class="maintenance-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            
+            <h1 class="maintenance-title">Site Under Maintenance</h1>
+            
+            <div class="maintenance-message">
+                <p><%= message || 'Sayonika is currently undergoing maintenance. Please check back later!' %></p>
+            </div>
+            
+            <div class="maintenance-info">
+                <p>We're working hard to improve your experience. This shouldn't take too long!</p>
+                <p>Thank you for your patience.</p>
+            </div>
+            
+            <% if (user && user.is_admin) { %>
+                <div class="admin-notice">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Admin Notice:</strong> You can access the site normally because you're an administrator.
+                        <a href="/admin" class="btn btn-sm btn-primary ms-2">Go to Admin Panel</a>
+                    </div>
+                </div>
+            <% } %>
+            
+            <div class="maintenance-actions">
+                <button onclick="window.location.reload()" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> Try Again
+                </button>
+                
+                <a href="https://github.com/Dynamicaaa/Sayonika" class="btn btn-outline-secondary" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.maintenance-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.maintenance-content {
+    max-width: 600px;
+    padding: 3rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.maintenance-icon {
+    font-size: 4rem;
+    margin-bottom: 2rem;
+    color: #ffd700;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.maintenance-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.maintenance-message {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.maintenance-info {
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.maintenance-info p {
+    margin-bottom: 0.5rem;
+}
+
+.admin-notice {
+    margin: 2rem 0;
+}
+
+.admin-notice .alert {
+    background: rgba(13, 202, 240, 0.2);
+    border: 1px solid rgba(13, 202, 240, 0.3);
+    color: white;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.maintenance-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.maintenance-actions .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.maintenance-actions .btn-primary {
+    background: #ff6b9d;
+    border: none;
+    color: white;
+}
+
+.maintenance-actions .btn-primary:hover {
+    background: #ff5a8a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+}
+
+.maintenance-actions .btn-outline-secondary {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.maintenance-actions .btn-outline-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .maintenance-content {
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+    }
+    
+    .maintenance-title {
+        font-size: 2rem;
+    }
+    
+    .maintenance-icon {
+        font-size: 3rem;
+    }
+    
+    .maintenance-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .maintenance-actions .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+</style>
+
+<%- include('partials/footer') %>
