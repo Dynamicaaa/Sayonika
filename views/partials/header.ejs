@@ -127,5 +127,22 @@
         </div>
     </nav>
 
+    <!-- Maintenance Mode Warning -->
+    <% if (locals.maintenanceMode && !user?.is_admin) { %>
+        <div class="maintenance-warning">
+            <div class="container">
+                <div class="maintenance-warning-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="maintenance-warning-text">
+                        <strong>Maintenance Mode:</strong> <%= locals.maintenanceMessage || 'The site is currently undergoing maintenance. Some features may be limited.' %>
+                    </div>
+                    <button class="maintenance-warning-close" onclick="this.parentElement.parentElement.parentElement.style.display='none'">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
     <!-- Main content -->
     <main class="main-content">

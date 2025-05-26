@@ -35,7 +35,8 @@ const checkMaintenanceMode = async (req, res, next) => {
             // Admin access (only for already logged in admins)
             '/admin',
 
-            // Mod browsing (read-only) - REMOVED home page, only allow browse and specific mod pages
+            // Mod browsing (read-only) - NOW INCLUDING home page with warning
+            '/',
             '/browse',
             '/mod/',
 
@@ -99,6 +100,12 @@ const checkMaintenanceMode = async (req, res, next) => {
         }
 
         if (isAllowedPath) {
+            // For allowed paths, add maintenance mode info to response locals
+            const maintenanceMessage = await db.getSiteSetting('maintenance_message') ||
+                'Sayonika is currently undergoing maintenance. Please check back later!';
+
+            res.locals.maintenanceMode = true;
+            res.locals.maintenanceMessage = maintenanceMessage;
             return next();
         }
 
@@ -111,7 +118,7 @@ const checkMaintenanceMode = async (req, res, next) => {
             });
         }
 
-        // For web requests, render maintenance page
+        // For web requests that are not allowed, render maintenance page
         const maintenanceMessage = await db.getSiteSetting('maintenance_message') ||
             'Sayonika is currently undergoing maintenance. Please check back later!';
 
