@@ -1,0 +1,302 @@
+<%- include('../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Troubleshooting</h4>
+                            <ul>
+                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Customization Guide -->
+                    <section class="docs-section" id="customization">
+                        <h2>Customization</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Sayonika is designed to be highly customizable. This guide covers how to modify the appearance,
+                                behavior, and functionality of your Sayonika instance to match your community's needs.
+                            </p>
+
+                            <!-- Theme Customization -->
+                            <h3 id="theme-customization">Theme Customization</h3>
+                            <p>
+                                Sayonika uses SASS for styling, making it easy to customize colors, fonts, and layouts.
+                                All theme files are located in the <code>src/scss/</code> directory.
+                            </p>
+
+                            <h4>Color Scheme</h4>
+                            <p>The main color variables are defined in <code>src/scss/_variables.scss</code>:</p>
+                            <div class="code-block">
+                                <pre><code>// Primary colors
+$primary-pink: #ff6b9d;
+$primary-blue: #4ecdc4;
+$primary-purple: #a8e6cf;
+
+// Background colors
+$light-bg: #ffffff;
+$dark-bg: #1a1a1a;
+
+// Text colors
+$light-text: #333333;
+$dark-text: #ffffff;</code></pre>
+                            </div>
+
+                            <h4>Custom Logo</h4>
+                            <p>To replace the default Sayonika logo:</p>
+                            <ol>
+                                <li>Place your logo files in <code>public/images/</code></li>
+                                <li>Update the logo references in <code>views/partials/header.ejs</code></li>
+                                <li>Modify the CSS in <code>src/scss/components/_header.scss</code> if needed</li>
+                            </ol>
+
+                            <!-- Configuration Options -->
+                            <h3 id="configuration-options">Configuration Options</h3>
+                            <p>
+                                Many aspects of Sayonika can be customized through environment variables and database settings.
+                            </p>
+
+                            <h4>Environment Variables</h4>
+                            <table class="docs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Variable</th>
+                                        <th>Description</th>
+                                        <th>Default</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>SITE_NAME</code></td>
+                                        <td>Name displayed in the header and title</td>
+                                        <td>Sayonika</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>SITE_DESCRIPTION</code></td>
+                                        <td>Meta description for SEO</td>
+                                        <td>DDLC Mod Platform</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>MAX_FILE_SIZE</code></td>
+                                        <td>Maximum upload file size in bytes</td>
+                                        <td>104857600 (100MB)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>ENABLE_REGISTRATION</code></td>
+                                        <td>Allow new user registrations</td>
+                                        <td>true</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Database Settings -->
+                            <h4>Database Settings</h4>
+                            <p>
+                                Runtime settings can be modified through the admin panel or directly in the database.
+                                These settings are stored in the <code>site_settings</code> table.
+                            </p>
+
+                            <div class="code-block">
+                                <pre><code>-- Example: Update site maintenance message
+UPDATE site_settings 
+SET value = 'Custom maintenance message' 
+WHERE key = 'maintenance_message';
+
+-- Example: Enable maintenance mode
+UPDATE site_settings 
+SET value = 'true' 
+WHERE key = 'maintenance_mode';</code></pre>
+                            </div>
+
+                            <!-- Custom Pages -->
+                            <h3 id="custom-pages">Custom Pages</h3>
+                            <p>
+                                You can add custom pages to your Sayonika instance by creating new EJS templates
+                                and adding routes.
+                            </p>
+
+                            <h4>Creating a Custom Page</h4>
+                            <ol>
+                                <li>Create a new EJS template in <code>views/</code></li>
+                                <li>Add a route in <code>routes/web.js</code></li>
+                                <li>Add navigation links if needed</li>
+                            </ol>
+
+                            <div class="code-block">
+                                <pre><code>// Example route in routes/web.js
+router.get('/custom-page', (req, res) => {
+    res.render('custom-page', {
+        title: 'Custom Page - Sayonika',
+        user: req.user,
+        currentPath: req.path
+    });
+});</code></pre>
+                            </div>
+
+                            <!-- Mod Categories -->
+                            <h3 id="mod-categories">Mod Categories</h3>
+                            <p>
+                                Customize the available mod categories and tags through the database.
+                                Categories help users find relevant mods more easily.
+                            </p>
+
+                            <div class="code-block">
+                                <pre><code>-- Add a new category
+INSERT INTO categories (name, description, color) 
+VALUES ('Horror', 'Scary and suspenseful mods', '#8B0000');
+
+-- Update category display order
+UPDATE categories SET sort_order = 1 WHERE name = 'Romance';
+UPDATE categories SET sort_order = 2 WHERE name = 'Comedy';</code></pre>
+                            </div>
+
+                            <!-- Email Templates -->
+                            <h3 id="email-templates">Email Templates</h3>
+                            <p>
+                                Customize email templates for user notifications, password resets, and other communications.
+                                Templates are located in <code>views/emails/</code>.
+                            </p>
+
+                            <h4>Available Templates</h4>
+                            <ul>
+                                <li><code>welcome.ejs</code> - Welcome email for new users</li>
+                                <li><code>password-reset.ejs</code> - Password reset instructions</li>
+                                <li><code>mod-approved.ejs</code> - Mod approval notification</li>
+                                <li><code>mod-rejected.ejs</code> - Mod rejection notification</li>
+                            </ul>
+
+                            <!-- Admin Panel Customization -->
+                            <h3 id="admin-panel">Admin Panel Customization</h3>
+                            <p>
+                                The admin panel can be customized to add new management features or modify existing ones.
+                                Admin routes are defined in <code>routes/admin.js</code>.
+                            </p>
+
+                            <div class="alert info">
+                                <i class="fas fa-info-circle"></i>
+                                <div>
+                                    <strong>Security Note:</strong> Always ensure proper authentication and authorization
+                                    checks when adding new admin features.
+                                </div>
+                            </div>
+
+                            <!-- Performance Optimization -->
+                            <h3 id="performance">Performance Optimization</h3>
+                            <p>
+                                Several configuration options can help optimize your Sayonika instance for better performance.
+                            </p>
+
+                            <h4>Caching</h4>
+                            <ul>
+                                <li>Enable Redis for session storage in production</li>
+                                <li>Configure CDN for static assets</li>
+                                <li>Use reverse proxy caching (nginx, Cloudflare)</li>
+                            </ul>
+
+                            <h4>Database Optimization</h4>
+                            <ul>
+                                <li>Regular database maintenance and optimization</li>
+                                <li>Proper indexing for frequently queried fields</li>
+                                <li>Consider PostgreSQL for larger instances</li>
+                            </ul>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Next Steps</h3>
+                                <div class="link-grid">
+                                    <a href="/docs/troubleshooting" class="quick-link">
+                                        <i class="fas fa-tools"></i>
+                                        <div>
+                                            <h4>Troubleshooting</h4>
+                                            <p>Common issues and solutions</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/api" class="quick-link">
+                                        <i class="fas fa-code"></i>
+                                        <div>
+                                            <h4>API Reference</h4>
+                                            <p>Integrate with external systems</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank" class="quick-link">
+                                        <i class="fas fa-question-circle"></i>
+                                        <div>
+                                            <h4>Get Help</h4>
+                                            <p>Ask questions or report issues</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../partials/footer') %>

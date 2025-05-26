@@ -103,10 +103,6 @@ router.get('/api/endpoints/categories', (req, res) => {
 });
 
 // Troubleshooting section
-router.get('/deployment', (req, res) => {
-    renderDocPage(req, res, 'docs/deployment', 'Deployment - Sayonika Documentation', 'Deployment');
-});
-
 router.get('/customization', (req, res) => {
     renderDocPage(req, res, 'docs/customization', 'Customization - Sayonika Documentation', 'Customization');
 });

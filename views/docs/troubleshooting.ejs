@@ -1,0 +1,340 @@
+<%- include('../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Troubleshooting</h4>
+                            <ul>
+                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Troubleshooting Guide -->
+                    <section class="docs-section" id="troubleshooting">
+                        <h2>Troubleshooting</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                This guide covers common issues you might encounter when setting up, configuring, or using Sayonika,
+                                along with step-by-step solutions to resolve them.
+                            </p>
+
+                            <!-- Installation Issues -->
+                            <h3 id="installation-issues">Installation Issues</h3>
+                            
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-exclamation-triangle"></i> Node.js Version Compatibility</h4>
+                                <p><strong>Problem:</strong> Application fails to start with Node.js version errors.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Check your Node.js version: <code>node --version</code></li>
+                                    <li>Ensure you're using Node.js 16.0 or higher</li>
+                                    <li>Update Node.js if needed: <a href="https://nodejs.org/" target="_blank">Download from nodejs.org</a></li>
+                                    <li>Clear npm cache: <code>npm cache clean --force</code></li>
+                                    <li>Reinstall dependencies: <code>rm -rf node_modules && npm install</code></li>
+                                </ol>
+                            </div>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-exclamation-triangle"></i> Database Connection Errors</h4>
+                                <p><strong>Problem:</strong> SQLite database fails to initialize or connect.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Check if the <code>database/</code> directory exists and is writable</li>
+                                    <li>Ensure SQLite3 is properly installed: <code>npm install sqlite3</code></li>
+                                    <li>Try rebuilding SQLite3: <code>npm rebuild sqlite3</code></li>
+                                    <li>Check file permissions on the database directory</li>
+                                    <li>Delete existing database file and restart to recreate</li>
+                                </ol>
+                            </div>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-exclamation-triangle"></i> SASS Compilation Errors</h4>
+                                <p><strong>Problem:</strong> CSS build fails with SASS errors.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Install SASS globally: <code>npm install -g sass</code></li>
+                                    <li>Check for syntax errors in <code>src/scss/</code> files</li>
+                                    <li>Run manual build: <code>npm run build-css</code></li>
+                                    <li>Clear build cache and retry: <code>rm -rf public/css && npm run build-css</code></li>
+                                </ol>
+                            </div>
+
+                            <!-- Configuration Issues -->
+                            <h3 id="configuration-issues">Configuration Issues</h3>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-cog"></i> Environment Variables Not Loading</h4>
+                                <p><strong>Problem:</strong> Application doesn't recognize .env file settings.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Ensure <code>.env</code> file is in the root directory</li>
+                                    <li>Check file format - no spaces around = signs</li>
+                                    <li>Restart the application after changes</li>
+                                    <li>Verify dotenv is installed: <code>npm install dotenv</code></li>
+                                    <li>Check for typos in variable names</li>
+                                </ol>
+                            </div>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-cog"></i> OAuth Authentication Failing</h4>
+                                <p><strong>Problem:</strong> GitHub OAuth returns errors or doesn't work.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Verify GitHub OAuth app settings in GitHub Developer Settings</li>
+                                    <li>Check callback URL matches: <code>YOUR_DOMAIN/auth/github/callback</code></li>
+                                    <li>Ensure <code>GITHUB_CLIENT_ID</code> and <code>GITHUB_CLIENT_SECRET</code> are correct</li>
+                                    <li>Check if <code>BASE_URL</code> environment variable is set correctly</li>
+                                    <li>Test with localhost first before production domain</li>
+                                </ol>
+                            </div>
+
+                            <!-- Runtime Issues -->
+                            <h3 id="runtime-issues">Runtime Issues</h3>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-server"></i> Application Crashes on Startup</h4>
+                                <p><strong>Problem:</strong> Server exits immediately after starting.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Check console output for error messages</li>
+                                    <li>Verify all required environment variables are set</li>
+                                    <li>Test database connection manually</li>
+                                    <li>Check port availability (default 3000)</li>
+                                    <li>Run with debug mode: <code>DEBUG=* npm start</code></li>
+                                </ol>
+                            </div>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-server"></i> File Upload Errors</h4>
+                                <p><strong>Problem:</strong> Mod uploads fail or timeout.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Check <code>uploads/</code> directory exists and is writable</li>
+                                    <li>Verify <code>MAX_FILE_SIZE</code> environment variable</li>
+                                    <li>Check available disk space</li>
+                                    <li>Ensure file types are allowed in upload validation</li>
+                                    <li>Test with smaller files first</li>
+                                </ol>
+                            </div>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-server"></i> Session/Login Issues</h4>
+                                <p><strong>Problem:</strong> Users get logged out frequently or can't stay logged in.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Check <code>SESSION_SECRET</code> environment variable is set</li>
+                                    <li>Verify session storage configuration</li>
+                                    <li>Clear browser cookies and try again</li>
+                                    <li>Check server time/timezone settings</li>
+                                    <li>Review session timeout settings</li>
+                                </ol>
+                            </div>
+
+                            <!-- Performance Issues -->
+                            <h3 id="performance-issues">Performance Issues</h3>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-tachometer-alt"></i> Slow Page Loading</h4>
+                                <p><strong>Problem:</strong> Pages take a long time to load.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Enable gzip compression in your reverse proxy</li>
+                                    <li>Optimize database queries and add indexes</li>
+                                    <li>Use a CDN for static assets</li>
+                                    <li>Enable browser caching headers</li>
+                                    <li>Consider using Redis for session storage</li>
+                                </ol>
+                            </div>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-tachometer-alt"></i> High Memory Usage</h4>
+                                <p><strong>Problem:</strong> Application uses excessive memory.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Monitor for memory leaks with <code>node --inspect</code></li>
+                                    <li>Restart application periodically</li>
+                                    <li>Optimize image processing and caching</li>
+                                    <li>Review database connection pooling</li>
+                                    <li>Consider upgrading server resources</li>
+                                </ol>
+                            </div>
+
+                            <!-- API Issues -->
+                            <h3 id="api-issues">API Issues</h3>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-code"></i> API Rate Limiting</h4>
+                                <p><strong>Problem:</strong> API requests are being rate limited.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Check rate limit headers in API responses</li>
+                                    <li>Implement exponential backoff in your client</li>
+                                    <li>Use authentication to get higher limits</li>
+                                    <li>Cache API responses when possible</li>
+                                    <li>Contact admin for higher limits if needed</li>
+                                </ol>
+                            </div>
+
+                            <div class="troubleshoot-item">
+                                <h4><i class="fas fa-code"></i> CORS Errors</h4>
+                                <p><strong>Problem:</strong> Browser blocks API requests due to CORS policy.</p>
+                                <p><strong>Solution:</strong></p>
+                                <ol>
+                                    <li>Add your domain to <code>CORS_ORIGINS</code> environment variable</li>
+                                    <li>Check if requests include proper headers</li>
+                                    <li>Use server-side requests instead of client-side for sensitive operations</li>
+                                    <li>Verify API endpoint URLs are correct</li>
+                                </ol>
+                            </div>
+
+                            <!-- Getting Help -->
+                            <h3 id="getting-help">Getting Help</h3>
+                            <p>
+                                If you're still experiencing issues after trying these solutions, here are ways to get additional help:
+                            </p>
+
+                            <div class="help-options">
+                                <div class="help-option">
+                                    <h4><i class="fab fa-github"></i> GitHub Issues</h4>
+                                    <p>Report bugs or request features on our GitHub repository.</p>
+                                    <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank" class="btn btn-outline">Create Issue</a>
+                                </div>
+
+                                <div class="help-option">
+                                    <h4><i class="fas fa-book"></i> Documentation</h4>
+                                    <p>Review the complete documentation for detailed setup instructions.</p>
+                                    <a href="/docs" class="btn btn-outline">View Docs</a>
+                                </div>
+
+                                <div class="help-option">
+                                    <h4><i class="fas fa-search"></i> Search Issues</h4>
+                                    <p>Check if your issue has already been reported and resolved.</p>
+                                    <a href="https://github.com/Dynamicaaa/Sayonika/issues" target="_blank" class="btn btn-outline">Browse Issues</a>
+                                </div>
+                            </div>
+
+                            <!-- Debug Information -->
+                            <h3 id="debug-info">Debug Information</h3>
+                            <p>
+                                When reporting issues, please include the following information to help with troubleshooting:
+                            </p>
+
+                            <div class="code-block">
+                                <pre><code># System Information
+- Operating System: (e.g., Ubuntu 20.04, Windows 10, macOS 12)
+- Node.js Version: (run `node --version`)
+- NPM Version: (run `npm --version`)
+- Sayonika Version: (check package.json)
+
+# Error Details
+- Full error message and stack trace
+- Steps to reproduce the issue
+- Expected vs actual behavior
+- Browser and version (for frontend issues)
+
+# Configuration
+- Relevant environment variables (remove sensitive data)
+- Database type and version
+- Reverse proxy configuration (if applicable)</code></pre>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Next Steps</h3>
+                                <div class="link-grid">
+                                    <a href="/docs/customization" class="quick-link">
+                                        <i class="fas fa-paint-brush"></i>
+                                        <div>
+                                            <h4>Customization</h4>
+                                            <p>Customize your Sayonika instance</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="/docs/configuration" class="quick-link">
+                                        <i class="fas fa-cogs"></i>
+                                        <div>
+                                            <h4>Configuration</h4>
+                                            <p>Review configuration options</p>
+                                        </div>
+                                    </a>
+
+                                    <a href="https://github.com/Dynamicaaa/Sayonika/issues/new" target="_blank" class="quick-link">
+                                        <i class="fas fa-bug"></i>
+                                        <div>
+                                            <h4>Report Issue</h4>
+                                            <p>Found a bug? Let us know</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../partials/footer') %>
