@@ -57,8 +57,10 @@ router.get('/github', optionalAuth, async (req, res, next) => {
                     }
 
                     console.log('Session saved successfully, proceeding with GitHub OAuth');
+                    console.log('Passing state parameter to GitHub OAuth:', req.query.token);
                     passport.authenticate('github', {
-                        scope: ['user:email']
+                        scope: ['user:email'],
+                        state: req.query.token
                     })(req, res, next);
                 });
                 return; // Important: return here to prevent the code below from executing
@@ -85,6 +87,7 @@ router.get('/github/callback', (req, res, next) => {
     console.log('GitHub OAuth callback received');
     console.log('Query params:', req.query);
     console.log('Session data:', req.session);
+    console.log('State parameter:', req.query.state);
 
     passport.authenticate('github', {
         failureRedirect: '/login?error=github_auth_failed',
@@ -108,7 +111,7 @@ router.get('/github/callback', (req, res, next) => {
             return res.redirect('/login?error=github_auth_failed');
         }
 
-        // Check if this was a linking request - check both session and database
+        // Check if this was a linking request - check both session and state parameter
         let wasLinking = req.session.linkProvider === 'github';
         let linkUserId = req.session.linkUserId;
 
@@ -119,7 +122,21 @@ router.get('/github/callback', (req, res, next) => {
             sessionId: req.sessionID
         });
 
-        // If session doesn't indicate linking, check database for any valid tokens as fallback
+        // If session doesn't indicate linking, check state parameter
+        if (!wasLinking && req.query.state) {
+            try {
+                const decoded = jwt.verify(req.query.state, process.env.JWT_SECRET || 'your-secret-key');
+                if (decoded.linkProvider === 'github') {
+                    wasLinking = true;
+                    linkUserId = decoded.linkUserId;
+                    console.log('GitHub OAuth linking detected via state parameter for user:', linkUserId);
+                }
+            } catch (error) {
+                console.log('Could not decode state parameter in GitHub callback:', error.message);
+            }
+        }
+
+        // If session and state don't indicate linking, check database for any valid tokens as fallback
         if (!wasLinking) {
             try {
                 const Database = require('../database/database');
