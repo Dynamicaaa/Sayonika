@@ -119,17 +119,17 @@ router.get('/github/callback', (req, res, next) => {
             sessionId: req.sessionID
         });
 
-        // If session doesn't indicate linking, check database for any valid tokens for this user
-        if (!wasLinking && req.user) {
+        // If session doesn't indicate linking, check database for any valid tokens as fallback
+        if (!wasLinking) {
             try {
                 const Database = require('../database/database');
                 const db = new Database();
                 await db.connect();
 
-                // Look for any valid GitHub link tokens for the current user
+                // Look for any valid GitHub link tokens created in the last 10 minutes
                 const tokenRecord = await db.get(
-                    'SELECT token, user_id FROM oauth_link_tokens WHERE user_id = ? AND provider = ? AND expires_at > CURRENT_TIMESTAMP ORDER BY created_at DESC LIMIT 1',
-                    [req.user.id, 'github']
+                    'SELECT token, user_id FROM oauth_link_tokens WHERE provider = ? AND expires_at > CURRENT_TIMESTAMP AND created_at > datetime("now", "-10 minutes") ORDER BY created_at DESC LIMIT 1',
+                    ['github']
                 );
 
                 if (tokenRecord) {
