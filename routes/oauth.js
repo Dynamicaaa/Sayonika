@@ -243,8 +243,12 @@ router.get('/discord', optionalAuth, async (req, res, next) => {
                     }
 
                     console.log('Session saved successfully, proceeding with Discord OAuth');
-                    passport.authenticate('discord')(req, res, next);
+                    // Pass the link token as state parameter for Discord OAuth
+                    passport.authenticate('discord', {
+                        state: req.query.token
+                    })(req, res, next);
                 });
+                return; // Important: return here to prevent the code below from executing
             } catch (error) {
                 console.error('Invalid link token:', error);
                 return res.redirect('/profile?error=invalid_link_token');
@@ -289,8 +293,18 @@ router.get('/discord/callback', (req, res, next) => {
             return res.redirect('/login?error=discord_auth_failed');
         }
 
-        // Check if this was a linking request
-        const wasLinking = req.session.linkProvider === 'discord';
+        // Check if this was a linking request - check both session and state parameter
+        let wasLinking = req.session.linkProvider === 'discord';
+
+        // If session doesn't indicate linking, check state parameter
+        if (!wasLinking && req.query.state) {
+            try {
+                const decoded = jwt.verify(req.query.state, process.env.JWT_SECRET || 'your-secret-key');
+                wasLinking = decoded.linkProvider === 'discord';
+            } catch (error) {
+                console.log('Could not decode state parameter in callback:', error.message);
+            }
+        }
 
         if (wasLinking) {
             // For linking requests, don't log in - just redirect to profile

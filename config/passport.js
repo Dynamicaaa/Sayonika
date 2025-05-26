@@ -330,7 +330,8 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
         scope: ['identify', 'email'],
         authorizationURL: 'https://discord.com/oauth2/authorize',
         tokenURL: 'https://discord.com/api/oauth2/token',
-        passReqToCallback: true
+        passReqToCallback: true,
+        state: true
     }, async (req, accessToken, refreshToken, profile, done) => {
         try {
             console.log('Discord OAuth callback - Profile:', JSON.stringify(profile, null, 2));
@@ -339,7 +340,8 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
                 linkUserId: req.session.linkUserId,
                 linkProvider: req.session.linkProvider,
                 linkTimestamp: req.session.linkTimestamp,
-                sessionId: req.sessionID
+                sessionId: req.sessionID,
+                fullSession: req.session
             });
 
             // Debug avatar information
@@ -359,9 +361,30 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
                 return done(new Error('Database connection failed'), null);
             }
 
-            // Check if this is a linking request (user is already logged in and wants to link Discord)
-            if (req.session.linkUserId && req.session.linkProvider === 'discord') {
-                console.log('Discord OAuth linking request detected for user:', req.session.linkUserId);
+            // Check if this is a linking request - first check session, then check state parameter
+            let linkUserId = req.session.linkUserId;
+            let linkProvider = req.session.linkProvider;
+
+            // If session data is not available, try to extract from state parameter
+            if (!linkUserId && req.query.state) {
+                try {
+                    const jwt = require('jsonwebtoken');
+                    const decoded = jwt.verify(req.query.state, process.env.JWT_SECRET || 'your-secret-key');
+                    if (decoded.linkUserId && decoded.linkProvider === 'discord') {
+                        linkUserId = decoded.linkUserId;
+                        linkProvider = decoded.linkProvider;
+                        console.log('Discord OAuth linking data recovered from state parameter:', {
+                            linkUserId,
+                            linkProvider
+                        });
+                    }
+                } catch (error) {
+                    console.log('Could not decode state parameter:', error.message);
+                }
+            }
+
+            if (linkUserId && linkProvider === 'discord') {
+                console.log('Discord OAuth linking request detected for user:', linkUserId);
 
                 // Check if this Discord account is already linked to another user
                 const existingUser = await db.get(
@@ -369,14 +392,14 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
                     [profile.id]
                 );
 
-                if (existingUser && existingUser.id !== req.session.linkUserId) {
+                if (existingUser && existingUser.id !== linkUserId) {
                     console.log('Discord account already linked to another user:', existingUser.username);
                     const errorMessage = `This Discord account is already linked to another user: ${existingUser.display_name || existingUser.username} (@${existingUser.username}). Please unlink it from that account first, or contact support if this is your account.`;
                     return done(new Error(errorMessage), null);
                 }
 
                 // Get current user data to check if they have a profile picture
-                const currentUser = await db.get('SELECT avatar_url FROM users WHERE id = ?', [req.session.linkUserId]);
+                const currentUser = await db.get('SELECT avatar_url FROM users WHERE id = ?', [linkUserId]);
 
                 // Only update avatar if user doesn't have one (null, empty, or default avatars)
                 const shouldUpdateAvatar = !currentUser.avatar_url ||
@@ -403,7 +426,7 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
                          avatar_url = ?,
                          last_login = CURRENT_TIMESTAMP
                          WHERE id = ?`,
-                        [profile.id, profile.username, profile.discriminator, discordAvatarUrl, req.session.linkUserId]
+                        [profile.id, profile.username, profile.discriminator, discordAvatarUrl, linkUserId]
                     );
                 } else {
                     console.log('User is linking Discord but already has a profile picture - preserving existing avatar');
@@ -415,12 +438,12 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
                          discord_discriminator = ?,
                          last_login = CURRENT_TIMESTAMP
                          WHERE id = ?`,
-                        [profile.id, profile.username, profile.discriminator, req.session.linkUserId]
+                        [profile.id, profile.username, profile.discriminator, linkUserId]
                     );
                 }
 
                 // Get the updated user
-                const linkedUser = await db.get('SELECT * FROM users WHERE id = ?', [req.session.linkUserId]);
+                const linkedUser = await db.get('SELECT * FROM users WHERE id = ?', [linkUserId]);
 
                 // Clean up session data
                 delete req.session.linkUserId;
