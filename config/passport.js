@@ -331,7 +331,7 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
         authorizationURL: 'https://discord.com/oauth2/authorize',
         tokenURL: 'https://discord.com/api/oauth2/token',
         passReqToCallback: true,
-        state: true
+        state: false
     }, async (req, accessToken, refreshToken, profile, done) => {
         try {
             console.log('Discord OAuth callback - Profile:', JSON.stringify(profile, null, 2));
