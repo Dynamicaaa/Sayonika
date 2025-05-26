@@ -16,6 +16,11 @@ CREATE TABLE IF NOT EXISTS users (
     achievement_points INTEGER DEFAULT 0,
     user_level INTEGER DEFAULT 1,
     user_title VARCHAR(100) DEFAULT 'Newcomer',
+    -- Email preferences
+    email_notifications_enabled BOOLEAN DEFAULT TRUE,
+    email_mod_approved BOOLEAN DEFAULT TRUE,
+    email_achievements BOOLEAN DEFAULT TRUE,
+    email_comments BOOLEAN DEFAULT TRUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_login DATETIME,

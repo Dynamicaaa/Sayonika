@@ -2,6 +2,9 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
+const https = require('https');
+const http = require('http');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -105,20 +108,53 @@ const authLimiter = rateLimit({
 app.use('/api/auth', authLimiter);
 app.use(limiter);
 
-// Development redirect middleware - redirect IP access to localhost for better security header support
+// Development IP access logging - log IP access for debugging
 if (isDevelopment) {
     app.use((req, res, next) => {
         const host = req.get('host');
-        if (host && host.includes('192.168.') && !req.url.startsWith('/api/')) {
-            const newUrl = `http://localhost:${PORT}${req.url}`;
-            console.log(`Redirecting IP access to localhost: ${newUrl}`);
-            return res.redirect(302, newUrl);
+        if (host && (host.includes('192.168.') || host.includes('67.183.50.4'))) {
+            console.log(`IP access detected from: ${host}${req.url}`);
+            console.log(`Cookies:`, req.cookies);
+            console.log(`Session ID:`, req.sessionID);
         }
         next();
     });
 }
 
-// CORS - more permissive in development
+// CORS - automatically handle HTTP/HTTPS variants
+const getAllowedOrigins = () => {
+    const baseOrigins = process.env.ALLOWED_ORIGINS ?
+        process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim()) :
+        [process.env.BASE_URL || 'https://localhost:3000'];
+
+    // Automatically add HTTP/HTTPS variants and common localhost variations
+    const expandedOrigins = new Set();
+
+    baseOrigins.forEach(origin => {
+        expandedOrigins.add(origin);
+
+        // Add HTTP/HTTPS variants
+        if (origin.startsWith('https://')) {
+            expandedOrigins.add(origin.replace('https://', 'http://'));
+        } else if (origin.startsWith('http://')) {
+            expandedOrigins.add(origin.replace('http://', 'https://'));
+        }
+
+        // Add localhost variants for development
+        if (isDevelopment) {
+            const url = new URL(origin);
+            if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+                expandedOrigins.add(`http://localhost:${url.port || '3000'}`);
+                expandedOrigins.add(`https://localhost:${url.port || '3000'}`);
+                expandedOrigins.add(`http://127.0.0.1:${url.port || '3000'}`);
+                expandedOrigins.add(`https://127.0.0.1:${url.port || '3000'}`);
+            }
+        }
+    });
+
+    return Array.from(expandedOrigins);
+};
+
 if (isDevelopment) {
     app.use(cors({
         origin: true, // Allow all origins in development
@@ -126,7 +162,7 @@ if (isDevelopment) {
     }));
 } else {
     app.use(cors({
-        origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [process.env.BASE_URL || 'http://localhost:3000'],
+        origin: getAllowedOrigins(),
         credentials: true
     }));
 }
@@ -151,10 +187,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Only require HTTPS in production
+        secure: process.env.ENABLE_HTTPS === 'true', // Require HTTPS when SSL is enabled
         httpOnly: true, // Prevent XSS attacks
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days for persistent sessions
-        sameSite: isDevelopment ? 'lax' : 'strict' // More relaxed in development
+        sameSite: 'lax' // Use 'lax' for better compatibility with IP access
     }
 }));
 
@@ -208,6 +244,12 @@ app.use((req, res, next) => {
     res.locals.user = req.user;
     res.locals.currentPath = req.path;
     res.locals.helpers = helpers;
+
+    // Debug logging for authentication status
+    if (isDevelopment && req.get('host') && (req.get('host').includes('192.168.') || req.get('host').includes('67.183.50.4'))) {
+        console.log(`Auth status for ${req.get('host')}${req.path}: user=${req.user ? req.user.username : 'none'}`);
+    }
+
     next();
 });
 
@@ -277,11 +319,68 @@ process.on('SIGINT', async () => {
 
 // Start server
 initializeServer().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Sayonika server running on port ${PORT}`);
-        console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-        console.log(`Visit: http://localhost:${PORT}`);
-    });
+    const enableHttps = process.env.ENABLE_HTTPS === 'true';
+
+    if (enableHttps) {
+        // HTTPS Server
+        try {
+            const sslKeyPath = process.env.SSL_KEY_PATH;
+            const sslCertPath = process.env.SSL_CERT_PATH;
+
+            if (!sslKeyPath || !sslCertPath) {
+                throw new Error('SSL_KEY_PATH and SSL_CERT_PATH must be set when ENABLE_HTTPS=true');
+            }
+
+            if (!fs.existsSync(sslKeyPath)) {
+                throw new Error(`SSL key file not found: ${sslKeyPath}`);
+            }
+
+            if (!fs.existsSync(sslCertPath)) {
+                throw new Error(`SSL certificate file not found: ${sslCertPath}`);
+            }
+
+            const httpsOptions = {
+                key: fs.readFileSync(sslKeyPath),
+                cert: fs.readFileSync(sslCertPath)
+            };
+
+            https.createServer(httpsOptions, app).listen(PORT, '0.0.0.0', () => {
+                console.log(`Sayonika HTTPS server running on port ${PORT}`);
+                console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+                console.log(`Base URL: ${process.env.BASE_URL || `https://localhost:${PORT}`}`);
+                console.log(`Visit: https://localhost:${PORT}`);
+                console.log(`Network access: https://192.168.0.249:${PORT}`);
+                if (process.env.EXTERNAL_URL) {
+                    console.log(`External access: ${process.env.EXTERNAL_URL}`);
+                }
+                console.log(`SSL Key: ${sslKeyPath}`);
+                console.log(`SSL Cert: ${sslCertPath}`);
+            });
+        } catch (error) {
+            console.error('Failed to start HTTPS server:', error.message);
+            console.log('Falling back to HTTP server...');
+
+            // Fallback to HTTP
+            http.createServer(app).listen(PORT, '0.0.0.0', () => {
+                console.log(`Sayonika HTTP server running on port ${PORT} (HTTPS failed)`);
+                console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+                console.log(`Visit: http://localhost:${PORT}`);
+                console.log(`Network access: http://192.168.0.249:${PORT}`);
+            });
+        }
+    } else {
+        // HTTP Server
+        http.createServer(app).listen(PORT, '0.0.0.0', () => {
+            console.log(`Sayonika HTTP server running on port ${PORT}`);
+            console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+            console.log(`Base URL: ${process.env.BASE_URL || `http://localhost:${PORT}`}`);
+            console.log(`Visit: http://localhost:${PORT}`);
+            console.log(`Network access: http://192.168.0.249:${PORT}`);
+            if (process.env.EXTERNAL_URL) {
+                console.log(`External access: ${process.env.EXTERNAL_URL}`);
+            }
+        });
+    }
 });
 
 module.exports = app;
