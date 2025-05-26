@@ -35,24 +35,21 @@ function renderDocPage(req, res, templatePath, title, pageTitle) {
 }
 
 // Getting Started section
-router.get('/getting-started', (req, res) => {
-    renderDocPage(req, res, 'docs/getting-started', 'Getting Started - Sayonika Documentation', 'Getting Started');
-});
-
 router.get('/installation', (req, res) => {
-    res.render('docs/installation', {
-        title: 'Installation - Sayonika Documentation',
-        user: req.user,
-        currentPath: req.path
-    });
+    renderDocPage(req, res, 'docs/installation', 'Installation - Sayonika Documentation', 'Installation');
 });
 
 router.get('/configuration', (req, res) => {
     renderDocPage(req, res, 'docs/configuration', 'Configuration - Sayonika Documentation', 'Configuration');
 });
 
+// Redirect old routes to new structure
+router.get('/getting-started', (req, res) => {
+    res.redirect('/docs/installation');
+});
+
 router.get('/first-run', (req, res) => {
-    renderDocPage(req, res, 'docs/first-run', 'First Run - Sayonika Documentation', 'First Run');
+    res.redirect('/docs/installation#first-run');
 });
 
 // API Reference section

@@ -27,10 +27,8 @@
                             <h4>Getting Started</h4>
                             <ul>
                                 <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/getting-started" class="nav-link <%= currentPath === '/docs/getting-started' ? 'active' : '' %>">Getting Started</a></li>
                                 <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
                                 <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
-                                <li><a href="/docs/first-run" class="nav-link <%= currentPath === '/docs/first-run' ? 'active' : '' %>">First Run</a></li>
                             </ul>
                         </div>
 
@@ -53,7 +51,6 @@
                                 <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
                                 <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
                                 <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
-                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
                             </ul>
                         </div>
 
@@ -82,248 +79,335 @@
 
                 <!-- Content Area -->
                 <main class="docs-content" id="docsContent">
-                    <!-- Installation Guide -->
+                    <!-- Installation Section -->
                     <section class="docs-section" id="installation">
-                        <h2>Installation</h2>
+                        <h2>Installation Guide</h2>
                         <div class="section-content">
                             <p class="lead">
-                                Get Sayonika up and running on your system with our comprehensive installation guide.
-                                Choose from Docker (recommended), manual installation, or development setup.
+                                Get Sayonika up and running on your server with this comprehensive installation guide.
+                                This guide covers everything from initial setup to your first admin account.
                             </p>
 
-        <!-- Installation Methods -->
-        <div class="installation-tabs">
-            <div class="tab-buttons">
-                <button class="tab-button" data-tab="docker-install">
-                    <i class="fab fa-docker"></i>
-                    Docker (Recommended)
-                </button>
-                <button class="tab-button" data-tab="manual-install">
-                    <i class="fas fa-cogs"></i>
-                    Manual Installation
-                </button>
-                <button class="tab-button" data-tab="dev-install">
-                    <i class="fas fa-code"></i>
-                    Development Setup
-                </button>
-            </div>
+                            <!-- Prerequisites -->
+                            <div class="prerequisites-section">
+                                <h3><i class="fas fa-list-check"></i> Prerequisites</h3>
+                                <div class="requirements-grid">
+                                    <div class="requirement-item">
+                                        <div class="req-icon">
+                                            <i class="fab fa-node-js"></i>
+                                        </div>
+                                        <div class="req-content">
+                                            <h4>Node.js 16+</h4>
+                                            <p>JavaScript runtime environment</p>
+                                            <a href="https://nodejs.org" target="_blank" class="req-link">Download</a>
+                                        </div>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <div class="req-icon">
+                                            <i class="fab fa-git-alt"></i>
+                                        </div>
+                                        <div class="req-content">
+                                            <h4>Git</h4>
+                                            <p>Version control system</p>
+                                            <a href="https://git-scm.com" target="_blank" class="req-link">Download</a>
+                                        </div>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <div class="req-icon">
+                                            <i class="fas fa-server"></i>
+                                        </div>
+                                        <div class="req-content">
+                                            <h4>512MB+ RAM</h4>
+                                            <p>Minimum system memory</p>
+                                        </div>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <div class="req-icon">
+                                            <i class="fas fa-hdd"></i>
+                                        </div>
+                                        <div class="req-content">
+                                            <h4>1GB+ Storage</h4>
+                                            <p>Free disk space</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-            <!-- Docker Installation -->
-            <div class="tab-content" id="docker-install">
-                <h3>Docker Installation</h3>
-                <p>The easiest way to get Sayonika running is with Docker. This method handles all dependencies automatically.</p>
+                            <!-- Quick Installation -->
+                            <div class="installation-section">
+                                <h3><i class="fas fa-rocket"></i> Quick Installation</h3>
+                                <p>The fastest way to get Sayonika running. Perfect for development and testing.</p>
 
-                <div class="alert info">
-                    <i class="fas fa-info-circle"></i>
-                    <div>
-                        <strong>Prerequisites:</strong> Make sure you have Docker and Docker Compose installed on your system.
-                    </div>
-                </div>
-
-                <div class="step-by-step">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>Clone the Repository</h4>
-                            <div class="code-block">
-                                <pre><code>git clone https://github.com/Dynamicaaa/Sayonika.git
+                                <div class="quick-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h4>Clone Repository</h4>
+                                            <div class="code-block">
+                                                <div class="code-header">
+                                                    <span>Clone and navigate</span>
+                                                    <button class="copy-btn" data-copy="git clone https://github.com/Dynamicaaa/Sayonika.git
+cd Sayonika">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                                <pre><code>git clone https://github.com/Dynamicaaa/Sayonika.git
 cd Sayonika</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h4>Install Dependencies</h4>
+                                            <div class="code-block">
+                                                <div class="code-header">
+                                                    <span>Install packages</span>
+                                                    <button class="copy-btn" data-copy="npm install">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                                <pre><code>npm install</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h4>Configure Environment</h4>
+                                            <div class="code-block">
+                                                <div class="code-header">
+                                                    <span>Create configuration file</span>
+                                                    <button class="copy-btn" data-copy="cp .env.example .env">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                                <pre><code>cp .env.example .env</code></pre>
+                                            </div>
+                                            <p>Edit the <code>.env</code> file with your basic configuration:</p>
+                                            <div class="code-block">
+                                                <div class="code-header">
+                                                    <span>Minimum .env configuration</span>
+                                                    <button class="copy-btn" data-copy="PORT=3000
+SESSION_SECRET=your-very-long-random-secret-key-here
+WEBSITE_URL=http://localhost:3000
+JWT_SECRET=your-jwt-secret-key-here">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                                <pre><code>PORT=3000
+SESSION_SECRET=your-very-long-random-secret-key-here
+WEBSITE_URL=http://localhost:3000
+JWT_SECRET=your-jwt-secret-key-here</code></pre>
+                                            </div>
+                                            <div class="alert warning">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                                <div>
+                                                    <strong>Security:</strong> Make sure to use strong, unique values for the secret keys in production!
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <h4>Build and Start</h4>
+                                            <div class="code-block">
+                                                <div class="code-header">
+                                                    <span>Build CSS and start server</span>
+                                                    <button class="copy-btn" data-copy="npm run build-css-prod
+npm run dev">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                                <pre><code>npm run build-css-prod
+npm run dev</code></pre>
+                                            </div>
+                                            <div class="alert success">
+                                                <i class="fas fa-check-circle"></i>
+                                                <div>
+                                                    <strong>Success!</strong> Sayonika is now running at <code>http://localhost:3000</code>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Configure Environment</h4>
-                            <p>Copy the example environment file and configure your settings:</p>
-                            <div class="code-block">
-                                <pre><code>cp .env.example .env
-nano .env</code></pre>
+                            <!-- First Run Section -->
+                            <div class="first-run-section" id="first-run">
+                                <h3><i class="fas fa-user-crown"></i> First Run</h3>
+                                <p>After installation, follow these steps to set up your admin account and configure Sayonika.</p>
+
+                                <div class="first-run-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h4>Access Your Instance</h4>
+                                            <p>Open your web browser and navigate to your Sayonika instance:</p>
+                                            <div class="code-block">
+                                                <pre><code>http://localhost:3000</code></pre>
+                                            </div>
+                                            <p>You should see the Sayonika homepage with a registration option.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h4>Create Owner Account</h4>
+                                            <p>The first user to register automatically becomes the "Owner" with full administrative privileges.</p>
+
+                                            <div class="registration-options">
+                                                <h5>Registration Methods:</h5>
+                                                <ul>
+                                                    <li><strong>Email Registration:</strong> Click "Register" and create an account with email and password</li>
+                                                    <li><strong>GitHub OAuth:</strong> Use GitHub authentication if you've configured OAuth</li>
+                                                </ul>
+                                            </div>
+
+                                            <div class="alert info">
+                                                <i class="fas fa-crown"></i>
+                                                <div>
+                                                    <strong>Owner Privileges:</strong> The first user gets special "Owner" status with elevated privileges over regular admins.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h4>Access Admin Panel</h4>
+                                            <p>Once logged in as the owner, you can access the admin panel:</p>
+                                            <ul>
+                                                <li>Click on your profile dropdown in the navigation</li>
+                                                <li>Select "Admin Panel" from the menu</li>
+                                                <li>Or navigate directly to <code>/admin</code></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <h4>Configure Settings</h4>
+                                            <p>In the admin panel, you can:</p>
+                                            <ul>
+                                                <li>Review and approve mod submissions</li>
+                                                <li>Manage users and permissions</li>
+                                                <li>Configure maintenance mode</li>
+                                                <li>View platform statistics</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>Start with Docker Compose</h4>
-                            <div class="code-block">
-                                <pre><code>docker-compose up -d</code></pre>
+                            <!-- Production Setup -->
+                            <div class="production-section">
+                                <h3><i class="fas fa-server"></i> Production Setup</h3>
+                                <p>Additional steps for production deployment:</p>
+
+                                <div class="production-checklist">
+                                    <div class="checklist-item">
+                                        <i class="fas fa-check-square"></i>
+                                        <div>
+                                            <h4>Environment Variables</h4>
+                                            <p>Set <code>NODE_ENV=production</code> and configure all required environment variables. See the <a href="/docs/configuration">Configuration</a> page for details.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item">
+                                        <i class="fas fa-check-square"></i>
+                                        <div>
+                                            <h4>Process Manager</h4>
+                                            <p>Use PM2 or similar to manage the Node.js process:</p>
+                                            <div class="code-block">
+                                                <pre><code>npm install -g pm2
+pm2 start server.js --name sayonika
+pm2 startup
+pm2 save</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item">
+                                        <i class="fas fa-check-square"></i>
+                                        <div>
+                                            <h4>Reverse Proxy</h4>
+                                            <p>Configure Nginx or Apache as a reverse proxy for better performance and SSL termination.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item">
+                                        <i class="fas fa-check-square"></i>
+                                        <div>
+                                            <h4>SSL Certificate</h4>
+                                            <p>Set up SSL/TLS certificates for HTTPS. Consider using Let's Encrypt for free certificates.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <p>This will start Sayonika on <code>http://localhost:3000</code></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Manual Installation -->
-            <div class="tab-content" id="manual-install">
-                <h3>Manual Installation</h3>
-                <p>For more control over your installation, you can set up Sayonika manually.</p>
+                            <!-- Troubleshooting -->
+                            <div class="troubleshooting-section">
+                                <h3><i class="fas fa-tools"></i> Common Issues</h3>
 
-                <div class="requirements">
-                    <h4>System Requirements</h4>
-                    <ul>
-                        <li>Node.js 16.0 or higher</li>
-                        <li>npm or yarn package manager</li>
-                        <li>Git</li>
-                        <li>512MB+ RAM</li>
-                        <li>1GB+ free disk space</li>
-                    </ul>
-                </div>
+                                <div class="faq-item">
+                                    <h4>Port already in use</h4>
+                                    <p>If port 3000 is already in use, change the <code>PORT</code> value in your <code>.env</code> file to a different port number.</p>
+                                </div>
 
-                <div class="step-by-step">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>Install Node.js</h4>
-                            <p>Download and install Node.js from <a href="https://nodejs.org" target="_blank">nodejs.org</a> or use a package manager:</p>
-                            <div class="code-block">
-                                <pre><code># Ubuntu/Debian
-sudo apt update
-sudo apt install nodejs npm
+                                <div class="faq-item">
+                                    <h4>Database errors</h4>
+                                    <p>The database is automatically created when you first run the server. Make sure you have write permissions in the project directory.</p>
+                                </div>
 
-# macOS with Homebrew
-brew install node
+                                <div class="faq-item">
+                                    <h4>CSS not loading</h4>
+                                    <p>Make sure you ran <code>npm run build-css-prod</code> before starting the server.</p>
+                                </div>
 
-# Windows with Chocolatey
-choco install nodejs</code></pre>
+                                <div class="faq-item">
+                                    <h4>Module not found errors</h4>
+                                    <p>Run <code>npm install</code> again to ensure all dependencies are properly installed.</p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Clone and Setup</h4>
-                            <div class="code-block">
-                                <pre><code>git clone https://github.com/Dynamicaaa/Sayonika.git
-cd Sayonika
-npm install</code></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>Configure Environment</h4>
-                            <div class="code-block">
-                                <pre><code>cp .env.example .env
-# Edit .env with your preferred editor</code></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>Initialize Database</h4>
-                            <div class="code-block">
-                                <pre><code>npm run migrate</code></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>Start the Server</h4>
-                            <div class="code-block">
-                                <pre><code>npm start</code></pre>
-                            </div>
-                            <p>Sayonika will be available at <code>http://localhost:3000</code></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Development Setup -->
-            <div class="tab-content" id="dev-install">
-                <h3>Development Setup</h3>
-                <p>Set up Sayonika for development with hot reloading and debugging tools.</p>
-
-                <div class="step-by-step">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>Fork and Clone</h4>
-                            <p>Fork the repository on GitHub, then clone your fork:</p>
-                            <div class="code-block">
-                                <pre><code>git clone https://github.com/YOUR_USERNAME/Sayonika.git
-cd Sayonika
-git remote add upstream https://github.com/Dynamicaaa/Sayonika.git</code></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Install Dependencies</h4>
-                            <div class="code-block">
-                                <pre><code>npm install
-# or
-yarn install</code></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>Development Environment</h4>
-                            <div class="code-block">
-                                <pre><code>cp .env.example .env.development
-# Configure development settings</code></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>Start Development Server</h4>
-                            <div class="code-block">
-                                <pre><code>npm run dev</code></pre>
-                            </div>
-                            <p>This starts the server with hot reloading and debugging enabled.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dev-tips">
-                    <h4>Development Tips</h4>
-                    <ul>
-                        <li>Use <code>npm run lint</code> to check code style</li>
-                        <li>Run <code>npm test</code> to execute the test suite</li>
-                        <li>Use <code>npm run migrate:dev</code> for development database migrations</li>
-                        <li>Enable debug mode by setting <code>DEBUG=sayonika:*</code> in your environment</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
 
                             <!-- Next Steps -->
-                            <div class="quick-links">
-                                <h3>Next Steps</h3>
-                                <div class="link-grid">
-                                    <a href="/docs/configuration" class="quick-link">
-                                        <i class="fas fa-cog"></i>
-                                        <div>
-                                            <h4>Configuration</h4>
-                                            <p>Configure your Sayonika instance</p>
+                            <div class="next-steps-section">
+                                <h3><i class="fas fa-arrow-right"></i> What's Next?</h3>
+                                <div class="next-steps-grid">
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-cog"></i>
                                         </div>
-                                    </a>
+                                        <h4>Advanced Configuration</h4>
+                                        <p>Set up OAuth providers, email settings, and production configurations.</p>
+                                        <a href="/docs/configuration" class="btn btn-outline">Configure Now</a>
+                                    </div>
 
-                                    <a href="/docs/first-run" class="quick-link">
-                                        <i class="fas fa-play"></i>
-                                        <div>
-                                            <h4>First Run</h4>
-                                            <p>Complete the initial setup</p>
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-code"></i>
                                         </div>
-                                    </a>
+                                        <h4>API Reference</h4>
+                                        <p>Explore the REST API endpoints and start building integrations.</p>
+                                        <a href="/docs/api" class="btn btn-outline">API Docs</a>
+                                    </div>
+
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-question-circle"></i>
+                                        </div>
+                                        <h4>Need Help?</h4>
+                                        <p>Check our troubleshooting guide or get support from the community.</p>
+                                        <a href="https://github.com/Dynamicaaa/Sayonika/issues" target="_blank" class="btn btn-outline">Get Support</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
