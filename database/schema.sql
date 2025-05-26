@@ -235,28 +235,28 @@ INSERT OR IGNORE INTO categories (name, description, color, icon) VALUES
 ('Misc', 'Other modifications that do not fit into specific categories', '#DDA0DD', 'fas fa-puzzle-piece');
 
 -- Insert default achievements
-INSERT OR IGNORE INTO achievements (name, description, icon, points, category, requirement_type, requirement_value) VALUES
+INSERT OR IGNORE INTO achievements (name, description, icon, points, category, requirement_type, requirement_value, is_hidden) VALUES
 -- Upload achievements
-('First Steps', 'Upload your first mod to Sayonika', 'fas fa-upload', 10, 'upload', 'mod_upload', 1),
-('Mod Creator', 'Upload 5 mods to the platform', 'fas fa-hammer', 25, 'upload', 'mod_upload', 5),
-('Prolific Creator', 'Upload 10 mods to the platform', 'fas fa-industry', 50, 'upload', 'mod_upload', 10),
-('Mod Master', 'Upload 25 mods to the platform', 'fas fa-crown', 100, 'upload', 'mod_upload', 25),
+('First Steps', 'Upload your first mod to Sayonika', 'fas fa-upload', 10, 'upload', 'mod_upload', 1, FALSE),
+('Mod Creator', 'Upload 5 mods to the platform', 'fas fa-hammer', 25, 'upload', 'mod_upload', 5, FALSE),
+('Prolific Creator', 'Upload 10 mods to the platform', 'fas fa-industry', 50, 'upload', 'mod_upload', 10, FALSE),
+('Mod Master', 'Upload 25 mods to the platform', 'fas fa-crown', 100, 'upload', 'mod_upload', 25, FALSE),
 
 -- Download achievements
-('Popular Creator', 'Get 100 total downloads across all your mods', 'fas fa-download', 15, 'download', 'total_downloads', 100),
-('Rising Star', 'Get 500 total downloads across all your mods', 'fas fa-star', 30, 'download', 'total_downloads', 500),
-('Community Favorite', 'Get 1000 total downloads across all your mods', 'fas fa-heart', 60, 'download', 'total_downloads', 1000),
-('Legendary Creator', 'Get 5000 total downloads across all your mods', 'fas fa-trophy', 150, 'download', 'total_downloads', 5000),
+('Popular Creator', 'Get 100 total downloads across all your mods', 'fas fa-download', 15, 'download', 'total_downloads', 100, FALSE),
+('Rising Star', 'Get 500 total downloads across all your mods', 'fas fa-star', 30, 'download', 'total_downloads', 500, FALSE),
+('Community Favorite', 'Get 1000 total downloads across all your mods', 'fas fa-heart', 60, 'download', 'total_downloads', 1000, FALSE),
+('Legendary Creator', 'Get 5000 total downloads across all your mods', 'fas fa-trophy', 150, 'download', 'total_downloads', 5000, FALSE),
 
 -- Community achievements
-('Conversationalist', 'Post 10 comments on mods', 'fas fa-comments', 10, 'community', 'comment_count', 10),
-('Community Helper', 'Post 50 comments on mods', 'fas fa-hands-helping', 25, 'community', 'comment_count', 50),
-('Discussion Leader', 'Post 100 comments on mods', 'fas fa-bullhorn', 50, 'community', 'comment_count', 100),
+('Conversationalist', 'Post 10 comments on mods', 'fas fa-comments', 10, 'community', 'comment_count', 10, FALSE),
+('Community Helper', 'Post 50 comments on mods', 'fas fa-hands-helping', 25, 'community', 'comment_count', 50, FALSE),
+('Discussion Leader', 'Post 100 comments on mods', 'fas fa-bullhorn', 50, 'community', 'comment_count', 100, FALSE),
 
 -- Special achievements
-('Early Adopter', 'One of the first 100 users to join Sayonika', 'fas fa-seedling', 25, 'special', 'user_id', 100),
-('Veteran', 'Member for over 1 year', 'fas fa-medal', 50, 'special', 'account_age_days', 365),
-('Perfectionist', 'Have a mod with 5-star average rating (min 10 ratings)', 'fas fa-gem', 75, 'special', 'perfect_rating', 1),
+('Early Adopter', 'One of the first 100 users to join Sayonika', 'fas fa-seedling', 25, 'special', 'user_id', 100, FALSE),
+('Veteran', 'Member for over 1 year', 'fas fa-medal', 50, 'special', 'account_age_days', 365, FALSE),
+('Perfectionist', 'Have a mod with 5-star average rating (min 10 ratings)', 'fas fa-gem', 75, 'special', 'perfect_rating', 1, FALSE),
 
 -- Hidden achievements
 ('Bug Hunter', 'Report a critical bug that gets fixed', 'fas fa-bug', 30, 'special', 'manual', 1, TRUE),
