@@ -62,32 +62,11 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
         try {
             console.log('GitHub OAuth callback - Profile:', JSON.stringify(profile, null, 2));
 
-            // Check for linking information in OAuth state parameter
-            let linkUserId = req.session.linkUserId;
-            let linkProvider = req.session.linkProvider;
-
-            // If session data is missing, try to get it from state parameter
-            if (!linkUserId && req.query.state) {
-                try {
-                    const jwt = require('jsonwebtoken');
-                    const stateData = jwt.verify(req.query.state, process.env.JWT_SECRET || 'your-secret-key');
-                    linkUserId = stateData.linkUserId;
-                    linkProvider = stateData.linkProvider;
-                    console.log('GitHub OAuth state data recovered:', {
-                        linkUserId,
-                        linkProvider,
-                        timestamp: stateData.timestamp
-                    });
-                } catch (error) {
-                    console.error('Invalid OAuth state token:', error);
-                }
-            }
-
-            console.log('GitHub OAuth linking data:', {
-                linkUserId,
-                linkProvider,
-                fromSession: !!req.session.linkUserId,
-                fromState: !!req.query.state
+            console.log('GitHub OAuth session data:', {
+                linkUserId: req.session.linkUserId,
+                linkProvider: req.session.linkProvider,
+                linkTimestamp: req.session.linkTimestamp,
+                sessionId: req.sessionID
             });
 
             // Ensure database connection is available
@@ -98,8 +77,8 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
             }
 
             // Check if this is a linking request (user is already logged in and wants to link GitHub)
-            if (linkUserId && linkProvider === 'github') {
-                console.log('GitHub OAuth linking request detected for user:', linkUserId);
+            if (req.session.linkUserId && req.session.linkProvider === 'github') {
+                console.log('GitHub OAuth linking request detected for user:', req.session.linkUserId);
 
                 // Check if this GitHub account is already linked to another user
                 const existingUser = await db.get(
@@ -107,14 +86,14 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                     [profile.id]
                 );
 
-                if (existingUser && existingUser.id !== linkUserId) {
+                if (existingUser && existingUser.id !== req.session.linkUserId) {
                     console.log('GitHub account already linked to another user:', existingUser.username);
                     const errorMessage = `This GitHub account is already linked to another user: ${existingUser.display_name || existingUser.username} (@${existingUser.username}). Please unlink it from that account first, or contact support if this is your account.`;
                     return done(new Error(errorMessage), null);
                 }
 
                 // Get current user data to preserve existing avatar if it's not a default one
-                const currentUser = await db.get('SELECT avatar_url FROM users WHERE id = ?', [linkUserId]);
+                const currentUser = await db.get('SELECT avatar_url FROM users WHERE id = ?', [req.session.linkUserId]);
                 const shouldUpdateAvatar = !currentUser.avatar_url ||
                     currentUser.avatar_url.includes('picsum.photos') ||
                     currentUser.avatar_url.includes('default-avatar-');
@@ -133,7 +112,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                          avatar_url = ?,
                          last_login = CURRENT_TIMESTAMP
                          WHERE id = ?`,
-                        [profile.id, profile.username, profile.photos[0]?.value, linkUserId]
+                        [profile.id, profile.username, profile.photos[0]?.value, req.session.linkUserId]
                     );
                 } else {
                     await db.run(
@@ -142,12 +121,12 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                          github_username = ?,
                          last_login = CURRENT_TIMESTAMP
                          WHERE id = ?`,
-                        [profile.id, profile.username, linkUserId]
+                        [profile.id, profile.username, req.session.linkUserId]
                     );
                 }
 
                 // Get the updated user
-                const linkedUser = await db.get('SELECT * FROM users WHERE id = ?', [linkUserId]);
+                const linkedUser = await db.get('SELECT * FROM users WHERE id = ?', [req.session.linkUserId]);
 
                 // Clean up session data
                 delete req.session.linkUserId;
@@ -356,32 +335,11 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
         try {
             console.log('Discord OAuth callback - Profile:', JSON.stringify(profile, null, 2));
 
-            // Check for linking information in OAuth state parameter
-            let linkUserId = req.session.linkUserId;
-            let linkProvider = req.session.linkProvider;
-
-            // If session data is missing, try to get it from state parameter
-            if (!linkUserId && req.query.state) {
-                try {
-                    const jwt = require('jsonwebtoken');
-                    const stateData = jwt.verify(req.query.state, process.env.JWT_SECRET || 'your-secret-key');
-                    linkUserId = stateData.linkUserId;
-                    linkProvider = stateData.linkProvider;
-                    console.log('Discord OAuth state data recovered:', {
-                        linkUserId,
-                        linkProvider,
-                        timestamp: stateData.timestamp
-                    });
-                } catch (error) {
-                    console.error('Invalid OAuth state token:', error);
-                }
-            }
-
-            console.log('Discord OAuth linking data:', {
-                linkUserId,
-                linkProvider,
-                fromSession: !!req.session.linkUserId,
-                fromState: !!req.query.state
+            console.log('Discord OAuth session data:', {
+                linkUserId: req.session.linkUserId,
+                linkProvider: req.session.linkProvider,
+                linkTimestamp: req.session.linkTimestamp,
+                sessionId: req.sessionID
             });
 
             // Debug avatar information
@@ -402,8 +360,8 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
             }
 
             // Check if this is a linking request (user is already logged in and wants to link Discord)
-            if (linkUserId && linkProvider === 'discord') {
-                console.log('Discord OAuth linking request detected for user:', linkUserId);
+            if (req.session.linkUserId && req.session.linkProvider === 'discord') {
+                console.log('Discord OAuth linking request detected for user:', req.session.linkUserId);
 
                 // Check if this Discord account is already linked to another user
                 const existingUser = await db.get(
@@ -411,14 +369,14 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
                     [profile.id]
                 );
 
-                if (existingUser && existingUser.id !== linkUserId) {
+                if (existingUser && existingUser.id !== req.session.linkUserId) {
                     console.log('Discord account already linked to another user:', existingUser.username);
                     const errorMessage = `This Discord account is already linked to another user: ${existingUser.display_name || existingUser.username} (@${existingUser.username}). Please unlink it from that account first, or contact support if this is your account.`;
                     return done(new Error(errorMessage), null);
                 }
 
                 // Get current user data to check if they have a profile picture
-                const currentUser = await db.get('SELECT avatar_url FROM users WHERE id = ?', [linkUserId]);
+                const currentUser = await db.get('SELECT avatar_url FROM users WHERE id = ?', [req.session.linkUserId]);
 
                 // Only update avatar if user doesn't have one (null, empty, or default avatars)
                 const shouldUpdateAvatar = !currentUser.avatar_url ||
@@ -445,7 +403,7 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
                          avatar_url = ?,
                          last_login = CURRENT_TIMESTAMP
                          WHERE id = ?`,
-                        [profile.id, profile.username, profile.discriminator, discordAvatarUrl, linkUserId]
+                        [profile.id, profile.username, profile.discriminator, discordAvatarUrl, req.session.linkUserId]
                     );
                 } else {
                     console.log('User is linking Discord but already has a profile picture - preserving existing avatar');
@@ -457,12 +415,12 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
                          discord_discriminator = ?,
                          last_login = CURRENT_TIMESTAMP
                          WHERE id = ?`,
-                        [profile.id, profile.username, profile.discriminator, linkUserId]
+                        [profile.id, profile.username, profile.discriminator, req.session.linkUserId]
                     );
                 }
 
                 // Get the updated user
-                const linkedUser = await db.get('SELECT * FROM users WHERE id = ?', [linkUserId]);
+                const linkedUser = await db.get('SELECT * FROM users WHERE id = ?', [req.session.linkUserId]);
 
                 // Clean up session data
                 delete req.session.linkUserId;

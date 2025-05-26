@@ -38,23 +38,29 @@ router.get('/github', optionalAuth, async (req, res, next) => {
                     timestamp: decoded.timestamp
                 });
 
-                // Store linking information in OAuth state parameter instead of session
-                const stateData = {
-                    linkUserId: decoded.linkUserId,
-                    linkProvider: decoded.linkProvider,
-                    timestamp: Date.now()
-                };
+                // Store linking information in session with explicit save
+                req.session.linkUserId = decoded.linkUserId;
+                req.session.linkProvider = decoded.linkProvider;
+                req.session.linkTimestamp = Date.now();
 
-                // Create a signed state token
-                const stateToken = jwt.sign(stateData, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '10m' });
+                console.log('Storing link data in session:', {
+                    linkUserId: req.session.linkUserId,
+                    linkProvider: req.session.linkProvider,
+                    sessionId: req.sessionID
+                });
 
-                console.log('Link data stored in OAuth state, proceeding with GitHub OAuth');
+                // Force session save and wait for it to complete
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Session save error before GitHub OAuth:', err);
+                        return res.redirect('/profile?error=session_save_failed');
+                    }
 
-                // Use passport authenticate with state parameter
-                passport.authenticate('github', {
-                    scope: ['user:email'],
-                    state: stateToken
-                })(req, res, next);
+                    console.log('Session saved successfully, proceeding with GitHub OAuth');
+                    passport.authenticate('github', {
+                        scope: ['user:email']
+                    })(req, res, next);
+                });
             } catch (error) {
                 console.error('Invalid link token:', error);
                 return res.redirect('/profile?error=invalid_link_token');
@@ -218,22 +224,27 @@ router.get('/discord', optionalAuth, async (req, res, next) => {
                     timestamp: decoded.timestamp
                 });
 
-                // Store linking information in OAuth state parameter instead of session
-                const stateData = {
-                    linkUserId: decoded.linkUserId,
-                    linkProvider: decoded.linkProvider,
-                    timestamp: Date.now()
-                };
+                // Store linking information in session with explicit save
+                req.session.linkUserId = decoded.linkUserId;
+                req.session.linkProvider = decoded.linkProvider;
+                req.session.linkTimestamp = Date.now();
 
-                // Create a signed state token
-                const stateToken = jwt.sign(stateData, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '10m' });
+                console.log('Storing link data in session:', {
+                    linkUserId: req.session.linkUserId,
+                    linkProvider: req.session.linkProvider,
+                    sessionId: req.sessionID
+                });
 
-                console.log('Link data stored in OAuth state, proceeding with Discord OAuth');
+                // Force session save and wait for it to complete
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Session save error before Discord OAuth:', err);
+                        return res.redirect('/profile?error=session_save_failed');
+                    }
 
-                // Use passport authenticate with state parameter
-                passport.authenticate('discord', {
-                    state: stateToken
-                })(req, res, next);
+                    console.log('Session saved successfully, proceeding with Discord OAuth');
+                    passport.authenticate('discord')(req, res, next);
+                });
             } catch (error) {
                 console.error('Invalid link token:', error);
                 return res.redirect('/profile?error=invalid_link_token');
