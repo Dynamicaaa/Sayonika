@@ -61,6 +61,7 @@ router.get('/github', optionalAuth, async (req, res, next) => {
                         scope: ['user:email']
                     })(req, res, next);
                 });
+                return; // Important: return here to prevent the code below from executing
             } catch (error) {
                 console.error('Invalid link token:', error);
                 return res.redirect('/profile?error=invalid_link_token');
