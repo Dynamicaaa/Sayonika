@@ -20,7 +20,7 @@ const checkMaintenanceMode = async (req, res, next) => {
             return next();
         }
 
-        // Only allow essential routes and mod browsing during maintenance
+        // Only allow essential routes during maintenance
         const allowedPaths = [
             // Essential system routes
             '/health',
@@ -30,11 +30,6 @@ const checkMaintenanceMode = async (req, res, next) => {
             // Admin access (only for already logged in admins)
             '/admin',
 
-            // Mod browsing (read-only)
-            '/',
-            '/browse',
-            '/mod/',
-
             // Static assets
             '/css/',
             '/js/',
@@ -42,6 +37,15 @@ const checkMaintenanceMode = async (req, res, next) => {
             '/uploads/',
             '/favicon.ico'
         ];
+
+        // Check for maintenance bypass parameter for mod browsing
+        const hasMaintenanceBypass = req.query.maintenance_bypass === 'true';
+        const isModBrowsingPath = req.path === '/' || req.path.startsWith('/browse') || req.path.startsWith('/mod/');
+
+        if (hasMaintenanceBypass && isModBrowsingPath) {
+            // Allow mod browsing with bypass parameter
+            return next();
+        }
 
         // Allowed API routes during maintenance
         const allowedApiRoutes = [
