@@ -11,6 +11,11 @@ const checkMaintenanceMode = async (req, res, next) => {
         // Check if maintenance mode is enabled
         const isMaintenanceMode = await db.isMaintenanceMode();
 
+        // Debug logging
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`[Maintenance Check] Path: ${req.path}, Maintenance Mode: ${isMaintenanceMode}, User: ${req.user ? req.user.username : 'none'}`);
+        }
+
         if (!isMaintenanceMode) {
             return next();
         }
@@ -30,8 +35,7 @@ const checkMaintenanceMode = async (req, res, next) => {
             // Admin access (only for already logged in admins)
             '/admin',
 
-            // Mod browsing (read-only)
-            '/',
+            // Mod browsing (read-only) - REMOVED home page, only allow browse and specific mod pages
             '/browse',
             '/mod/',
 
@@ -58,6 +62,16 @@ const checkMaintenanceMode = async (req, res, next) => {
             }
             return req.path === path || req.path.startsWith(path + '/');
         });
+
+        // Debug logging
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`[Maintenance Check] Path: ${req.path}, Allowed: ${isAllowedPath}, Matched paths: ${allowedPaths.filter(path => {
+                if (path.endsWith('/')) {
+                    return req.path.startsWith(path);
+                }
+                return req.path === path || req.path.startsWith(path + '/');
+            })}`);
+        }
 
         // For API routes, check if it's an allowed API route and method
         if (req.path.startsWith('/api/')) {
