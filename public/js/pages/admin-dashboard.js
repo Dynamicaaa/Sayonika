@@ -2,27 +2,33 @@
 
 // Server-side logging utility
 function serverLog(level, message, data = null) {
-    const logData = {
-        level: level, // 'info', 'warn', 'error', 'debug'
-        message: message,
-        data: data,
-        timestamp: new Date().toISOString(),
-        source: 'admin-dashboard'
-    };
+    try {
+        const logData = {
+            level: level, // 'info', 'warn', 'error', 'debug'
+            message: message,
+            data: data,
+            timestamp: new Date().toISOString(),
+            source: 'admin-dashboard'
+        };
 
-    // Send to server asynchronously, don't wait for response
-    fetch('/api/admin/logs', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(logData)
-    }).catch(err => {
-        // Fallback to console if server logging fails
-        console.error('[Admin Dashboard] Failed to send log to server:', err);
+        // Send to server asynchronously, don't wait for response
+        fetch('/api/admin/logs', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(logData)
+        }).catch(err => {
+            // Fallback to console if server logging fails
+            console.error('[Admin Dashboard] Failed to send log to server:', err);
+            console.log(`[Admin Dashboard] ${level.toUpperCase()}: ${message}`, data);
+        });
+    } catch (err) {
+        // If serverLog itself fails, just log to console
+        console.error('[Admin Dashboard] serverLog function error:', err);
         console.log(`[Admin Dashboard] ${level.toUpperCase()}: ${message}`, data);
-    });
+    }
 }
 
 // Tab switching
@@ -132,11 +138,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const settingsForm = document.getElementById('settingsForm');
     if (settingsForm) {
         serverLog('debug', 'Found settings form, adding event listener');
+        console.log('Found settings form, adding event listener');
         settingsForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            serverLog('info', 'Settings form submitted');
-            await saveSiteSettings();
+            serverLog('info', 'Settings form submitted - calling saveSiteSettings');
+            console.log('Settings form submitted - calling saveSiteSettings');
+
+            // Add a small delay to ensure logs are sent
+            setTimeout(async () => {
+                try {
+                    console.log('About to call saveSiteSettings...');
+                    await saveSiteSettings();
+                    serverLog('info', 'saveSiteSettings completed successfully');
+                    console.log('saveSiteSettings completed successfully');
+                } catch (error) {
+                    serverLog('error', 'Error in saveSiteSettings', { error: error.message, stack: error.stack });
+                    console.error('Error in saveSiteSettings:', error);
+                }
+            }, 100);
         });
+    } else {
+        serverLog('warn', 'Settings form not found!');
+        console.warn('Settings form not found!');
     }
 
     // Maintenance mode toggle handler
@@ -570,41 +593,93 @@ async function loadSiteSettings() {
 
 // Save site settings to server
 async function saveSiteSettings() {
+    console.log('=== saveSiteSettings function called ===');
     try {
+        serverLog('info', 'Starting saveSiteSettings function');
+        console.log('Starting saveSiteSettings function');
+
+        // Find form elements
         const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
         const maxFileSizeInput = document.getElementById('maxFileSize');
         const featuredModsCountInput = document.getElementById('featuredModsCount');
 
+        console.log('Form elements:', {
+            maintenanceMode: maintenanceModeCheckbox,
+            maxFileSize: maxFileSizeInput,
+            featuredModsCount: featuredModsCountInput
+        });
+
+        serverLog('debug', 'Form elements found', {
+            maintenanceMode: !!maintenanceModeCheckbox,
+            maxFileSize: !!maxFileSizeInput,
+            featuredModsCount: !!featuredModsCountInput
+        });
+
+        // Build settings object
         const settings = {};
 
         if (maintenanceModeCheckbox) {
             settings.maintenance_mode = maintenanceModeCheckbox.checked;
+            serverLog('debug', `Maintenance mode setting: ${settings.maintenance_mode}`);
         }
 
         if (maxFileSizeInput) {
             settings.max_file_size_mb = parseInt(maxFileSizeInput.value);
+            serverLog('debug', `Max file size setting: ${settings.max_file_size_mb}`);
         }
 
         if (featuredModsCountInput) {
             settings.featured_mods_count = parseInt(featuredModsCountInput.value);
+            serverLog('debug', `Featured mods count setting: ${settings.featured_mods_count}`);
         }
+
+        serverLog('info', 'Settings object prepared', settings);
+        console.log('Settings object prepared:', settings);
+
+        // Show loading state
+        const submitButton = document.querySelector('#settingsForm button[type="submit"]');
+        const originalButtonText = submitButton ? submitButton.innerHTML : '';
+        console.log('Submit button found:', !!submitButton);
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            console.log('Submit button set to loading state');
+        }
+
+        serverLog('info', 'Making API request to /api/admin/settings');
+        console.log('Making API request to /api/admin/settings');
 
         const response = await fetch('/api/admin/settings', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({ settings })
         });
 
+        console.log('API request completed, response:', response);
+        serverLog('debug', `API response status: ${response.status}`);
+
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            let errorMessage;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+            } catch (parseError) {
+                errorMessage = `HTTP error! status: ${response.status}`;
+            }
+            throw new Error(errorMessage);
         }
 
         const result = await response.json();
+        serverLog('info', 'Site settings saved successfully', result);
 
-        serverLog('info', 'Site settings saved successfully');
+        // Restore button state
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        }
 
         if (window.S && window.S.notify) {
             window.S.notify.success('Settings saved successfully!');
@@ -627,8 +702,25 @@ async function saveSiteSettings() {
         }
 
     } catch (error) {
+        console.error('=== ERROR in saveSiteSettings ===');
         console.error('Failed to save site settings:', error);
-        serverLog('error', `Failed to save site settings: ${error.message}`);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+
+        serverLog('error', `Failed to save site settings: ${error.message}`, {
+            error: error.message,
+            stack: error.stack
+        });
+
+        // Restore button state on error
+        const submitButton = document.querySelector('#settingsForm button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<i class="fas fa-save"></i> Save Settings';
+        }
 
         if (window.S && window.S.notify) {
             window.S.notify.error(`Failed to save settings: ${error.message}`);
@@ -663,3 +755,13 @@ function switchTab(tabName) {
     if (selectedTab) selectedTab.classList.add('active');
     if (selectedContent) selectedContent.classList.add('active');
 }
+
+// Test function for debugging - can be called from browser console
+window.testSaveSettings = function() {
+    console.log('=== Testing saveSiteSettings manually ===');
+    saveSiteSettings().then(() => {
+        console.log('Manual test completed successfully');
+    }).catch(error => {
+        console.error('Manual test failed:', error);
+    });
+};
