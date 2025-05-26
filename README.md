@@ -9,38 +9,44 @@ Sayonika is a comprehensive mod store and community platform for Doki Doki Liter
 - **Download System**: Secure mod downloads with tracking
 - **Version Control**: Support for multiple mod versions
 - **Categories**: Organized mod categories (Full Mods, Gameplay, Visual, Audio, etc.)
+- **Mod Review System**: Admin approval workflow for quality control
 
 ### 👥 User System
-- **User Registration & Authentication**: JWT-based secure authentication
+- **User Registration & Authentication**: Secure authentication with persistent sessions
+- **OAuth Integration**: GitHub authentication with account linking
 - **User Profiles**: Customizable profiles with avatars and bios
-- **Mod Uploads**: Easy mod submission system for creators
-- **Admin Panel**: Administrative tools for mod approval and management
+- **Mod Uploads**: Easy mod submission system with wizard interface
+- **Admin Panel**: Comprehensive administrative tools and user management
+- **Owner System**: First user becomes "Owner" with elevated privileges
 
 ### 🎨 Modern Interface
 - **Responsive Design**: Mobile-friendly interface built with SASS
 - **Dark/Light Theme**: Toggle between themes with persistent preference
 - **DDLC-Inspired Design**: Color scheme and styling inspired by the game
 - **Accessibility**: Built with accessibility best practices
+- **Maintenance Mode**: Configurable maintenance mode with admin bypass
 
 ### 🔧 Technical Features
 - **REST API**: Comprehensive API for mod data and user management
-- **SQLite Database**: Lightweight, file-based database
+- **SQLite Database**: Lightweight, file-based database with migrations
 - **File Upload**: Secure mod file handling with validation
-- **Rate Limiting**: Protection against abuse
-- **Security**: Helmet.js, CORS, input validation
+- **Rate Limiting**: Protection against abuse with configurable limits
+- **Security**: Helmet.js, CORS, input validation, and secure headers
+- **Cloudflare Ready**: Configured for reverse proxy and CDN setups
 
 ## Installation
 
 ### Prerequisites
 - Node.js 16.0.0 or higher
-- npm or yarn package manager
+- npm package manager
+- Git (for cloning the repository)
 
-### Setup
+### Quick Setup
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd sayonika
+   git clone https://github.com/Dynamicaaa/Sayonika.git
+   cd Sayonika
    ```
 
 2. **Install dependencies**
@@ -51,7 +57,7 @@ Sayonika is a comprehensive mod store and community platform for Doki Doki Liter
 3. **Environment Configuration**
    ```bash
    cp .env.example .env
-   # Edit .env with your configuration
+   # Edit .env with your configuration (see Configuration section below)
    ```
 
 4. **Initialize Database**
@@ -59,17 +65,12 @@ Sayonika is a comprehensive mod store and community platform for Doki Doki Liter
    npm run init-db
    ```
 
-5. **Run Database Migrations** (for existing databases)
-   ```bash
-   npm run migrate
-   ```
-
-6. **Build CSS**
+5. **Build CSS**
    ```bash
    npm run build-css-prod
    ```
 
-7. **Start the server**
+6. **Start the server**
    ```bash
    # Development
    npm run dev
@@ -78,7 +79,37 @@ Sayonika is a comprehensive mod store and community platform for Doki Doki Liter
    npm start
    ```
 
-The server will start on the configured BASE_URL (default: `http://localhost:3000` or your configured PORT).
+The server will start on the configured port (default: `http://localhost:3000`). The first user to register will automatically become the Owner with full administrative privileges.
+
+## Configuration
+
+Key environment variables (see `.env.example` for complete list):
+
+### Basic Configuration
+- `PORT` - Server port (default: 3000)
+- `SESSION_SECRET` - Session encryption secret
+- `WEBSITE_URL` - Your domain URL (e.g., https://your-domain.com)
+- `NODE_ENV` - Environment (development/production)
+
+### Database
+- `DATABASE_PATH` - SQLite database file path
+- `SESSIONS_DATABASE_PATH` - Sessions database file path
+
+### OAuth Authentication
+- `GITHUB_CLIENT_ID` - GitHub OAuth client ID
+- `GITHUB_CLIENT_SECRET` - GitHub OAuth client secret
+
+### Security & Performance
+- `JWT_SECRET` - JWT signing secret for API authentication
+- `RATE_LIMIT_WINDOW` - Rate limiting window in milliseconds
+- `RATE_LIMIT_MAX` - Maximum requests per window
+- `TRUST_PROXY_HOPS` - Number of proxy hops to trust (for Cloudflare)
+
+### Email (Optional)
+- `SMTP_HOST` - SMTP server hostname
+- `SMTP_PORT` - SMTP server port
+- `SMTP_USER` - SMTP username
+- `SMTP_PASS` - SMTP password
 
 ## Development
 
@@ -88,6 +119,7 @@ The server will start on the configured BASE_URL (default: `http://localhost:300
 - `npm run build-css` - Watch and compile SASS files
 - `npm run build-css-prod` - Build CSS for production
 - `npm run init-db` - Initialize database with schema
+- `npm run migrate` - Run database migrations
 - `npm test` - Run tests
 
 ### Project Structure
@@ -159,9 +191,9 @@ Sayonika includes a comprehensive admin system for managing mod submissions and 
 
 ### Admin Access
 
-1. **First User Admin**: The first user to register on the website automatically becomes an admin
-   - This applies to both regular registration and OAuth registration (GitHub/Discord)
-   - The first user receives a special welcome message indicating their admin status
+1. **First User Owner**: The first user to register automatically becomes the "Owner" with full privileges
+   - This applies to both regular registration and OAuth registration (GitHub)
+   - The first user receives a special welcome message and displays as "Owner" in their profile
    - All subsequent users are regular users by default
 
 2. **Making Additional Admins**: Update the database directly for additional admin users
@@ -169,9 +201,10 @@ Sayonika includes a comprehensive admin system for managing mod submissions and 
    UPDATE users SET is_admin = 1 WHERE username = 'your_username';
    ```
 
-3. **Admin Panel Access**: Available at `/admin` for admin users
+3. **Admin Panel Access**: Available at `/admin` for admin users and owners
    - Admin panel button appears in navigation dropdown
    - Admin panel button appears on user profile page
+   - Owners have additional privileges over regular admins
 
 ### Mod Review Workflow
 
@@ -223,23 +256,40 @@ npm run migrate:create add_user_preferences
 
 For detailed migration documentation, see `database/README.md`.
 
-## Configuration
+## Maintenance Mode
 
-Key environment variables:
-- `NODE_ENV` - Environment (development/production)
-- `PORT` - Server port (default: 3000)
-- `JWT_SECRET` - JWT signing secret
-- `DATABASE_PATH` - SQLite database file path
-- `ALLOWED_ORIGINS` - CORS allowed origins
+Sayonika includes a configurable maintenance mode feature:
+
+### Features
+- **Admin Toggle**: Enable/disable maintenance mode from the admin panel
+- **Admin Bypass**: Administrators can access the site normally during maintenance
+- **Mod Browsing**: Users can still browse mods during maintenance
+- **Custom Messages**: Configure custom maintenance messages
+- **API Support**: Maintenance mode affects both web and API endpoints
+
+### Usage
+1. Access the admin panel at `/admin`
+2. Navigate to the maintenance mode section
+3. Toggle maintenance mode on/off
+4. Optionally set a custom maintenance message
+
+During maintenance mode:
+- Most site functionality is disabled for regular users
+- Mod browsing remains available at `/browse`
+- Admins can access all features normally
+- API endpoints return appropriate maintenance status codes
 
 ## Security Features
 
-- **JWT Authentication**: Secure token-based authentication
-- **Rate Limiting**: Prevents abuse and spam
-- **Input Validation**: Server-side validation using express-validator
-- **File Upload Security**: File type and size validation
+- **JWT Authentication**: Secure token-based authentication with configurable expiration
+- **Persistent Sessions**: Remember me functionality with secure cookie storage
+- **OAuth Integration**: Secure GitHub authentication with account linking
+- **Rate Limiting**: Configurable protection against abuse and spam
+- **Input Validation**: Comprehensive server-side validation using express-validator
+- **File Upload Security**: File type, size, and content validation
 - **CORS Protection**: Configurable cross-origin resource sharing
 - **Helmet.js**: Security headers and protections
+- **Proxy Support**: Secure configuration for Cloudflare and reverse proxies
 
 ## Contributing
 
@@ -259,7 +309,10 @@ This project is not affiliated with Team Salvato or the official Doki Doki Liter
 
 ## Support
 
-For support, please open an issue on GitHub or contact the development team.
+For support and issue reporting, please create a new issue at:
+**[GitHub Issues](https://github.com/Dynamicaaa/Sayonika/issues/new)**
+
+You can also use the contact form on your Sayonika instance at `/contact` which will send consolidated emails to all administrators.
 
 ---
 
