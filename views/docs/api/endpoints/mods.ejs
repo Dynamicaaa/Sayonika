@@ -27,10 +27,8 @@
                             <h4>Getting Started</h4>
                             <ul>
                                 <li><a href="/docs" class="nav-link">Overview</a></li>
-                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
                                 <li><a href="/docs/installation" class="nav-link">Installation</a></li>
                                 <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
-                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
                             </ul>
                         </div>
 
@@ -58,19 +56,7 @@
                         </div>
 
                         <div class="nav-section">
-                            <h4>Examples</h4>
-                            <ul>
-                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
-                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
-                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
-                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
-                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
-                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Advanced</h4>
+                            <h4>Troubleshooting</h4>
                             <ul>
                                 <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
                                 <li><a href="/docs/customization" class="nav-link">Customization</a></li>
@@ -199,13 +185,13 @@
                                 <h4>Example</h4>
                                 <div class="code-block">
                                     <pre><code># Get all mods
-curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods"
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/mods"
 
 # Search for romance mods
-curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods?search=romance&tags=romance,comedy"
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/mods?search=romance&tags=romance,comedy"
 
 # Get mods sorted by downloads
-curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods?sort=downloads&order=desc"</code></pre>
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/mods?sort=downloads&order=desc"</code></pre>
                                 </div>
                             </div>
 
@@ -289,7 +275,7 @@ curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods?
 
                                 <h4>Example</h4>
                                 <div class="code-block">
-                                    <pre><code>curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods/my-awesome-mod"</code></pre>
+                                    <pre><code>curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/mods/my-awesome-mod"</code></pre>
                                 </div>
                             </div>
 
@@ -391,7 +377,7 @@ Content-Type: multipart/form-data</code></pre>
 
                                 <h4>Example</h4>
                                 <div class="code-block">
-                                    <pre><code>curl -X POST "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods" \
+                                    <pre><code>curl -X POST "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/mods" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -F "title=My New Mod" \
   -F "description=An amazing new mod for DDLC" \
@@ -440,7 +426,7 @@ Content-Length: 52428800</code></pre>
                                 <h4>Example</h4>
                                 <div class="code-block">
                                     <pre><code># Download mod file
-curl -X GET "<%- process.env.WEBSITE_URL || 'http://localhost:3000' %>/api/mods/my-awesome-mod/download" \
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/mods/my-awesome-mod/download" \
   -o "my-awesome-mod.zip"</code></pre>
                                 </div>
                             </div>

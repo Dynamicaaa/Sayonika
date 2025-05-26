@@ -1,0 +1,726 @@
+<%- include('../../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="docs-sidebar" id="docsSidebar">
+                    <div class="sidebar-header">
+                        <h3>Documentation</h3>
+                        <button class="sidebar-close" id="sidebarClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="nav-section">
+                            <h4>Getting Started</h4>
+                            <ul>
+                                <li><a href="/docs" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>API Reference</h4>
+                            <ul>
+                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/authentication" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/rate-limiting" class="nav-link">Rate Limiting</a></li>
+                                <li><a href="/docs/api/response-format" class="nav-link">Response Format</a></li>
+                                <li><a href="/docs/api/error-handling" class="nav-link">Error Handling</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Endpoints</h4>
+                            <ul>
+                                <li><a href="/docs/api/endpoints" class="nav-link">Overview</a></li>
+                                <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
+                                <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
+                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
+                                <li><a href="/docs/api/endpoints/admin" class="nav-link active">Admin</a></li>
+                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-section">
+                            <h4>Troubleshooting</h4>
+                            <ul>
+                                <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
+                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
+                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Admin Endpoints -->
+                    <section class="docs-section" id="admin-endpoints">
+                        <h2>Admin Endpoints</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Admin endpoints provide administrative functions for managing users, mods, and platform settings.
+                                All admin endpoints require authentication with admin or owner privileges.
+                            </p>
+
+                            <div class="alert warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div>
+                                    <strong>Admin Access Required:</strong> All endpoints in this section require admin or owner privileges.
+                                    Unauthorized access will result in a 403 Forbidden error.
+                                </div>
+                            </div>
+
+                            <!-- Get Platform Stats -->
+                            <div class="endpoint">
+                                <h3 id="get-platform-stats">
+                                    <span class="method get">GET</span>
+                                    <code>/api/admin/stats</code>
+                                </h3>
+                                <p>Get comprehensive platform statistics and metrics.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "users": {
+      "total": 1250,
+      "new_this_month": 45,
+      "active_this_week": 320
+    },
+    "mods": {
+      "total": 150,
+      "approved": 135,
+      "pending": 12,
+      "rejected": 3,
+      "new_this_month": 8
+    },
+    "downloads": {
+      "total": 25000,
+      "this_month": 3500,
+      "this_week": 850
+    },
+    "storage": {
+      "total_size_mb": 2048,
+      "mod_files_mb": 1800,
+      "avatars_mb": 128,
+      "thumbnails_mb": 120
+    }
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/stats" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- List All Users -->
+                            <div class="endpoint">
+                                <h3 id="list-all-users">
+                                    <span class="method get">GET</span>
+                                    <code>/api/admin/users</code>
+                                </h3>
+                                <p>Get a paginated list of all users with admin information.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</code></pre>
+                                </div>
+
+                                <h4>Query Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                            <th>Default</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>page</code></td>
+                                            <td>integer</td>
+                                            <td>Page number</td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>per_page</code></td>
+                                            <td>integer</td>
+                                            <td>Items per page (max: 100)</td>
+                                            <td>20</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>search</code></td>
+                                            <td>string</td>
+                                            <td>Search by username, email, or display name</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>role</code></td>
+                                            <td>string</td>
+                                            <td>Filter by role: user, admin, owner</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>sort</code></td>
+                                            <td>string</td>
+                                            <td>Sort field: created_at, username, email</td>
+                                            <td>created_at</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>order</code></td>
+                                            <td>string</td>
+                                            <td>Sort order: asc, desc</td>
+                                            <td>desc</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 123,
+      "username": "user123",
+      "email": "user@example.com",
+      "display_name": "User 123",
+      "role": "user",
+      "avatar_url": "https://example.com/avatars/user-123.jpg",
+      "created_at": "2024-01-10T08:00:00Z",
+      "last_login": "2024-01-15T10:30:00Z",
+      "stats": {
+        "mods_uploaded": 3,
+        "total_downloads": 500
+      },
+      "oauth_accounts": ["github"]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 20,
+    "total": 1250,
+    "total_pages": 63,
+    "has_next": true,
+    "has_prev": false
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code># Get all users
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/users" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"
+
+# Search for users
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/users?search=john&role=user" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Update User Role -->
+                            <div class="endpoint">
+                                <h3 id="update-user-role">
+                                    <span class="method put">PUT</span>
+                                    <code>/api/admin/users/{id}/role</code>
+                                </h3>
+                                <p>Update a user's role. Only owners can promote users to admin.</p>
+
+                                <h4>Path Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>id</code></td>
+                                            <td>integer</td>
+                                            <td>User ID</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN
+Content-Type: application/json</code></pre>
+                                </div>
+
+                                <h4>Request Body</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "role": "string"  // "user" or "admin" (admin promotion requires owner privileges)
+}</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "id": 123,
+    "username": "user123",
+    "role": "admin",
+    "updated_at": "2024-01-15T12:00:00Z",
+    "message": "User role updated successfully"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X PUT "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/users/123/role" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"role": "admin"}'</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- List All Mods -->
+                            <div class="endpoint">
+                                <h3 id="list-all-mods">
+                                    <span class="method get">GET</span>
+                                    <code>/api/admin/mods</code>
+                                </h3>
+                                <p>Get a list of all mods including pending and rejected ones.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</code></pre>
+                                </div>
+
+                                <h4>Query Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                            <th>Default</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>page</code></td>
+                                            <td>integer</td>
+                                            <td>Page number</td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>per_page</code></td>
+                                            <td>integer</td>
+                                            <td>Items per page (max: 100)</td>
+                                            <td>20</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>status</code></td>
+                                            <td>string</td>
+                                            <td>Filter by status: pending, approved, rejected</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>search</code></td>
+                                            <td>string</td>
+                                            <td>Search by title or author</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>sort</code></td>
+                                            <td>string</td>
+                                            <td>Sort field: created_at, updated_at, title</td>
+                                            <td>created_at</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>order</code></td>
+                                            <td>string</td>
+                                            <td>Sort order: asc, desc</td>
+                                            <td>desc</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 123,
+      "title": "Pending Mod",
+      "slug": "pending-mod",
+      "description": "A mod awaiting review",
+      "version": "1.0.0",
+      "status": "pending",
+      "downloads": 0,
+      "thumbnail_url": "https://example.com/thumbnails/mod-123.jpg",
+      "created_at": "2024-01-15T08:00:00Z",
+      "updated_at": "2024-01-15T08:00:00Z",
+      "author": {
+        "id": 456,
+        "username": "modder123",
+        "display_name": "Awesome Modder"
+      },
+      "category": {
+        "id": 1,
+        "name": "Full Mods",
+        "slug": "full-mods"
+      },
+      "review_notes": null
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 20,
+    "total": 150,
+    "total_pages": 8,
+    "has_next": true,
+    "has_prev": false
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code># Get all pending mods
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/mods?status=pending" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"
+
+# Search for mods
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/mods?search=romance" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Approve Mod -->
+                            <div class="endpoint">
+                                <h3 id="approve-mod">
+                                    <span class="method post">POST</span>
+                                    <code>/api/admin/mods/{id}/approve</code>
+                                </h3>
+                                <p>Approve a pending mod for public listing.</p>
+
+                                <h4>Path Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>id</code></td>
+                                            <td>integer</td>
+                                            <td>Mod ID</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN
+Content-Type: application/json</code></pre>
+                                </div>
+
+                                <h4>Request Body</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "review_notes": "string"  // optional admin notes
+}</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "id": 123,
+    "title": "Approved Mod",
+    "status": "approved",
+    "approved_at": "2024-01-15T12:00:00Z",
+    "approved_by": {
+      "id": 1,
+      "username": "admin",
+      "display_name": "Administrator"
+    },
+    "message": "Mod approved successfully"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X POST "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/mods/123/approve" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"review_notes": "Great mod, approved!"}'</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Reject Mod -->
+                            <div class="endpoint">
+                                <h3 id="reject-mod">
+                                    <span class="method post">POST</span>
+                                    <code>/api/admin/mods/{id}/reject</code>
+                                </h3>
+                                <p>Reject a pending mod and remove it from the system.</p>
+
+                                <h4>Path Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>id</code></td>
+                                            <td>integer</td>
+                                            <td>Mod ID</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN
+Content-Type: application/json</code></pre>
+                                </div>
+
+                                <h4>Request Body</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "reason": "string"  // required rejection reason
+}</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "id": 123,
+    "title": "Rejected Mod",
+    "status": "rejected",
+    "rejected_at": "2024-01-15T12:00:00Z",
+    "rejected_by": {
+      "id": 1,
+      "username": "admin",
+      "display_name": "Administrator"
+    },
+    "rejection_reason": "Does not meet quality standards",
+    "message": "Mod rejected and removed from system"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X POST "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/mods/123/reject" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Does not meet quality standards"}'</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Toggle Maintenance Mode -->
+                            <div class="endpoint">
+                                <h3 id="toggle-maintenance">
+                                    <span class="method post">POST</span>
+                                    <code>/api/admin/maintenance</code>
+                                </h3>
+                                <p>Toggle maintenance mode on or off. Only owners can use this endpoint.</p>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_OWNER_JWT_TOKEN
+Content-Type: application/json</code></pre>
+                                </div>
+
+                                <h4>Request Body</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "enabled": "boolean",  // true to enable, false to disable
+  "message": "string"    // optional maintenance message
+}</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "maintenance_mode": true,
+    "message": "System maintenance in progress",
+    "updated_at": "2024-01-15T12:00:00Z",
+    "updated_by": {
+      "id": 1,
+      "username": "owner",
+      "display_name": "Site Owner"
+    }
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X POST "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/maintenance" \
+  -H "Authorization: Bearer YOUR_OWNER_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true, "message": "System maintenance in progress"}'</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Delete User -->
+                            <div class="endpoint">
+                                <h3 id="delete-user">
+                                    <span class="method delete">DELETE</span>
+                                    <code>/api/admin/users/{id}</code>
+                                </h3>
+                                <p>Delete a user account and all associated data. Cannot delete admins or owners.</p>
+
+                                <h4>Path Parameters</h4>
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>id</code></td>
+                                            <td>integer</td>
+                                            <td>User ID</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>Headers</h4>
+                                <div class="code-block">
+                                    <pre><code>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</code></pre>
+                                </div>
+
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "data": {
+    "message": "User account deleted successfully",
+    "deleted_user": {
+      "id": 123,
+      "username": "deleteduser",
+      "email": "user@example.com"
+    },
+    "deleted_at": "2024-01-15T12:00:00Z"
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example</h4>
+                                <div class="code-block">
+                                    <pre><code>curl -X DELETE "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/admin/users/123" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Common Error Responses -->
+                            <h3>Common Error Responses</h3>
+
+                            <h4>Forbidden (403)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Admin privileges required"
+  }
+}</code></pre>
+                            </div>
+
+                            <h4>Insufficient Privileges (403)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "INSUFFICIENT_PRIVILEGES",
+    "message": "Owner privileges required for this action"
+  }
+}</code></pre>
+                            </div>
+
+                            <h4>Cannot Delete Admin (422)</h4>
+                            <div class="code-block">
+                                <pre><code>{
+  "success": false,
+  "error": {
+    "code": "CANNOT_DELETE_ADMIN",
+    "message": "Cannot delete admin or owner accounts"
+  }
+}</code></pre>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Next Steps</h3>
+                                <div class="link-grid">
+                                    <a href="/docs/api/endpoints/categories" class="quick-link">
+                                        <i class="fas fa-tags"></i>
+                                        <div>
+                                            <h4>Category Endpoints</h4>
+                                            <p>Browse categories and tags</p>
+                                        </div>
+                                    </a>
+                                    <a href="/docs/api/authentication" class="quick-link">
+                                        <i class="fas fa-key"></i>
+                                        <div>
+                                            <h4>Authentication</h4>
+                                            <p>Learn about API authentication</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/docs.js"></script>
+<%- include('../../../partials/footer') %>

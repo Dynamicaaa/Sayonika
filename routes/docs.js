@@ -102,32 +102,7 @@ router.get('/api/endpoints/categories', (req, res) => {
     renderDocPage(req, res, 'docs/api/endpoints/categories', 'Category Endpoints - API Reference', 'Category Endpoints');
 });
 
-// Examples section
-router.get('/examples', (req, res) => {
-    renderDocPage(req, res, 'docs/examples/index', 'Code Examples - Sayonika Documentation', 'Code Examples');
-});
-
-router.get('/examples/javascript', (req, res) => {
-    renderDocPage(req, res, 'docs/examples/javascript', 'JavaScript Examples - Sayonika Documentation', 'JavaScript Examples');
-});
-
-router.get('/examples/python', (req, res) => {
-    renderDocPage(req, res, 'docs/examples/python', 'Python Examples - Sayonika Documentation', 'Python Examples');
-});
-
-router.get('/examples/php', (req, res) => {
-    renderDocPage(req, res, 'docs/examples/php', 'PHP Examples - Sayonika Documentation', 'PHP Examples');
-});
-
-router.get('/integration-guides', (req, res) => {
-    renderDocPage(req, res, 'docs/integration-guides', 'Integration Guides - Sayonika Documentation', 'Integration Guides');
-});
-
-router.get('/webhooks', (req, res) => {
-    renderDocPage(req, res, 'docs/webhooks', 'Webhooks - Sayonika Documentation', 'Webhooks');
-});
-
-// Advanced section
+// Troubleshooting section
 router.get('/deployment', (req, res) => {
     renderDocPage(req, res, 'docs/deployment', 'Deployment - Sayonika Documentation', 'Deployment');
 });

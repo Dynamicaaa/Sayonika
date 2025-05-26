@@ -21,19 +21,17 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    
+
                     <nav class="sidebar-nav">
                         <div class="nav-section">
                             <h4>Getting Started</h4>
                             <ul>
                                 <li><a href="/docs" class="nav-link">Overview</a></li>
-                                <li><a href="/docs/getting-started" class="nav-link">Getting Started</a></li>
                                 <li><a href="/docs/installation" class="nav-link">Installation</a></li>
                                 <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
-                                <li><a href="/docs/first-run" class="nav-link">First Run</a></li>
                             </ul>
                         </div>
-                        
+
                         <div class="nav-section">
                             <h4>API Reference</h4>
                             <ul>
@@ -44,33 +42,18 @@
                                 <li><a href="/docs/api/error-handling" class="nav-link active">Error Handling</a></li>
                             </ul>
                         </div>
-                        
+
                         <div class="nav-section">
                             <h4>Endpoints</h4>
                             <ul>
                                 <li><a href="/docs/api/endpoints" class="nav-link">Overview</a></li>
                                 <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
                                 <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
-                                <li><a href="/docs/api/endpoints/users" class="nav-link">Users</a></li>
-                                <li><a href="/docs/api/endpoints/admin" class="nav-link">Admin</a></li>
-                                <li><a href="/docs/api/endpoints/categories" class="nav-link">Categories</a></li>
                             </ul>
                         </div>
-                        
+
                         <div class="nav-section">
-                            <h4>Examples</h4>
-                            <ul>
-                                <li><a href="/docs/examples" class="nav-link">Overview</a></li>
-                                <li><a href="/docs/examples/javascript" class="nav-link">JavaScript</a></li>
-                                <li><a href="/docs/examples/python" class="nav-link">Python</a></li>
-                                <li><a href="/docs/examples/php" class="nav-link">PHP</a></li>
-                                <li><a href="/docs/integration-guides" class="nav-link">Integration Guides</a></li>
-                                <li><a href="/docs/webhooks" class="nav-link">Webhooks</a></li>
-                            </ul>
-                        </div>
-                        
-                        <div class="nav-section">
-                            <h4>Advanced</h4>
+                            <h4>Troubleshooting</h4>
                             <ul>
                                 <li><a href="/docs/deployment" class="nav-link">Deployment</a></li>
                                 <li><a href="/docs/customization" class="nav-link">Customization</a></li>
@@ -439,11 +422,11 @@ Retry-After: 3600
   try {
     const response = await fetch(url, options);
     const data = await response.json();
-    
+
     if (!response.ok) {
       throw new APIError(data.error, response.status);
     }
-    
+
     return data;
   } catch (error) {
     if (error instanceof APIError) {
@@ -460,7 +443,7 @@ function handleAPIError(error) {
     case 'EXPIRED_TOKEN':
       // Refresh token and retry
       return refreshTokenAndRetry();
-      
+
     case 'RATE_LIMIT_EXCEEDED':
       // Wait and retry
       const retryAfter = error.details.retry_after * 1000;
@@ -468,17 +451,17 @@ function handleAPIError(error) {
         // Retry the request
       }, retryAfter);
       break;
-      
+
     case 'VALIDATION_ERROR':
       // Show validation errors to user
       displayValidationErrors(error.details.fields);
       break;
-      
+
     case 'INSUFFICIENT_PERMISSIONS':
       // Redirect to login or show permission error
       showPermissionError();
       break;
-      
+
     default:
       // Generic error handling
       showGenericError(error.message);
@@ -513,10 +496,10 @@ def handle_api_request(url: str, **kwargs) -> Dict[str, Any]:
     try:
         response = requests.request(**kwargs, url=url)
         data = response.json()
-        
+
         if not response.ok:
             raise APIError(data.get('error', {}), response.status_code)
-        
+
         return data
     except requests.RequestException as e:
         print(f"Network error: {e}")
@@ -567,7 +550,7 @@ except APIError as e:
 handle_api_error() {
     local status_code=$1
     local response_body=$2
-    
+
     case $status_code in
         400)
             echo "Bad Request: Check your request parameters"
@@ -607,17 +590,17 @@ api_request() {
     local url=$1
     local method=${2:-GET}
     local data=${3:-}
-    
+
     local response=$(curl -s -w "\n%{http_code}" \
         -X "$method" \
         -H "Authorization: Bearer $TOKEN" \
         -H "Content-Type: application/json" \
         ${data:+-d "$data"} \
         "$url")
-    
+
     local body=$(echo "$response" | head -n -1)
     local status_code=$(echo "$response" | tail -n 1)
-    
+
     if [[ $status_code -ge 200 && $status_code -lt 300 ]]; then
         echo "$body"
         return 0
@@ -636,7 +619,7 @@ api_request "https://your-domain.com/api/mods" "GET"</code></pre>
 
                             <!-- Debugging Tips -->
                             <h3>Debugging Tips</h3>
-                            
+
                             <div class="debugging-tips">
                                 <div class="tip">
                                     <h4><i class="fas fa-search"></i> Use Request IDs</h4>
