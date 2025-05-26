@@ -1192,6 +1192,84 @@ class Database {
         return await this.get(sql, [userId]);
     }
 
+    // Support tickets methods
+    async createSupportTicket(ticketData) {
+        const { user_id, name, email, subject, message, priority = 'medium' } = ticketData;
+
+        const sql = `
+            INSERT INTO support_tickets (user_id, name, email, subject, message, priority)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        return await this.run(sql, [user_id, name, email, subject, message, priority]);
+    }
+
+    async getSupportTickets(filters = {}) {
+        let sql = `
+            SELECT st.*, u.username, u.display_name
+            FROM support_tickets st
+            LEFT JOIN users u ON st.user_id = u.id
+            WHERE 1=1
+        `;
+        const params = [];
+
+        if (filters.status) {
+            sql += ' AND st.status = ?';
+            params.push(filters.status);
+        }
+
+        if (filters.priority) {
+            sql += ' AND st.priority = ?';
+            params.push(filters.priority);
+        }
+
+        if (filters.search) {
+            sql += ' AND (st.subject LIKE ? OR st.message LIKE ? OR st.name LIKE ? OR st.email LIKE ?)';
+            const searchTerm = `%${filters.search}%`;
+            params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+        }
+
+        sql += ' ORDER BY st.created_at DESC';
+
+        if (filters.limit) {
+            sql += ' LIMIT ?';
+            params.push(filters.limit);
+        }
+
+        return await this.all(sql, params);
+    }
+
+    async getSupportTicketById(id) {
+        const sql = `
+            SELECT st.*, u.username, u.display_name, u.avatar_url
+            FROM support_tickets st
+            LEFT JOIN users u ON st.user_id = u.id
+            WHERE st.id = ?
+        `;
+        return await this.get(sql, [id]);
+    }
+
+    async updateSupportTicketStatus(id, status) {
+        const sql = 'UPDATE support_tickets SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
+        return await this.run(sql, [status, id]);
+    }
+
+    async updateSupportTicketPriority(id, priority) {
+        const sql = 'UPDATE support_tickets SET priority = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
+        return await this.run(sql, [priority, id]);
+    }
+
+    async deleteSupportTicket(id) {
+        const sql = 'DELETE FROM support_tickets WHERE id = ?';
+        return await this.run(sql, [id]);
+    }
+
+    async getAdminEmails() {
+        const sql = 'SELECT email FROM users WHERE (is_admin = 1 OR is_owner = 1) AND email IS NOT NULL';
+        const admins = await this.all(sql);
+        return admins.map(admin => admin.email);
+    }
+
     // Site settings methods
     async getSiteSetting(key) {
         const sql = 'SELECT setting_value, setting_type FROM site_settings WHERE setting_key = ?';

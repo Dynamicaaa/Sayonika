@@ -304,6 +304,47 @@ router.get('/admin', async (req, res) => {
     }
 });
 
+// Admin ticket detail page
+router.get('/admin/tickets/:id', async (req, res) => {
+    if (!req.user || !req.user.is_admin) {
+        return res.status(403).render('error', {
+            title: 'Access Denied',
+            message: 'Admin access required.',
+            user: req.user,
+            currentPath: req.path
+        });
+    }
+
+    try {
+        const { id } = req.params;
+        const ticket = await db.getSupportTicketById(parseInt(id));
+
+        if (!ticket) {
+            return res.status(404).render('error', {
+                title: 'Ticket Not Found',
+                message: 'The requested support ticket could not be found.',
+                user: req.user,
+                currentPath: req.path
+            });
+        }
+
+        res.render('admin/ticket-detail', {
+            title: `Support Ticket #${ticket.id} - Sayonika`,
+            user: req.user,
+            ticket,
+            currentPath: req.path
+        });
+    } catch (error) {
+        console.error('Admin ticket detail error:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Internal server error',
+            user: req.user,
+            currentPath: req.path
+        });
+    }
+});
+
 // Maintenance page route
 router.get('/maintenance', async (req, res) => {
     try {

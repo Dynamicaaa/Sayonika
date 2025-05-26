@@ -192,6 +192,38 @@ class EmailService {
                     `
                 };
 
+            case 'support_ticket':
+                return {
+                    subject: `New Support Ticket: ${data.subject}`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+                                <h1 style="margin: 0; font-size: 28px;">New Support Ticket</h1>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
+                                <h2 style="color: #333; margin-top: 0;">Ticket Details</h2>
+                                <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea;">
+                                    <p style="margin: 0 0 10px 0;"><strong>Subject:</strong> ${data.subject}</p>
+                                    <p style="margin: 0 0 10px 0;"><strong>From:</strong> ${data.name} (${data.email})</p>
+                                    <p style="margin: 0 0 10px 0;"><strong>Priority:</strong> <span style="text-transform: capitalize; color: ${data.priority === 'urgent' ? '#dc3545' : data.priority === 'high' ? '#fd7e14' : data.priority === 'medium' ? '#ffc107' : '#28a745'};">${data.priority}</span></p>
+                                    ${data.username ? `<p style="margin: 0 0 10px 0;"><strong>User:</strong> ${data.username}</p>` : ''}
+                                    <p style="margin: 0 0 10px 0;"><strong>Ticket ID:</strong> #${data.ticketId}</p>
+                                </div>
+                                <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                                    <h3 style="color: #333; margin-top: 0;">Message:</h3>
+                                    <p style="font-size: 16px; line-height: 1.6; color: #555; white-space: pre-wrap;">${data.message}</p>
+                                </div>
+                                <div style="text-align: center; margin-top: 30px;">
+                                    <a href="${baseUrl}/admin/tickets/${data.ticketId}" style="background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">View Ticket</a>
+                                </div>
+                                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 14px;">
+                                    <p>This email was sent to all administrators and owners of Sayonika.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                };
+
             default:
                 return {
                     subject: 'Notification from Sayonika',
@@ -267,6 +299,40 @@ class EmailService {
             username,
             verificationToken
         });
+    }
+
+    async sendSupportTicketEmail(adminEmails, ticketData) {
+        this.ensureInitialized();
+
+        if (!this.isConfigured) {
+            console.log('[Email] Email service not configured, skipping support ticket email');
+            return { success: false, error: 'Email service not configured' };
+        }
+
+        if (!adminEmails || adminEmails.length === 0) {
+            console.log('[Email] No admin emails found, skipping support ticket email');
+            return { success: false, error: 'No admin emails found' };
+        }
+
+        try {
+            const template = this.generateEmailTemplate('support_ticket', ticketData);
+
+            // Send to all admins in one email with BCC
+            const mailOptions = {
+                from: `"Sayonika Support" <${process.env.SMTP_USER}>`,
+                to: adminEmails[0], // First admin as primary recipient
+                bcc: adminEmails.slice(1), // Rest as BCC
+                subject: template.subject,
+                html: template.html
+            };
+
+            const result = await this.transporter.sendMail(mailOptions);
+            console.log(`[Email] Support ticket email sent to ${adminEmails.length} admins: ${template.subject}`);
+            return { success: true, messageId: result.messageId };
+        } catch (error) {
+            console.error(`[Email] Failed to send support ticket email:`, error);
+            return { success: false, error: error.message };
+        }
     }
 }
 
