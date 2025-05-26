@@ -58,8 +58,7 @@ router.get('/github', optionalAuth, async (req, res, next) => {
 
                     console.log('Session saved successfully, proceeding with GitHub OAuth');
                     passport.authenticate('github', {
-                        scope: ['user:email'],
-                        state: req.query.token
+                        scope: ['user:email']
                     })(req, res, next);
                 });
                 return; // Important: return here to prevent the code below from executing
@@ -120,30 +119,26 @@ router.get('/github/callback', (req, res, next) => {
             sessionId: req.sessionID
         });
 
-        // If session doesn't indicate linking, check database for token
-        if (!wasLinking && req.query.state) {
+        // If session doesn't indicate linking, check database for any valid tokens for this user
+        if (!wasLinking && req.user) {
             try {
                 const Database = require('../database/database');
                 const db = new Database();
                 await db.connect();
 
-                // Check if the state parameter is a valid link token
-                const decoded = jwt.verify(req.query.state, process.env.JWT_SECRET || 'your-secret-key');
-                if (decoded.linkProvider === 'github') {
-                    // Verify token exists in database and hasn't expired
-                    const tokenRecord = await db.get(
-                        'SELECT user_id FROM oauth_link_tokens WHERE token = ? AND provider = ? AND expires_at > CURRENT_TIMESTAMP',
-                        [req.query.state, 'github']
-                    );
+                // Look for any valid GitHub link tokens for the current user
+                const tokenRecord = await db.get(
+                    'SELECT token, user_id FROM oauth_link_tokens WHERE user_id = ? AND provider = ? AND expires_at > CURRENT_TIMESTAMP ORDER BY created_at DESC LIMIT 1',
+                    [req.user.id, 'github']
+                );
 
-                    if (tokenRecord) {
-                        wasLinking = true;
-                        linkUserId = tokenRecord.user_id;
-                        console.log('GitHub OAuth linking detected via database token for user:', linkUserId);
+                if (tokenRecord) {
+                    wasLinking = true;
+                    linkUserId = tokenRecord.user_id;
+                    console.log('GitHub OAuth linking detected via database token for user:', linkUserId);
 
-                        // Clean up the used token
-                        await db.run('DELETE FROM oauth_link_tokens WHERE token = ?', [req.query.state]);
-                    }
+                    // Clean up the used token
+                    await db.run('DELETE FROM oauth_link_tokens WHERE token = ?', [tokenRecord.token]);
                 }
             } catch (error) {
                 console.log('Could not verify GitHub link token from database:', error.message);

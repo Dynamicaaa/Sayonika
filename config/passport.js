@@ -57,8 +57,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
         callbackURL: process.env.GITHUB_CALLBACK_URL || '/auth/github/callback',
         scope: ['user:email'],
-        passReqToCallback: true,
-        state: true
+        passReqToCallback: true
     }, async (req, accessToken, refreshToken, profile, done) => {
         try {
             console.log('GitHub OAuth callback - Profile:', JSON.stringify(profile, null, 2));
@@ -78,8 +77,29 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
             }
 
             // Check if this is a linking request (user is already logged in and wants to link GitHub)
-            if (req.session.linkUserId && req.session.linkProvider === 'github') {
-                console.log('GitHub OAuth linking request detected for user:', req.session.linkUserId);
+            let linkUserId = req.session.linkUserId;
+            let isLinking = req.session.linkProvider === 'github';
+
+            // If session doesn't indicate linking, check database for any valid tokens
+            if (!isLinking && req.user) {
+                try {
+                    const tokenRecord = await db.get(
+                        'SELECT user_id FROM oauth_link_tokens WHERE user_id = ? AND provider = ? AND expires_at > CURRENT_TIMESTAMP ORDER BY created_at DESC LIMIT 1',
+                        [req.user.id, 'github']
+                    );
+
+                    if (tokenRecord) {
+                        isLinking = true;
+                        linkUserId = tokenRecord.user_id;
+                        console.log('GitHub OAuth linking detected via database token in passport for user:', linkUserId);
+                    }
+                } catch (error) {
+                    console.log('Could not check database for GitHub link token in passport:', error.message);
+                }
+            }
+
+            if (linkUserId && isLinking) {
+                console.log('GitHub OAuth linking request detected for user:', linkUserId);
 
                 // Check if this GitHub account is already linked to another user
                 const existingUser = await db.get(
@@ -87,14 +107,14 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                     [profile.id]
                 );
 
-                if (existingUser && existingUser.id !== req.session.linkUserId) {
+                if (existingUser && existingUser.id !== linkUserId) {
                     console.log('GitHub account already linked to another user:', existingUser.username);
                     const errorMessage = `This GitHub account is already linked to another user: ${existingUser.display_name || existingUser.username} (@${existingUser.username}). Please unlink it from that account first, or contact support if this is your account.`;
                     return done(new Error(errorMessage), null);
                 }
 
                 // Get current user data to preserve existing avatar if it's not a default one
-                const currentUser = await db.get('SELECT avatar_url FROM users WHERE id = ?', [req.session.linkUserId]);
+                const currentUser = await db.get('SELECT avatar_url FROM users WHERE id = ?', [linkUserId]);
                 const shouldUpdateAvatar = !currentUser.avatar_url ||
                     currentUser.avatar_url.includes('picsum.photos') ||
                     currentUser.avatar_url.includes('default-avatar-');
@@ -113,7 +133,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                          avatar_url = ?,
                          last_login = CURRENT_TIMESTAMP
                          WHERE id = ?`,
-                        [profile.id, profile.username, profile.photos[0]?.value, req.session.linkUserId]
+                        [profile.id, profile.username, profile.photos[0]?.value, linkUserId]
                     );
                 } else {
                     await db.run(
@@ -122,16 +142,19 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                          github_username = ?,
                          last_login = CURRENT_TIMESTAMP
                          WHERE id = ?`,
-                        [profile.id, profile.username, req.session.linkUserId]
+                        [profile.id, profile.username, linkUserId]
                     );
                 }
 
                 // Get the updated user
-                const linkedUser = await db.get('SELECT * FROM users WHERE id = ?', [req.session.linkUserId]);
+                const linkedUser = await db.get('SELECT * FROM users WHERE id = ?', [linkUserId]);
 
-                // Clean up session data
+                // Clean up session data and database tokens
                 delete req.session.linkUserId;
                 delete req.session.linkProvider;
+
+                // Clean up any remaining tokens for this user and provider
+                await db.run('DELETE FROM oauth_link_tokens WHERE user_id = ? AND provider = ?', [linkUserId, 'github']);
 
                 console.log('GitHub account successfully linked to user:', linkedUser.id);
                 return done(null, linkedUser);
