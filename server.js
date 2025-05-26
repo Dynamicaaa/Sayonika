@@ -349,7 +349,6 @@ initializeServer().then(() => {
                 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
                 console.log(`Base URL: ${process.env.BASE_URL || `https://localhost:${PORT}`}`);
                 console.log(`Visit: https://localhost:${PORT}`);
-                console.log(`Network access: https://192.168.0.249:${PORT}`);
                 if (process.env.EXTERNAL_URL) {
                     console.log(`External access: ${process.env.EXTERNAL_URL}`);
                 }
@@ -365,7 +364,6 @@ initializeServer().then(() => {
                 console.log(`Sayonika HTTP server running on port ${PORT} (HTTPS failed)`);
                 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
                 console.log(`Visit: http://localhost:${PORT}`);
-                console.log(`Network access: http://192.168.0.249:${PORT}`);
             });
         }
     } else {
@@ -375,7 +373,6 @@ initializeServer().then(() => {
             console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`Base URL: ${process.env.BASE_URL || `http://localhost:${PORT}`}`);
             console.log(`Visit: http://localhost:${PORT}`);
-            console.log(`Network access: http://192.168.0.249:${PORT}`);
             if (process.env.EXTERNAL_URL) {
                 console.log(`External access: ${process.env.EXTERNAL_URL}`);
             }
