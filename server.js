@@ -29,6 +29,43 @@ const docsRoutes = require('./routes/docs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
+
+// Static files FIRST - before any other middleware that might interfere
+app.use(express.static(path.join(__dirname, 'public'), {
+    setHeaders: (res, filePath) => {
+        console.log(`Serving static file: ${filePath}`);
+        // Set proper MIME types and cache headers
+        if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (filePath.endsWith('.png')) {
+            res.setHeader('Content-Type', 'image/png');
+        } else if (filePath.endsWith('.ico')) {
+            res.setHeader('Content-Type', 'image/x-icon');
+        }
+
+        // Add cache headers for static assets in production
+        if (process.env.NODE_ENV !== 'development') {
+            res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
+        }
+    }
+}));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    setHeaders: (res, filePath) => {
+        // Set proper cache headers for uploads
+        if (process.env.NODE_ENV !== 'development') {
+            res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+        }
+    }
+}));
+
 // Initialize database
 const db = new Database();
 
@@ -202,41 +239,11 @@ app.use(passport.session());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Static files with proper headers
-app.use(express.static(path.join(__dirname, 'public'), {
-    setHeaders: (res, path) => {
-        // Set proper MIME types and cache headers
-        if (path.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
-        } else if (path.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript');
-        } else if (path.endsWith('.png')) {
-            res.setHeader('Content-Type', 'image/png');
-        } else if (path.endsWith('.ico')) {
-            res.setHeader('Content-Type', 'image/x-icon');
-        }
-
-        // Add cache headers for static assets in production
-        if (!isDevelopment) {
-            res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
-        }
-    }
-}));
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-    setHeaders: (res, path) => {
-        // Set proper cache headers for uploads
-        if (!isDevelopment) {
-            res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
-        }
-    }
-}));
-
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Apply authentication middleware globally
+// Apply authentication middleware globally - AFTER static files
 app.use(optionalAuth);
 
 // Make user and helpers available in all templates
@@ -251,6 +258,11 @@ app.use((req, res, next) => {
     }
 
     next();
+});
+
+// Favicon handler
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).end(); // No content for favicon if not found
 });
 
 // Routes
