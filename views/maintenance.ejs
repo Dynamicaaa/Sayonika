@@ -6,18 +6,29 @@
             <div class="maintenance-icon">
                 <i class="fas fa-tools"></i>
             </div>
-            
+
             <h1 class="maintenance-title">Site Under Maintenance</h1>
-            
+
             <div class="maintenance-message">
                 <p><%= message || 'Sayonika is currently undergoing maintenance. Please check back later!' %></p>
             </div>
-            
+
             <div class="maintenance-info">
                 <p>We're working hard to improve your experience. This shouldn't take too long!</p>
+                <p><strong>You can still browse mods</strong> while we perform maintenance.</p>
                 <p>Thank you for your patience.</p>
             </div>
-            
+
+            <div class="maintenance-actions">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Browse Mods
+                </a>
+
+                <a href="/browse" class="btn btn-outline-secondary">
+                    <i class="fas fa-search"></i> Search Mods
+                </a>
+            </div>
+
             <% if (user && user.is_admin) { %>
                 <div class="admin-notice">
                     <div class="alert alert-info">
@@ -27,13 +38,13 @@
                     </div>
                 </div>
             <% } %>
-            
-            <div class="maintenance-actions">
-                <button onclick="window.location.reload()" class="btn btn-primary">
+
+            <div class="maintenance-secondary-actions">
+                <button onclick="window.location.reload()" class="btn btn-sm btn-outline-light">
                     <i class="fas fa-sync-alt"></i> Try Again
                 </button>
-                
-                <a href="https://github.com/Dynamicaaa/Sayonika" class="btn btn-outline-secondary" target="_blank">
+
+                <a href="https://github.com/Dynamicaaa/Sayonika" class="btn btn-sm btn-outline-light" target="_blank">
                     <i class="fab fa-github"></i> GitHub
                 </a>
             </div>
@@ -115,6 +126,15 @@
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.maintenance-secondary-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
 }
 
 .maintenance-actions .btn {
@@ -154,20 +174,20 @@
         margin: 1rem;
         padding: 2rem 1.5rem;
     }
-    
+
     .maintenance-title {
         font-size: 2rem;
     }
-    
+
     .maintenance-icon {
         font-size: 3rem;
     }
-    
+
     .maintenance-actions {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .maintenance-actions .btn {
         width: 100%;
         max-width: 200px;
