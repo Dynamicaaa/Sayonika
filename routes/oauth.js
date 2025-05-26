@@ -24,6 +24,32 @@ router.get('/github', optionalAuth, async (req, res, next) => {
         req.session.rememberMe = true;
     }
 
+    // Store linking information if this is a link request
+    if (req.query.link === 'true') {
+        console.log('GitHub OAuth link request detected');
+        console.log('Current session linkUserId:', req.session.linkUserId);
+        console.log('Current session linkProvider:', req.session.linkProvider);
+
+        // Ensure the session data is preserved
+        if (!req.session.linkUserId || !req.session.linkProvider) {
+            console.log('Warning: Link session data missing, this might be a session persistence issue');
+            return res.redirect('/profile?error=session_lost');
+        }
+
+        // Save session before OAuth redirect to ensure persistence
+        return req.session.save((err) => {
+            if (err) {
+                console.error('Session save error before GitHub OAuth:', err);
+                return res.redirect('/profile?error=session_save_failed');
+            }
+
+            console.log('Session saved before GitHub OAuth redirect');
+            passport.authenticate('github', {
+                scope: ['user:email']
+            })(req, res, next);
+        });
+    }
+
     passport.authenticate('github', {
         scope: ['user:email']
     })(req, res, next);
@@ -166,7 +192,19 @@ router.get('/discord', optionalAuth, async (req, res, next) => {
         // Ensure the session data is preserved
         if (!req.session.linkUserId || !req.session.linkProvider) {
             console.log('Warning: Link session data missing, this might be a session persistence issue');
+            return res.redirect('/profile?error=session_lost');
         }
+
+        // Save session before OAuth redirect to ensure persistence
+        return req.session.save((err) => {
+            if (err) {
+                console.error('Session save error before Discord OAuth:', err);
+                return res.redirect('/profile?error=session_save_failed');
+            }
+
+            console.log('Session saved before Discord OAuth redirect');
+            passport.authenticate('discord')(req, res, next);
+        });
     }
 
     passport.authenticate('discord')(req, res, next);
