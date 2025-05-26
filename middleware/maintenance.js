@@ -43,7 +43,7 @@ const checkMaintenanceMode = async (req, res, next) => {
             '/favicon.ico'
         ];
 
-        // Allowed API routes (read-only for mod browsing)
+        // Allowed API routes during maintenance
         const allowedApiRoutes = [
             '/api/health',
             '/api/mods',      // GET only for browsing
