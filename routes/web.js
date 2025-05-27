@@ -261,6 +261,68 @@ router.get('/upload', async (req, res) => {
     }
 });
 
+// Edit mod page
+router.get('/mod/:identifier/edit', async (req, res) => {
+    if (!req.user) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const { identifier } = req.params;
+        let mod;
+
+        // Check if identifier is numeric (ID) or string (slug)
+        if (/^\d+$/.test(identifier)) {
+            mod = await db.getModById(parseInt(identifier));
+        } else {
+            mod = await db.getModBySlug(identifier);
+        }
+
+        if (!mod) {
+            return res.status(404).render('error', {
+                title: 'Mod Not Found',
+                message: 'The requested mod could not be found.',
+                user: req.user,
+                currentPath: req.path
+            });
+        }
+
+        // Check if user has permission to edit this mod
+        const canEdit = req.user.id === mod.author_id || req.user.is_admin;
+        if (!canEdit) {
+            return res.status(403).render('error', {
+                title: 'Access Denied',
+                message: 'You do not have permission to edit this mod.',
+                user: req.user,
+                currentPath: req.path
+            });
+        }
+
+        // Parse JSON fields for the form
+        mod.screenshots = mod.screenshots ? JSON.parse(mod.screenshots) : [];
+        mod.tags = mod.tags ? JSON.parse(mod.tags) : [];
+        mod.requirements = mod.requirements ? JSON.parse(mod.requirements) : {};
+
+        // Get categories for the form
+        const categories = await db.getCategories();
+
+        res.render('mod-edit', {
+            title: `Edit ${mod.title} - Sayonika`,
+            user: req.user,
+            mod,
+            categories
+        });
+    } catch (error) {
+        console.error('Mod edit page error:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Internal server error',
+            user: req.user,
+            currentPath: req.path
+        });
+    }
+});
+
 // Admin dashboard
 router.get('/admin', async (req, res) => {
     if (!req.user || !req.user.is_admin) {

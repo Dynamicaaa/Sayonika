@@ -1,0 +1,473 @@
+<%- include('partials/header', { title: title }) %>
+
+<div class="upload-page">
+    <div class="container">
+        <div class="upload-header">
+            <div class="upload-header-content">
+                <div class="upload-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h1>Edit Your Mod</h1>
+                <p>Update your mod information and files</p>
+                <div class="upload-steps">
+                    <div class="step active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Basic Info</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Files</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Details</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Review</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-content">
+            <form id="editForm" class="upload-form" enctype="multipart/form-data">
+                <input type="hidden" name="modId" value="<%= mod.id %>">
+
+                <!-- Progress indicator -->
+                <div class="form-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%"></div>
+                    </div>
+                    <span class="progress-text">Step 1 of 4</span>
+                </div>
+
+                <!-- Basic Information -->
+                <div class="form-section active" data-section="1">
+                    <div class="section-header">
+                        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+                        <p>Update your mod's basic information</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="title" class="form-label">
+                                Mod Title *
+                                <span class="label-hint">Choose a memorable and descriptive title</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    class="form-control"
+                                    required
+                                    maxlength="255"
+                                    placeholder="Enter your mod's title"
+                                    value="<%= mod.title %>"
+                                >
+                                <div class="input-feedback"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category_id" class="form-label">
+                                Category *
+                                <span class="label-hint">Select the most appropriate category</span>
+                            </label>
+                            <div class="select-wrapper">
+                                <select id="category_id" name="category_id" class="form-control" required>
+                                    <option value="">Choose a category...</option>
+                                    <% categories.forEach(category => { %>
+                                        <option value="<%= category.id %>" <%= mod.category_id === category.id ? 'selected' : '' %>><%= category.name %></option>
+                                    <% }); %>
+                                </select>
+                                <i class="fas fa-chevron-down select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="short_description" class="form-label">
+                            Short Description *
+                            <span class="label-hint">This will appear in mod listings and search results</span>
+                        </label>
+                        <div class="textarea-wrapper">
+                            <textarea
+                                id="short_description"
+                                name="short_description"
+                                class="form-control"
+                                rows="3"
+                                required
+                                maxlength="500"
+                                placeholder="Write a compelling short description that captures the essence of your mod..."
+                            ><%= mod.short_description || '' %></textarea>
+                            <div class="char-counter">
+                                <span class="char-count"><%= (mod.short_description || '').length %></span> / 500
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description" class="form-label">
+                            Full Description *
+                            <span class="label-hint">Provide detailed information about your mod's story, features, and content</span>
+                        </label>
+                        <div class="textarea-wrapper">
+                            <textarea
+                                id="description"
+                                name="description"
+                                class="form-control"
+                                rows="8"
+                                required
+                                placeholder="Describe your mod in detail. What's the story about? What new features does it include? What makes it special? Be as descriptive as possible to help users understand what they can expect..."
+                            ><%= mod.description || '' %></textarea>
+                            <div class="formatting-help">
+                                <small><i class="fas fa-info-circle"></i> You can use line breaks to organize your description</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <a href="/mod/<%= mod.slug %>" class="btn btn-outline">
+                            <i class="fas fa-arrow-left"></i> Back to Mod
+                        </a>
+                        <button type="button" class="btn btn-primary next-section" data-next="2">
+                            Next: Update Files <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mod File Upload -->
+                <div class="form-section" data-section="2">
+                    <div class="section-header">
+                        <h2><i class="fas fa-file-archive"></i> Update Files</h2>
+                        <p>Update your mod file and thumbnail image (optional)</p>
+                    </div>
+
+                    <div class="upload-grid">
+                        <div class="form-group file-upload-group">
+                            <label for="modFile" class="form-label">
+                                Mod Archive
+                                <span class="label-hint">Leave empty to keep current file, or upload a new version</span>
+                            </label>
+
+                            <!-- Current file info -->
+                            <% if (mod.file_path || mod.external_url) { %>
+                                <div class="current-file-info">
+                                    <div class="file-info-card">
+                                        <i class="fas fa-file-archive"></i>
+                                        <div class="file-details">
+                                            <span class="file-name">Current file: <%= mod.file_path ? mod.file_path.split('/').pop() : 'External URL' %></span>
+                                            <% if (mod.file_size) { %>
+                                                <span class="file-size"><%= (mod.file_size / (1024 * 1024)).toFixed(2) %> MB</span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <!-- Upload method toggle -->
+                            <div class="upload-method-toggle">
+                                <div class="toggle-buttons">
+                                    <button type="button" class="toggle-btn active" data-method="file">
+                                        <i class="fas fa-upload"></i> Upload New File
+                                    </button>
+                                    <button type="button" class="toggle-btn" data-method="url">
+                                        <i class="fas fa-link"></i> External URL
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- File upload area -->
+                            <div class="upload-method-content" id="fileUploadMethod">
+                                <div class="file-upload-area modern" id="fileUploadArea">
+                                    <input type="file" id="modFile" name="modFile" accept=".zip,.rar,.7z" style="display: none;">
+                                    <div class="upload-placeholder">
+                                        <div class="upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <div class="upload-text">
+                                            <h3>Drop your new mod file here</h3>
+                                            <p>or <span class="upload-link">click to browse</span></p>
+                                            <div class="upload-specs">
+                                                <span class="spec-item"><i class="fas fa-file-archive"></i> ZIP, RAR, 7Z</span>
+                                                <span class="spec-item"><i class="fas fa-weight-hanging"></i> Max Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="upload-progress" style="display: none;">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"></div>
+                                        </div>
+                                        <span class="progress-text">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- External URL input -->
+                            <div class="upload-method-content" id="urlUploadMethod" style="display: none;">
+                                <div class="url-input-section">
+                                    <div class="url-input-header">
+                                        <h4><i class="fas fa-link"></i> External Download URL</h4>
+                                        <p>Provide a direct link to your mod file hosted elsewhere</p>
+                                    </div>
+
+                                    <div class="input-wrapper">
+                                        <input
+                                            type="url"
+                                            id="externalUrl"
+                                            name="externalUrl"
+                                            class="form-control"
+                                            placeholder="https://github.com/username/mod/releases/download/v1.0.0/my-mod.zip"
+                                            value="<%= mod.external_url || '' %>"
+                                        >
+                                        <div class="input-feedback"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group thumbnail-upload-group">
+                            <label for="thumbnail" class="form-label">
+                                Thumbnail Image
+                                <span class="label-hint">Optional preview image for your mod</span>
+                            </label>
+
+                            <!-- Current thumbnail -->
+                            <% if (mod.thumbnail_url) { %>
+                                <div class="current-thumbnail-info">
+                                    <div class="current-thumbnail-preview">
+                                        <img src="<%= mod.thumbnail_url %>" alt="Current thumbnail">
+                                        <div class="thumbnail-overlay">
+                                            <span>Current thumbnail</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <div class="thumbnail-upload-area" id="thumbnailUploadArea">
+                                <input type="file" id="thumbnail" name="thumbnail" accept="image/*" style="display: none;">
+                                <div class="thumbnail-placeholder">
+                                    <div class="thumbnail-icon">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                    <p><%= mod.thumbnail_url ? 'Replace Thumbnail' : 'Add Thumbnail' %></p>
+                                    <small>300x200px recommended, max Loading...</small>
+                                </div>
+                                <div class="thumbnail-preview" style="display: none;">
+                                    <img src="" alt="Thumbnail preview">
+                                    <div class="thumbnail-overlay">
+                                        <button type="button" class="btn btn-sm btn-danger remove-thumbnail">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group version-group">
+                        <label for="version" class="form-label">
+                            Version *
+                            <span class="label-hint">Semantic versioning recommended (e.g., 1.0.0)</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input
+                                type="text"
+                                id="version"
+                                name="version"
+                                class="form-control"
+                                required
+                                maxlength="20"
+                                placeholder="1.0.0"
+                                pattern="[0-9]+\.[0-9]+(\.[0-9]+)?"
+                                title="Version should be in format like 1.0.0"
+                                value="<%= mod.version %>"
+                            >
+                            <div class="input-feedback"></div>
+                        </div>
+                        <div class="version-examples">
+                            <small>
+                                <i class="fas fa-lightbulb"></i>
+                                Examples: 1.0.0 (initial release), 1.1.0 (new features), 1.0.1 (bug fixes)
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-outline prev-section" data-prev="1">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary next-section" data-next="3">
+                            Next: Additional Details <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="form-section" data-section="3">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tags"></i> Additional Details</h2>
+                        <p>Update tags, changelog, and content ratings</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags" class="form-label">
+                            Tags
+                            <span class="label-hint">Help users discover your mod with relevant keywords</span>
+                        </label>
+                        <div class="tags-input-wrapper">
+                            <input
+                                type="text"
+                                id="tags"
+                                name="tags"
+                                class="form-control"
+                                placeholder="Type tags and press Enter (e.g., romance, horror, comedy)"
+                            >
+                            <div class="tags-container" id="tagsContainer">
+                                <% if (mod.tags && mod.tags.length > 0) { %>
+                                    <% mod.tags.forEach(tag => { %>
+                                        <span class="tag-item">
+                                            <%= tag %>
+                                            <button type="button" class="remove-tag" data-tag="<%= tag %>">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </span>
+                                    <% }); %>
+                                <% } %>
+                            </div>
+                            <div class="tags-suggestions">
+                                <small>
+                                    <i class="fas fa-lightbulb"></i>
+                                    Popular tags: romance, horror, comedy, drama, psychological, wholesome, yuri
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="changelog" class="form-label">
+                            Changelog
+                            <span class="label-hint">Describe what's new or changed in this version</span>
+                        </label>
+                        <div class="textarea-wrapper">
+                            <textarea
+                                id="changelog"
+                                name="changelog"
+                                class="form-control"
+                                rows="4"
+                                placeholder="What's new in this version? List new features, bug fixes, improvements, etc."
+                            ><%= mod.changelog || '' %></textarea>
+                            <div class="formatting-help">
+                                <small><i class="fas fa-info-circle"></i> Use bullet points or numbered lists for better readability</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-rating-section">
+                        <h3>Content Rating</h3>
+                        <div class="rating-options">
+                            <div class="form-check rating-option">
+                                <input type="checkbox" id="is_nsfw" name="is_nsfw" class="form-check-input" <%= mod.is_nsfw ? 'checked' : '' %>>
+                                <label for="is_nsfw" class="form-check-label">
+                                    <div class="rating-info">
+                                        <span class="rating-title">Mature/NSFW Content</span>
+                                        <span class="rating-desc">Contains adult themes, explicit content, or mature subject matter</span>
+                                    </div>
+                                    <i class="fas fa-exclamation-triangle rating-icon"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-outline prev-section" data-prev="2">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary next-section" data-next="4">
+                            Next: Screenshots & Review <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Screenshots & Review -->
+                <div class="form-section" data-section="4">
+                    <div class="section-header">
+                        <h2><i class="fas fa-images"></i> Screenshots & Final Review</h2>
+                        <p>Update screenshots and review your changes</p>
+                    </div>
+
+                    <div class="screenshots-section">
+                        <h3>Screenshots (Optional)</h3>
+                        <p>Update your mod screenshots (max Loading... each)</p>
+
+                        <!-- Current screenshots -->
+                        <% if (mod.screenshots && mod.screenshots.length > 0) { %>
+                            <div class="current-screenshots">
+                                <h4>Current Screenshots</h4>
+                                <div class="current-screenshots-grid">
+                                    <% mod.screenshots.forEach((screenshot, index) => { %>
+                                        <div class="current-screenshot-item" data-screenshot-index="<%= index %>">
+                                            <img src="<%= screenshot %>" alt="Screenshot <%= index + 1 %>">
+                                            <div class="screenshot-overlay">
+                                                <button type="button" class="btn btn-sm btn-danger remove-current-screenshot" data-screenshot="<%= screenshot %>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% } %>
+
+                        <div class="screenshots-upload modern">
+                            <div class="screenshot-slots" id="screenshotSlots">
+                                <!-- Screenshot slots will be dynamically generated -->
+                            </div>
+                            <input type="file" id="screenshotInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>Review Your Changes</h3>
+                        <div class="submission-summary" id="submissionSummary">
+                            <!-- Summary will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-outline prev-section" data-prev="3">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-outline save-draft-btn">
+                            <i class="fas fa-save"></i> Save as Draft
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Update Mod
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Terms Notice -->
+            <div class="terms-notice">
+                <div class="terms-content">
+                    <i class="fas fa-info-circle"></i>
+                    <p>
+                        By updating your mod, you confirm that any changes comply with our
+                        <a href="/guidelines" target="_blank">Community Guidelines</a>.
+                        Updated mods may require re-review before publication.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Pass mod data to JavaScript
+window.modData = <%-JSON.stringify(mod)%>;
+</script>
+
+<%- include('partials/footer', { scripts: ['/js/pages/mod-edit.js'] }) %>

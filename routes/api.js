@@ -427,15 +427,20 @@ router.get('/user/mods', requireAuth, async (req, res) => {
 });
 
 // User: Update own mod
-router.patch('/user/mods/:id', [
+router.patch('/user/mods/:id', upload.fields([
+    { name: 'modFile', maxCount: 1 },
+    { name: 'thumbnail', maxCount: 1 }
+]), [
     body('title').optional().isLength({ min: 1, max: 255 }).withMessage('Title must be 1-255 characters'),
     body('description').optional().isLength({ min: 1 }).withMessage('Description is required'),
     body('short_description').optional().isLength({ max: 500 }).withMessage('Short description must be less than 500 characters'),
     body('category_id').optional().isInt().withMessage('Category ID must be integer'),
     body('version').optional().isLength({ min: 1, max: 20 }).withMessage('Version must be 1-20 characters'),
-    body('is_nsfw').optional().isBoolean().withMessage('NSFW flag must be boolean'),
-    body('tags').optional().isArray().withMessage('Tags must be array'),
-    body('requirements').optional().isObject().withMessage('Requirements must be object')
+    body('is_nsfw').optional().isIn(['true', 'false', true, false]).withMessage('NSFW flag must be boolean'),
+    body('tags').optional().isJSON().withMessage('Tags must be valid JSON array'),
+    body('changelog').optional().isLength({ max: 2000 }).withMessage('Changelog must be less than 2000 characters'),
+    body('externalUrl').optional().isURL().withMessage('External URL must be valid'),
+    body('removedScreenshots').optional().isJSON().withMessage('Removed screenshots must be valid JSON array')
 ], requireAuth, async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -456,16 +461,76 @@ router.patch('/user/mods/:id', [
             return res.status(403).json({ error: 'You can only edit your own mods' });
         }
 
+        // Handle file uploads
+        const modFile = req.files && req.files.modFile ? req.files.modFile[0] : null;
+        const thumbnailFile = req.files && req.files.thumbnail ? req.files.thumbnail[0] : null;
+
+        // Check file size against database setting (only for file uploads)
+        if (modFile) {
+            const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
+            if (maxFileSizeMB && modFile.size > maxFileSizeMB * 1024 * 1024) {
+                // Delete the uploaded file since it exceeds the limit
+                try {
+                    await fs.unlink(modFile.path);
+                } catch (unlinkError) {
+                    console.error('Error deleting oversized file:', unlinkError);
+                }
+                return res.status(400).json({
+                    error: `File size exceeds the maximum limit of ${maxFileSizeMB}MB`
+                });
+            }
+        }
+
+        // Handle thumbnail upload
+        let thumbnailUrl = mod.thumbnail_url;
+        if (thumbnailFile) {
+            thumbnailUrl = `/uploads/mods/${thumbnailFile.filename}`;
+        }
+
+        // Parse tags if provided
+        let tags = mod.tags ? JSON.parse(mod.tags) : [];
+        if (req.body.tags) {
+            try {
+                tags = JSON.parse(req.body.tags);
+            } catch (e) {
+                return res.status(400).json({ error: 'Invalid tags format' });
+            }
+        }
+
+        // Handle removed screenshots
+        let screenshots = mod.screenshots ? JSON.parse(mod.screenshots) : [];
+        if (req.body.removedScreenshots) {
+            try {
+                const removedScreenshots = JSON.parse(req.body.removedScreenshots);
+                screenshots = screenshots.filter(screenshot => !removedScreenshots.includes(screenshot));
+            } catch (e) {
+                return res.status(400).json({ error: 'Invalid removed screenshots format' });
+            }
+        }
+
         const updateData = {
             title: req.body.title || mod.title,
             description: req.body.description || mod.description,
             short_description: req.body.short_description || mod.short_description,
             category_id: req.body.category_id || mod.category_id,
             version: req.body.version || mod.version,
-            is_nsfw: req.body.is_nsfw !== undefined ? req.body.is_nsfw : mod.is_nsfw,
-            tags: req.body.tags || (mod.tags ? JSON.parse(mod.tags) : []),
-            requirements: req.body.requirements || (mod.requirements ? JSON.parse(mod.requirements) : {})
+            is_nsfw: req.body.is_nsfw !== undefined ? (req.body.is_nsfw === 'true' || req.body.is_nsfw === true) : mod.is_nsfw,
+            tags: tags,
+            requirements: mod.requirements ? JSON.parse(mod.requirements) : {},
+            changelog: req.body.changelog || mod.changelog,
+            thumbnail_url: thumbnailUrl,
+            screenshots: screenshots
         };
+
+        // Handle file updates
+        if (modFile) {
+            updateData.file_path = modFile.path;
+            updateData.file_size = modFile.size;
+            updateData.external_url = null; // Clear external URL if uploading new file
+        } else if (req.body.externalUrl) {
+            updateData.external_url = req.body.externalUrl;
+            // Keep existing file_path and file_size if switching to external URL
+        }
 
         await db.updateMod(modId, updateData);
 
@@ -1391,24 +1456,26 @@ router.post('/support/ticket', [
 
 // Admin: Get support tickets
 router.get('/admin/support/tickets', [
-    query('status').optional().isIn(['open', 'in_progress', 'resolved', 'closed']).withMessage('Invalid status filter'),
-    query('priority').optional().isIn(['low', 'medium', 'high', 'urgent']).withMessage('Invalid priority filter'),
-    query('search').optional().isLength({ max: 100 }).withMessage('Search term too long'),
-    query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100')
+    query('status').optional({ values: 'falsy' }).isIn(['open', 'in_progress', 'resolved', 'closed']).withMessage('Invalid status filter'),
+    query('priority').optional({ values: 'falsy' }).isIn(['low', 'medium', 'high', 'urgent']).withMessage('Invalid priority filter'),
+    query('search').optional({ values: 'falsy' }).isLength({ max: 100 }).withMessage('Search term too long'),
+    query('limit').optional({ values: 'falsy' }).isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100')
 ], requireAuth, requireAdmin, async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            console.error('Support tickets validation errors:', errors.array());
             return res.status(400).json({ errors: errors.array() });
         }
 
         const filters = {
-            status: req.query.status,
-            priority: req.query.priority,
-            search: req.query.search,
+            status: req.query.status && req.query.status.trim() !== '' ? req.query.status : undefined,
+            priority: req.query.priority && req.query.priority.trim() !== '' ? req.query.priority : undefined,
+            search: req.query.search && req.query.search.trim() !== '' ? req.query.search : undefined,
             limit: parseInt(req.query.limit) || 50
         };
 
+        console.log('Support tickets filters:', filters);
         const tickets = await db.getSupportTickets(filters);
         res.json(tickets);
     } catch (error) {
