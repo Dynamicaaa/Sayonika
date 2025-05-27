@@ -166,7 +166,15 @@ router.post('/mods', requireAuth, upload.fields([
         const thumbnailFile = req.files.thumbnail ? req.files.thumbnail[0] : null;
 
         // Check file size against database setting
-        const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb') || 100;
+        const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
+
+        if (maxFileSizeMB === null || maxFileSizeMB === undefined) {
+            console.error('[Upload] max_file_size_mb setting not found in database');
+            return res.status(500).json({
+                error: 'File size limit setting not configured. Please contact administrator.'
+            });
+        }
+
         const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
 
         console.log(`[Upload] File size check - File: ${(modFile.size / 1024 / 1024).toFixed(2)}MB, Limit: ${maxFileSizeMB}MB`);
@@ -322,13 +330,24 @@ router.get('/categories', async (req, res) => {
 // Get public site settings (for file size limits, etc.)
 router.get('/settings/public', async (req, res) => {
     try {
-        const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb') || 100;
+        const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
+
+        if (maxFileSizeMB === null || maxFileSizeMB === undefined) {
+            console.error('[API] max_file_size_mb setting not found in database');
+            return res.status(500).json({
+                error: 'File size limit setting not found in database. Please contact administrator.'
+            });
+        }
+
+        console.log(`[API] Retrieved max_file_size_mb from database: ${maxFileSizeMB}MB`);
         res.json({
             max_file_size_mb: maxFileSizeMB
         });
     } catch (error) {
-        console.error('Get public settings error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('[API] Get public settings error:', error);
+        res.status(500).json({
+            error: 'Failed to retrieve settings from database. Please try again or contact support.'
+        });
     }
 });
 
@@ -868,6 +887,17 @@ router.put('/admin/settings', requireAuth, requireAdmin, async (req, res) => {
             return res.status(400).json({ error: 'Settings object is required' });
         }
 
+        console.log(`[Admin] Settings update requested by admin ${req.user.username}:`, settings);
+
+        // Validate specific settings
+        if ('max_file_size_mb' in settings) {
+            const maxFileSize = parseInt(settings.max_file_size_mb);
+            if (isNaN(maxFileSize) || maxFileSize < 1) {
+                return res.status(400).json({ error: 'Maximum file size must be a positive number' });
+            }
+            settings.max_file_size_mb = maxFileSize;
+        }
+
         // Update each setting
         for (const [key, value] of Object.entries(settings)) {
             let type = 'string';
@@ -881,18 +911,24 @@ router.put('/admin/settings', requireAuth, requireAdmin, async (req, res) => {
                 type = 'json';
             }
 
+            console.log(`[Admin] Updating setting ${key} = ${value} (type: ${type})`);
             await db.setSiteSetting(key, value, type);
         }
 
-        // Log maintenance mode changes
+        // Log specific setting changes
         if ('maintenance_mode' in settings) {
             console.log(`[Admin] Maintenance mode ${settings.maintenance_mode ? 'enabled' : 'disabled'} by admin ${req.user.username}`);
         }
 
+        if ('max_file_size_mb' in settings) {
+            console.log(`[Admin] Maximum file size limit updated to ${settings.max_file_size_mb}MB by admin ${req.user.username}`);
+        }
+
+        console.log(`[Admin] All settings updated successfully by admin ${req.user.username}`);
         res.json({ message: 'Settings updated successfully' });
     } catch (error) {
-        console.error('Update site settings error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('[Admin] Update site settings error:', error);
+        res.status(500).json({ error: 'Failed to update settings. Please try again.' });
     }
 });
 

@@ -579,15 +579,24 @@ async function saveSiteSettings() {
 
         if (maintenanceModeCheckbox) {
             settings.maintenance_mode = maintenanceModeCheckbox.checked;
+            serverLog('debug', `Maintenance mode setting: ${settings.maintenance_mode}`);
         }
 
         if (maxFileSizeInput) {
-            settings.max_file_size_mb = parseInt(maxFileSizeInput.value);
+            const maxFileSize = parseInt(maxFileSizeInput.value);
+            if (isNaN(maxFileSize) || maxFileSize < 1) {
+                throw new Error('Maximum file size must be a positive number');
+            }
+            settings.max_file_size_mb = maxFileSize;
+            serverLog('debug', `Max file size setting: ${settings.max_file_size_mb}MB`);
         }
 
         if (featuredModsCountInput) {
             settings.featured_mods_count = parseInt(featuredModsCountInput.value);
+            serverLog('debug', `Featured mods count setting: ${settings.featured_mods_count}`);
         }
+
+        serverLog('info', 'Saving site settings to database:', settings);
 
         const response = await fetch('/api/admin/settings', {
             method: 'PUT',
@@ -604,19 +613,19 @@ async function saveSiteSettings() {
 
         const result = await response.json();
 
-        serverLog('info', 'Site settings saved successfully');
+        serverLog('info', 'Site settings saved successfully to database');
 
         if (window.S && window.S.notify) {
-            window.S.notify.success('Settings saved successfully!');
+            window.S.notify.success('Settings saved successfully to database!');
         } else {
-            alert('Settings saved successfully!');
+            alert('Settings saved successfully to database!');
         }
 
         // Show special message if maintenance mode was toggled
         if ('maintenance_mode' in settings) {
             const message = settings.maintenance_mode
                 ? 'Maintenance mode has been enabled. New uploads and registrations are now blocked.'
-                : 'Maintenance mode has been disabled. The site is now fully operational.';
+                : 'Maintenance mode has been disabled. Normal operations have resumed.';
 
             if (window.S && window.S.notify) {
                 window.S.notify.info(message);
@@ -626,9 +635,14 @@ async function saveSiteSettings() {
             updateMaintenanceIndicator(settings.maintenance_mode);
         }
 
+        // Show special message if file size limit was changed
+        if ('max_file_size_mb' in settings) {
+            const message = `Maximum file size limit updated to ${settings.max_file_size_mb}MB`;
+            serverLog('info', message);
+        }
+
     } catch (error) {
-        console.error('Failed to save site settings:', error);
-        serverLog('error', `Failed to save site settings: ${error.message}`);
+        serverLog('error', 'Failed to save site settings:', error.message);
 
         if (window.S && window.S.notify) {
             window.S.notify.error(`Failed to save settings: ${error.message}`);

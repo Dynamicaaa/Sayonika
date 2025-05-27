@@ -300,15 +300,24 @@ async function handleFileSelect(file) {
     const placeholder = fileUploadArea.querySelector('.upload-placeholder');
 
     // Get dynamic file size limit from server
-    let maxSizeMB = 100; // Default fallback
+    let maxSizeMB;
     try {
         const response = await fetch('/api/settings/public');
-        if (response.ok) {
-            const settings = await response.json();
-            maxSizeMB = settings.max_file_size_mb || 100;
+        if (!response.ok) {
+            throw new Error(`Failed to fetch settings: ${response.status} ${response.statusText}`);
         }
+
+        const settings = await response.json();
+        if (!settings.max_file_size_mb) {
+            throw new Error('max_file_size_mb setting not found in database');
+        }
+
+        maxSizeMB = settings.max_file_size_mb;
+        console.log(`[Upload] Retrieved file size limit from database: ${maxSizeMB}MB`);
     } catch (error) {
-        console.warn('Could not fetch file size limit, using default 100MB');
+        console.error('[Upload] Failed to fetch file size limit from database:', error);
+        showNotification('Failed to retrieve file size limit from server. Please try again or contact support.', 'error');
+        return;
     }
 
     const maxSize = maxSizeMB * 1024 * 1024;
@@ -685,15 +694,24 @@ async function updateFileSizeLimitDisplay() {
     if (!placeholder) return;
 
     // Get dynamic file size limit from server
-    let maxSizeMB = 100; // Default fallback
+    let maxSizeMB;
     try {
         const response = await fetch('/api/settings/public');
-        if (response.ok) {
-            const settings = await response.json();
-            maxSizeMB = settings.max_file_size_mb || 100;
+        if (!response.ok) {
+            throw new Error(`Failed to fetch settings: ${response.status} ${response.statusText}`);
         }
+
+        const settings = await response.json();
+        if (!settings.max_file_size_mb) {
+            throw new Error('max_file_size_mb setting not found in database');
+        }
+
+        maxSizeMB = settings.max_file_size_mb;
+        console.log(`[Upload] Retrieved file size limit for display: ${maxSizeMB}MB`);
     } catch (error) {
-        console.warn('Could not fetch file size limit, using default 100MB');
+        console.error('[Upload] Failed to fetch file size limit for display:', error);
+        // For display purposes, we can show a generic message but still allow the form to load
+        maxSizeMB = 'Unknown';
     }
 
     // Update the placeholder content with the correct file size limit
