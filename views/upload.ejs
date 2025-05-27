@@ -1,6 +1,6 @@
 <%- include('partials/header', { title: title }) %>
 
-<div class="upload-page-redesigned">
+<div class="upload-page">
     <!-- Animated Background -->
     <div class="upload-background">
         <div class="bg-gradient"></div>
@@ -11,7 +11,7 @@
     <!-- Main Upload Container -->
     <div class="upload-container">
         <!-- Header Section -->
-        <div class="upload-header-redesigned">
+        <div class="upload-header">
             <div class="header-icon">
                 <div class="icon-wrapper">
                     <i class="fas fa-cloud-upload-alt"></i>
@@ -48,8 +48,8 @@
         </div>
 
         <!-- Form Container -->
-        <div class="form-container-redesigned">
-            <form id="uploadForm" class="upload-form-redesigned" enctype="multipart/form-data">
+        <div class="form-container">
+            <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
 
                 <!-- Step 1: Basic Information -->
                 <div class="form-step active" data-step="1">
@@ -402,4 +402,4 @@
     </div>
 </div>
 
-<%- include('partials/footer', { scripts: ['/js/pages/upload-redesigned.js'] }) %>
+<%- include('partials/footer', { scripts: ['/js/pages/upload.js'] }) %>
