@@ -666,7 +666,7 @@ function updateReviewSection() {
     `;
 }
 
-// Form submission handler
+// Form submission handler with upload progress
 async function handleFormSubmission(e) {
     e.preventDefault();
 
@@ -686,25 +686,16 @@ async function handleFormSubmission(e) {
         formData.delete('tags');
     }
 
+    // Create upload progress UI
+    const progressContainer = createUploadProgressUI();
+
     try {
         submitBtn.classList.add('btn-loading');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing upload...';
 
-        const response = await fetch('/api/mods', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            if (result.errors && Array.isArray(result.errors)) {
-                const errorMessages = result.errors.map(err => err.msg).join(', ');
-                throw new Error(`Validation errors: ${errorMessages}`);
-            }
-            throw new Error(result.error || 'Upload failed');
-        }
+        // Use XMLHttpRequest for progress tracking
+        const result = await uploadWithProgress(formData, progressContainer);
 
         showNotification('Mod uploaded successfully! It will be reviewed before being published.', 'success');
 
@@ -713,12 +704,185 @@ async function handleFormSubmission(e) {
         }, 2000);
 
     } catch (error) {
+        console.error('Upload error:', error);
         showNotification(error.message || 'Upload failed. Please try again.', 'error');
+
+        // Hide progress container on error
+        if (progressContainer && progressContainer.parentNode) {
+            progressContainer.parentNode.removeChild(progressContainer);
+        }
     } finally {
         submitBtn.classList.remove('btn-loading');
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Mod';
     }
+}
+
+// Create upload progress UI
+function createUploadProgressUI() {
+    // Remove any existing progress container
+    const existingProgress = document.querySelector('.upload-progress-overlay');
+    if (existingProgress) {
+        existingProgress.remove();
+    }
+
+    const progressOverlay = document.createElement('div');
+    progressOverlay.className = 'upload-progress-overlay';
+    progressOverlay.innerHTML = `
+        <div class="upload-progress-modal">
+            <div class="upload-progress-header">
+                <h3><i class="fas fa-cloud-upload-alt"></i> Uploading Mod</h3>
+                <p class="upload-status">Preparing upload...</p>
+            </div>
+            <div class="upload-progress-content">
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0%</div>
+                </div>
+                <div class="upload-details">
+                    <div class="upload-speed">Speed: --</div>
+                    <div class="upload-eta">ETA: --</div>
+                    <div class="upload-size">0 MB / 0 MB</div>
+                </div>
+            </div>
+            <div class="upload-progress-footer">
+                <button type="button" class="btn btn-secondary cancel-upload-btn">
+                    <i class="fas fa-times"></i> Cancel Upload
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(progressOverlay);
+    return progressOverlay;
+}
+
+// Upload with progress tracking using XMLHttpRequest
+function uploadWithProgress(formData, progressContainer) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        let startTime = Date.now();
+        let lastLoaded = 0;
+        let lastTime = startTime;
+
+        // Get UI elements
+        const progressFill = progressContainer.querySelector('.progress-fill');
+        const progressText = progressContainer.querySelector('.progress-text');
+        const uploadStatus = progressContainer.querySelector('.upload-status');
+        const uploadSpeed = progressContainer.querySelector('.upload-speed');
+        const uploadEta = progressContainer.querySelector('.upload-eta');
+        const uploadSize = progressContainer.querySelector('.upload-size');
+        const cancelBtn = progressContainer.querySelector('.cancel-upload-btn');
+
+        // Handle upload progress
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                const currentTime = Date.now();
+
+                // Update progress bar
+                progressFill.style.width = `${percentComplete}%`;
+                progressText.textContent = `${Math.round(percentComplete)}%`;
+
+                // Update status
+                uploadStatus.textContent = 'Uploading...';
+
+                // Calculate speed and ETA
+                const timeDiff = currentTime - lastTime;
+                if (timeDiff > 1000) { // Update every second
+                    const bytesDiff = e.loaded - lastLoaded;
+                    const speed = bytesDiff / (timeDiff / 1000); // bytes per second
+                    const speedMB = speed / (1024 * 1024); // MB per second
+
+                    uploadSpeed.textContent = `Speed: ${speedMB.toFixed(1)} MB/s`;
+
+                    // Calculate ETA
+                    const remainingBytes = e.total - e.loaded;
+                    const etaSeconds = remainingBytes / speed;
+                    const etaMinutes = Math.floor(etaSeconds / 60);
+                    const etaSecondsRemainder = Math.floor(etaSeconds % 60);
+
+                    if (etaMinutes > 0) {
+                        uploadEta.textContent = `ETA: ${etaMinutes}m ${etaSecondsRemainder}s`;
+                    } else {
+                        uploadEta.textContent = `ETA: ${etaSecondsRemainder}s`;
+                    }
+
+                    lastLoaded = e.loaded;
+                    lastTime = currentTime;
+                }
+
+                // Update size info
+                const loadedMB = (e.loaded / (1024 * 1024)).toFixed(1);
+                const totalMB = (e.total / (1024 * 1024)).toFixed(1);
+                uploadSize.textContent = `${loadedMB} MB / ${totalMB} MB`;
+            }
+        });
+
+        // Handle upload completion
+        xhr.addEventListener('load', () => {
+            uploadStatus.textContent = 'Processing...';
+            progressFill.style.width = '100%';
+            progressText.textContent = '100%';
+
+            try {
+                const result = JSON.parse(xhr.responseText);
+
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Success
+                    uploadStatus.textContent = 'Upload completed successfully!';
+                    setTimeout(() => {
+                        progressContainer.remove();
+                        resolve(result);
+                    }, 1000);
+                } else {
+                    // Server error
+                    if (result.errors && Array.isArray(result.errors)) {
+                        const errorMessages = result.errors.map(err => err.msg).join(', ');
+                        throw new Error(`Validation errors: ${errorMessages}`);
+                    }
+                    throw new Error(result.error || `Upload failed with status ${xhr.status}`);
+                }
+            } catch (parseError) {
+                console.error('Error parsing response:', parseError);
+                reject(new Error('Invalid server response'));
+            }
+        });
+
+        // Handle upload errors
+        xhr.addEventListener('error', () => {
+            console.error('Upload error occurred');
+            reject(new Error('Network error occurred during upload'));
+        });
+
+        // Handle upload timeout
+        xhr.addEventListener('timeout', () => {
+            console.error('Upload timeout');
+            reject(new Error('Upload timed out. Please try again with a smaller file or check your connection.'));
+        });
+
+        // Handle upload abort
+        xhr.addEventListener('abort', () => {
+            console.log('Upload cancelled by user');
+            reject(new Error('Upload cancelled'));
+        });
+
+        // Cancel button functionality
+        cancelBtn.addEventListener('click', () => {
+            xhr.abort();
+            progressContainer.remove();
+        });
+
+        // Configure request
+        xhr.open('POST', '/api/mods');
+        xhr.timeout = 30 * 60 * 1000; // 30 minutes timeout for large files
+
+        // Start upload
+        uploadStatus.textContent = 'Starting upload...';
+        xhr.send(formData);
+    });
 }
 
 function saveDraft() {
