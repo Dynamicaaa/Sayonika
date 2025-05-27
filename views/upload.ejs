@@ -1,136 +1,209 @@
 <%- include('partials/header', { title: title }) %>
 
 <div class="upload-page">
-    <div class="container">
-        <div class="upload-header">
-            <div class="upload-header-content">
-                <div class="upload-icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
+    <div class="container-fluid">
+        <!-- Modern Upload Header with Glass Effect -->
+        <div class="upload-header-modern">
+            <div class="header-background">
+                <div class="gradient-overlay"></div>
+                <div class="pattern-overlay"></div>
+            </div>
+            <div class="header-content">
+                <div class="upload-icon-modern">
+                    <div class="icon-glow">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
                 </div>
-                <h1>Upload Your Mod</h1>
-                <p>Share your creation with the DDLC community and let others experience your story</p>
-                <div class="upload-steps">
-                    <div class="step active" data-step="1">
-                        <span class="step-number">1</span>
-                        <span class="step-text">Basic Info</span>
-                    </div>
-                    <div class="step" data-step="2">
-                        <span class="step-number">2</span>
-                        <span class="step-text">Files</span>
-                    </div>
-                    <div class="step" data-step="3">
-                        <span class="step-number">3</span>
-                        <span class="step-text">Details</span>
-                    </div>
-                    <div class="step" data-step="4">
-                        <span class="step-number">4</span>
-                        <span class="step-text">Review</span>
+                <h1 class="upload-title">Upload Your Mod</h1>
+                <p class="upload-subtitle">Share your creation with the DDLC community and let others experience your story</p>
+
+                <!-- Enhanced Progress Steps -->
+                <div class="upload-steps-modern">
+                    <div class="steps-container">
+                        <div class="step-modern active" data-step="1">
+                            <div class="step-circle">
+                                <span class="step-number">1</span>
+                                <div class="step-glow"></div>
+                            </div>
+                            <div class="step-content">
+                                <span class="step-title">Basic Info</span>
+                                <span class="step-desc">Title & Description</span>
+                            </div>
+                        </div>
+                        <div class="step-connector"></div>
+                        <div class="step-modern" data-step="2">
+                            <div class="step-circle">
+                                <span class="step-number">2</span>
+                                <div class="step-glow"></div>
+                            </div>
+                            <div class="step-content">
+                                <span class="step-title">Files</span>
+                                <span class="step-desc">Upload & Thumbnail</span>
+                            </div>
+                        </div>
+                        <div class="step-connector"></div>
+                        <div class="step-modern" data-step="3">
+                            <div class="step-circle">
+                                <span class="step-number">3</span>
+                                <div class="step-glow"></div>
+                            </div>
+                            <div class="step-content">
+                                <span class="step-title">Details</span>
+                                <span class="step-desc">Tags & Settings</span>
+                            </div>
+                        </div>
+                        <div class="step-connector"></div>
+                        <div class="step-modern" data-step="4">
+                            <div class="step-circle">
+                                <span class="step-number">4</span>
+                                <div class="step-glow"></div>
+                            </div>
+                            <div class="step-content">
+                                <span class="step-title">Review</span>
+                                <span class="step-desc">Final Check</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="upload-content">
-            <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
-                <!-- Progress indicator -->
-                <div class="form-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 25%"></div>
+        <!-- Modern Form Container -->
+        <div class="upload-content-modern">
+            <div class="form-container-glass">
+                <form id="uploadForm" class="upload-form-modern" enctype="multipart/form-data">
+                    <!-- Enhanced Progress Indicator -->
+                    <div class="form-progress-modern">
+                        <div class="progress-track">
+                            <div class="progress-fill-modern" style="width: 25%"></div>
+                            <div class="progress-glow"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="progress-text-modern">Step 1 of 4</span>
+                            <span class="progress-percentage">25%</span>
+                        </div>
                     </div>
-                    <span class="progress-text">Step 1 of 4</span>
-                </div>
 
-                <!-- Basic Information -->
-                <div class="form-section active" data-section="1">
-                    <div class="section-header">
-                        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
-                        <p>Tell us about your mod and help users discover it</p>
-                    </div>
+                    <!-- Basic Information Section -->
+                    <div class="form-section-modern active" data-section="1">
+                        <div class="section-header-modern">
+                            <div class="section-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="section-title-content">
+                                <h2>Basic Information</h2>
+                                <p>Tell us about your mod and help users discover it</p>
+                            </div>
+                        </div>
 
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="title" class="form-label">
-                                Mod Title *
-                                <span class="label-hint">Choose a memorable and descriptive title</span>
+                        <div class="form-grid-modern">
+                            <div class="form-group-modern">
+                                <label for="title" class="form-label-modern">
+                                    <span class="label-text">Mod Title</span>
+                                    <span class="label-required">*</span>
+                                    <span class="label-hint">Choose a memorable and descriptive title</span>
+                                </label>
+                                <div class="input-wrapper-modern">
+                                    <div class="input-icon">
+                                        <i class="fas fa-heading"></i>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        id="title"
+                                        name="title"
+                                        class="form-control-modern"
+                                        required
+                                        maxlength="255"
+                                        placeholder="Enter your mod's title"
+                                    >
+                                    <div class="input-border"></div>
+                                    <div class="input-feedback-modern"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="category_id" class="form-label-modern">
+                                    <span class="label-text">Category</span>
+                                    <span class="label-required">*</span>
+                                    <span class="label-hint">Select the most appropriate category</span>
+                                </label>
+                                <div class="select-wrapper-modern">
+                                    <div class="select-icon">
+                                        <i class="fas fa-folder"></i>
+                                    </div>
+                                    <select id="category_id" name="category_id" class="form-control-modern" required>
+                                        <option value="">Choose a category...</option>
+                                        <% categories.forEach(category => { %>
+                                            <option value="<%= category.id %>"><%= category.name %></option>
+                                        <% }); %>
+                                    </select>
+                                    <div class="select-arrow-modern">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="input-border"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-modern full-width">
+                            <label for="short_description" class="form-label-modern">
+                                <span class="label-text">Short Description</span>
+                                <span class="label-required">*</span>
+                                <span class="label-hint">This will appear in mod listings and search results</span>
                             </label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="text"
-                                    id="title"
-                                    name="title"
-                                    class="form-control"
+                            <div class="textarea-wrapper-modern">
+                                <div class="textarea-icon">
+                                    <i class="fas fa-align-left"></i>
+                                </div>
+                                <textarea
+                                    id="short_description"
+                                    name="short_description"
+                                    class="form-control-modern textarea-modern"
+                                    rows="3"
                                     required
-                                    maxlength="255"
-                                    placeholder="Enter your mod's title"
-                                >
-                                <div class="input-feedback"></div>
+                                    maxlength="500"
+                                    placeholder="Write a compelling short description that captures the essence of your mod..."
+                                ></textarea>
+                                <div class="input-border"></div>
+                                <div class="char-counter-modern">
+                                    <span class="char-count">0</span> / 500
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="category_id" class="form-label">
-                                Category *
-                                <span class="label-hint">Select the most appropriate category</span>
+                        <div class="form-group-modern full-width">
+                            <label for="description" class="form-label-modern">
+                                <span class="label-text">Full Description</span>
+                                <span class="label-required">*</span>
+                                <span class="label-hint">Provide detailed information about your mod's story, features, and content</span>
                             </label>
-                            <div class="select-wrapper">
-                                <select id="category_id" name="category_id" class="form-control" required>
-                                    <option value="">Choose a category...</option>
-                                    <% categories.forEach(category => { %>
-                                        <option value="<%= category.id %>"><%= category.name %></option>
-                                    <% }); %>
-                                </select>
-                                <i class="fas fa-chevron-down select-arrow"></i>
+                            <div class="textarea-wrapper-modern">
+                                <div class="textarea-icon">
+                                    <i class="fas fa-file-text"></i>
+                                </div>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    class="form-control-modern textarea-modern"
+                                    rows="8"
+                                    required
+                                    placeholder="Describe your mod in detail. What's the story about? What new features does it include? What makes it special? Be as descriptive as possible to help users understand what they can expect..."
+                                ></textarea>
+                                <div class="input-border"></div>
+                                <div class="formatting-help-modern">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>You can use line breaks to organize your description</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="short_description" class="form-label">
-                            Short Description *
-                            <span class="label-hint">This will appear in mod listings and search results</span>
-                        </label>
-                        <div class="textarea-wrapper">
-                            <textarea
-                                id="short_description"
-                                name="short_description"
-                                class="form-control"
-                                rows="3"
-                                required
-                                maxlength="500"
-                                placeholder="Write a compelling short description that captures the essence of your mod..."
-                            ></textarea>
-                            <div class="char-counter">
-                                <span class="char-count">0</span> / 500
-                            </div>
+                        <div class="section-actions-modern">
+                            <button type="button" class="btn-modern btn-primary-modern next-section" data-next="2">
+                                <span>Next: Upload Files</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="description" class="form-label">
-                            Full Description *
-                            <span class="label-hint">Provide detailed information about your mod's story, features, and content</span>
-                        </label>
-                        <div class="textarea-wrapper">
-                            <textarea
-                                id="description"
-                                name="description"
-                                class="form-control"
-                                rows="8"
-                                required
-                                placeholder="Describe your mod in detail. What's the story about? What new features does it include? What makes it special? Be as descriptive as possible to help users understand what they can expect..."
-                            ></textarea>
-                            <div class="formatting-help">
-                                <small><i class="fas fa-info-circle"></i> You can use line breaks to organize your description</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section-actions">
-                        <button type="button" class="btn btn-primary next-section" data-next="2">
-                            Next: Upload Files <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
 
                 <!-- Mod File Upload -->
                 <div class="form-section" data-section="2">

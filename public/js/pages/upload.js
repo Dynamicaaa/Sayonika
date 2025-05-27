@@ -8,9 +8,9 @@ let currentUploadMethod = 'file'; // 'file' or 'url'
 
 // Initialize upload page event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[Upload] DOM Content Loaded - Initializing upload page...');
+    console.log('[Upload] DOM Content Loaded - Initializing modern upload page...');
 
-    // Initialize wizard to step 1
+    // Initialize wizard (modern UI compatible)
     initializeWizard();
     initializeStepNavigation();
     initializeFormValidation();
@@ -24,18 +24,18 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCharacterCounters();
     initializeFormSubmission();
 
-    // Load and update file size limit display
-    updateFileSizeLimitDisplay();
+    // Load and update file size limit display with proxy detection
+    updateFileSizeLimitDisplayWithProxy();
 
-    console.log('[Upload] Upload page initialization complete');
+    console.log('[Upload] Modern upload page initialization complete');
 });
 
 // Initialize wizard state
 function initializeWizard() {
     console.log('Initializing upload wizard...');
 
-    // Ensure only step 1 is visible on load
-    const allSections = document.querySelectorAll('.form-section');
+    // Ensure only step 1 is visible on load (support both old and modern classes)
+    const allSections = document.querySelectorAll('.form-section, .form-section-modern');
     console.log('Found', allSections.length, 'form sections');
 
     allSections.forEach((section, index) => {
@@ -52,17 +52,17 @@ function initializeWizard() {
         console.error('Step 1 section not found!');
     }
 
-    // Set step indicators
-    const stepIndicators = document.querySelectorAll('.upload-steps .step');
+    // Set step indicators (support both old and modern classes)
+    const stepIndicators = document.querySelectorAll('.upload-steps .step, .upload-steps-modern .step-modern');
     console.log('Found', stepIndicators.length, 'step indicators');
 
     stepIndicators.forEach((step, index) => {
         step.classList.toggle('active', index === 0);
     });
 
-    // Set progress bar
-    const progressFill = document.querySelector('.form-progress .progress-fill');
-    const progressText = document.querySelector('.form-progress .progress-text');
+    // Set progress bar (support both old and modern classes)
+    const progressFill = document.querySelector('.form-progress .progress-fill, .form-progress-modern .progress-fill-modern');
+    const progressText = document.querySelector('.form-progress .progress-text, .form-progress-modern .progress-text-modern');
     if (progressFill && progressText) {
         progressFill.style.width = '25%';
         progressText.textContent = 'Step 1 of 4';
@@ -94,8 +94,8 @@ function initializeStepNavigation() {
         });
     });
 
-    // Step indicator clicks
-    document.querySelectorAll('.upload-steps .step').forEach(step => {
+    // Step indicator clicks (support both old and modern classes)
+    document.querySelectorAll('.upload-steps .step, .upload-steps-modern .step-modern').forEach(step => {
         step.addEventListener('click', function() {
             const stepNumber = parseInt(this.dataset.step);
             if (stepNumber <= currentStep || validateStepsUpTo(stepNumber - 1)) {
@@ -108,8 +108,8 @@ function initializeStepNavigation() {
 function goToStep(step) {
     console.log(`Going to step ${step} from step ${currentStep}`);
 
-    // Hide current section
-    document.querySelectorAll('.form-section').forEach(section => {
+    // Hide current section (support both old and modern classes)
+    document.querySelectorAll('.form-section, .form-section-modern').forEach(section => {
         section.classList.remove('active');
     });
 
@@ -122,18 +122,26 @@ function goToStep(step) {
         console.error(`Step ${step} section not found!`);
     }
 
-    // Update step indicators
-    document.querySelectorAll('.upload-steps .step').forEach((stepEl, index) => {
+    // Update step indicators (support both old and modern classes)
+    document.querySelectorAll('.upload-steps .step, .upload-steps-modern .step-modern').forEach((stepEl, index) => {
         stepEl.classList.toggle('active', index + 1 === step);
     });
 
-    // Update progress bar
-    const progressFill = document.querySelector('.form-progress .progress-fill');
-    const progressText = document.querySelector('.form-progress .progress-text');
+    // Update progress bar (support both old and modern classes)
+    const progressFill = document.querySelector('.form-progress .progress-fill, .form-progress-modern .progress-fill-modern');
+    const progressText = document.querySelector('.form-progress .progress-text, .form-progress-modern .progress-text-modern');
+    const progressPercentage = document.querySelector('.form-progress-modern .progress-percentage');
+
     if (progressFill && progressText) {
         const percentage = (step / 4) * 100;
         progressFill.style.width = `${percentage}%`;
         progressText.textContent = `Step ${step} of 4`;
+
+        // Update percentage display for modern UI
+        if (progressPercentage) {
+            progressPercentage.textContent = `${percentage}%`;
+        }
+
         console.log(`Progress updated to ${percentage}%`);
     }
 
@@ -871,6 +879,59 @@ async function handleFormSubmission(e) {
 
 function saveDraft() {
     showNotification('Draft functionality coming soon!', 'info');
+}
+
+// Update file size limit display with proxy detection
+async function updateFileSizeLimitDisplayWithProxy() {
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const placeholder = fileUploadArea?.querySelector('.upload-placeholder');
+
+    if (!placeholder) return;
+
+    try {
+        console.log('[Upload] Fetching file size limits with proxy detection...');
+
+        const response = await fetch('/api/settings/public');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const settings = await response.json();
+        console.log('[Upload] Retrieved settings with proxy info:', settings);
+
+        maxSizeMB = settings.max_file_size_mb;
+        maxThumbnailSizeMB = settings.max_thumbnail_size_mb;
+        maxScreenshotSizeMB = settings.max_screenshot_size_mb;
+
+        // Store globally for use in validation functions
+        window.uploadSettings = {
+            maxFileSizeMB: maxSizeMB,
+            maxThumbnailSizeMB: maxThumbnailSizeMB,
+            maxScreenshotSizeMB: maxScreenshotSizeMB,
+            proxyInfo: settings.proxy_info || null
+        };
+
+        // Display proxy information if detected
+        if (settings.proxy_info) {
+            console.log('[Upload] Proxy detected:', settings.proxy_info);
+
+            let proxyType = 'Reverse Proxy';
+            if (settings.proxy_info.is_cloudflare) {
+                proxyType = 'Cloudflare';
+            } else if (settings.proxy_info.is_nginx) {
+                proxyType = 'Nginx';
+            }
+
+            // Show proxy info in console for debugging
+            console.log(`[Upload] File size limit enforced by ${proxyType}: ${maxSizeMB}MB`);
+        }
+
+        updateFileSizeLimitDisplay();
+    } catch (error) {
+        console.error('[Upload] Error fetching proxy-aware settings:', error);
+        // Fallback to original function
+        updateFileSizeLimitDisplay();
+    }
 }
 
 // Update file size limit display

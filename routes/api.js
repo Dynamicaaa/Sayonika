@@ -5,6 +5,7 @@ const fs = require('fs').promises;
 const { body, validationResult, query } = require('express-validator');
 const Database = require('../database/database');
 const { authenticateToken, requireAuth, requireAdmin, requireOwner, optionalAuth } = require('../middleware/auth');
+const { detectReverseProxy, getEffectiveFileLimit, getFileLimitMB } = require('../middleware/proxy-detection');
 const { deleteAvatarFile, generateDefaultThumbnail } = require('../utils/helpers');
 const emailService = require('../utils/emailService');
 
@@ -135,7 +136,7 @@ router.get('/mods/:identifier', optionalAuth, async (req, res) => {
 });
 
 // Create new mod
-router.post('/mods', requireAuth, upload.fields([
+router.post('/mods', requireAuth, detectReverseProxy, upload.fields([
     { name: 'modFile', maxCount: 1 },
     { name: 'thumbnail', maxCount: 1 }
 ]), [
@@ -363,17 +364,15 @@ router.get('/categories', async (req, res) => {
 });
 
 // Get public site settings (for file size limits, etc.)
-router.get('/settings/public', async (req, res) => {
+router.get('/settings/public', detectReverseProxy, async (req, res) => {
     try {
-        const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
+        // Get proxy-aware file size limit
+        const effectiveFileLimitMB = getFileLimitMB(req);
         const maxThumbnailSizeMB = await db.getSiteSetting('max_thumbnail_size_mb');
         const maxScreenshotSizeMB = await db.getSiteSetting('max_screenshot_size_mb');
 
-        // Check if all required settings exist
+        // Check if thumbnail and screenshot settings exist
         const missingSettings = [];
-        if (maxFileSizeMB === null || maxFileSizeMB === undefined) {
-            missingSettings.push('max_file_size_mb');
-        }
         if (maxThumbnailSizeMB === null || maxThumbnailSizeMB === undefined) {
             missingSettings.push('max_thumbnail_size_mb');
         }
@@ -388,12 +387,23 @@ router.get('/settings/public', async (req, res) => {
             });
         }
 
-        console.log(`[API] Retrieved file size limits from database - Mod: ${maxFileSizeMB}MB, Thumbnail: ${maxThumbnailSizeMB}MB, Screenshot: ${maxScreenshotSizeMB}MB`);
-        res.json({
-            max_file_size_mb: maxFileSizeMB,
+        const response = {
+            max_file_size_mb: effectiveFileLimitMB,
             max_thumbnail_size_mb: maxThumbnailSizeMB,
             max_screenshot_size_mb: maxScreenshotSizeMB
-        });
+        };
+
+        // Include proxy information for debugging
+        if (req.proxyInfo.isReverseProxy) {
+            response.proxy_info = {
+                is_cloudflare: req.proxyInfo.isCloudflare,
+                is_nginx: req.proxyInfo.isNginx,
+                detected_headers: req.proxyInfo.detectedHeaders
+            };
+        }
+
+        console.log(`[API] Retrieved file size limits - Mod: ${effectiveFileLimitMB}MB (proxy-aware), Thumbnail: ${maxThumbnailSizeMB}MB, Screenshot: ${maxScreenshotSizeMB}MB`);
+        res.json(response);
     } catch (error) {
         console.error('[API] Get public settings error:', error);
         res.status(500).json({
@@ -427,7 +437,7 @@ router.get('/user/mods', requireAuth, async (req, res) => {
 });
 
 // User: Update own mod
-router.patch('/user/mods/:id', upload.fields([
+router.patch('/user/mods/:id', detectReverseProxy, upload.fields([
     { name: 'modFile', maxCount: 1 },
     { name: 'thumbnail', maxCount: 1 }
 ]), [
@@ -465,18 +475,24 @@ router.patch('/user/mods/:id', upload.fields([
         const modFile = req.files && req.files.modFile ? req.files.modFile[0] : null;
         const thumbnailFile = req.files && req.files.thumbnail ? req.files.thumbnail[0] : null;
 
-        // Check file size against database setting (only for file uploads)
+        // Check file size against proxy-aware limits (only for file uploads)
         if (modFile) {
-            const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
-            if (maxFileSizeMB && modFile.size > maxFileSizeMB * 1024 * 1024) {
+            const effectiveLimit = getEffectiveFileLimit(req);
+            const limitMB = getFileLimitMB(req);
+
+            if (modFile.size > effectiveLimit) {
                 // Delete the uploaded file since it exceeds the limit
                 try {
                     await fs.unlink(modFile.path);
                 } catch (unlinkError) {
                     console.error('Error deleting oversized file:', unlinkError);
                 }
+
+                const proxyType = req.proxyInfo.isCloudflare ? 'Cloudflare' :
+                                 req.proxyInfo.isNginx ? 'reverse proxy' : 'system';
+
                 return res.status(400).json({
-                    error: `File size exceeds the maximum limit of ${maxFileSizeMB}MB`
+                    error: `File size exceeds the maximum limit of ${limitMB}MB (enforced by ${proxyType})`
                 });
             }
         }

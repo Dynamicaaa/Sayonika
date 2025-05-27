@@ -1,0 +1,436 @@
+// Modern Upload Form Styles
+@use 'sass:color';
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// Modern Form Container
+.upload-content-modern {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 1rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.form-container-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2rem;
+  padding: 3rem;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $primary-pink, $primary-blue, $primary-purple, $primary-yellow);
+    border-radius: 2rem 2rem 0 0;
+  }
+
+  @include media-breakpoint-down(md) {
+    padding: 2rem 1.5rem;
+    border-radius: 1.5rem;
+  }
+
+  @include media-breakpoint-down(sm) {
+    padding: 1.5rem 1rem;
+    border-radius: 1rem;
+  }
+}
+
+// Modern Progress Indicator
+.form-progress-modern {
+  margin-bottom: 3rem;
+  
+  .progress-track {
+    position: relative;
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+
+    .progress-fill-modern {
+      height: 100%;
+      background: linear-gradient(90deg, $primary-pink, $primary-blue, $primary-purple);
+      border-radius: 4px;
+      @include transition(width);
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: progressShimmer 2s infinite;
+      }
+    }
+
+    .progress-glow {
+      position: absolute;
+      top: -2px;
+      left: 0;
+      right: 0;
+      bottom: -2px;
+      background: linear-gradient(90deg, $primary-pink, $primary-blue, $primary-purple);
+      border-radius: 6px;
+      opacity: 0.3;
+      filter: blur(4px);
+      z-index: -1;
+    }
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .progress-text-modern {
+      font-size: 0.9rem;
+      color: $light-text;
+      font-weight: $font-weight-medium;
+    }
+
+    .progress-percentage {
+      font-size: 0.8rem;
+      color: $light-text-muted;
+      font-weight: $font-weight-semibold;
+    }
+  }
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+// Modern Form Sections
+.form-section-modern {
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  @include transition(all);
+
+  &.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    animation: fadeInUp 0.4s ease-out;
+  }
+}
+
+// Modern Section Headers
+.section-header-modern {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  @include media-breakpoint-down(md) {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .section-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba($primary-pink, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i {
+      font-size: 1.5rem;
+      color: $primary-pink;
+    }
+  }
+
+  .section-title-content {
+    flex: 1;
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: $font-weight-bold;
+      color: $light-text;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: $light-text-muted;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+}
+
+// Modern Form Grid
+.form-grid-modern {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @include media-breakpoint-down(md) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+// Modern Form Groups
+.form-group-modern {
+  margin-bottom: 2rem;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+// Modern Form Labels
+.form-label-modern {
+  display: block;
+  margin-bottom: 0.75rem;
+
+  .label-text {
+    font-size: 1rem;
+    font-weight: $font-weight-semibold;
+    color: $light-text;
+    display: block;
+  }
+
+  .label-required {
+    color: $primary-pink;
+    margin-left: 0.25rem;
+    font-weight: $font-weight-bold;
+  }
+
+  .label-hint {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: $font-weight-normal;
+    color: $light-text-muted;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+  }
+}
+
+// Modern Input Wrappers
+.input-wrapper-modern,
+.textarea-wrapper-modern,
+.select-wrapper-modern {
+  position: relative;
+
+  .input-icon,
+  .textarea-icon,
+  .select-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $light-text-muted;
+    z-index: 2;
+    @include transition(color);
+
+    i {
+      font-size: 1rem;
+    }
+  }
+
+  .textarea-icon {
+    top: 1rem;
+    transform: none;
+  }
+}
+
+// Modern Form Controls
+.form-control-modern {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  font-size: 1rem;
+  font-weight: $font-weight-normal;
+  line-height: 1.5;
+  color: $light-text;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  @include transition(all);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  &:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: $primary-pink;
+    box-shadow: 0 0 0 4px rgba($primary-pink, 0.2);
+
+    + .input-border {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+
+    ~ .input-icon i,
+    ~ .textarea-icon i,
+    ~ .select-icon i {
+      color: $primary-pink;
+    }
+  }
+
+  &::placeholder {
+    color: rgba($light-text-muted, 0.7);
+  }
+
+  &.textarea-modern {
+    padding: 1rem 1rem 1rem 3rem;
+    resize: vertical;
+    min-height: 120px;
+  }
+}
+
+// Input Border Animation
+.input-border {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, $primary-pink, $primary-blue);
+  border-radius: 1px;
+  opacity: 0;
+  transform: scaleX(0);
+  @include transition(all);
+}
+
+// Modern Select Arrow
+.select-arrow-modern {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $light-text-muted;
+  pointer-events: none;
+  @include transition(all);
+
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+.select-wrapper-modern:hover .select-arrow-modern {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+// Modern Character Counter
+.char-counter-modern {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 1rem;
+  font-size: 0.75rem;
+  color: $light-text-muted;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: $border-radius;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  .char-count {
+    font-weight: $font-weight-semibold;
+    color: $primary-pink;
+  }
+}
+
+// Modern Formatting Help
+.formatting-help-modern {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: $light-text-muted;
+
+  i {
+    color: $primary-blue;
+  }
+}
+
+// Modern Section Actions
+.section-actions-modern {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+  }
+}
+
+// Modern Buttons
+.btn-modern {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: $font-weight-semibold;
+  text-decoration: none;
+  border: none;
+  border-radius: $border-radius-lg;
+  cursor: pointer;
+  @include transition(all);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    @include transition(left);
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &.btn-primary-modern {
+    background: linear-gradient(135deg, $primary-pink, $primary-blue);
+    color: white;
+    box-shadow: 0 4px 15px rgba($primary-pink, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba($primary-pink, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  i {
+    font-size: 0.9rem;
+  }
+}
