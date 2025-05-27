@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeScreenshots();
     initializeCharacterCounters();
     initializeFormSubmission();
+
+    // Load and update file size limit display
+    updateFileSizeLimitDisplay();
 });
 
 // Initialize wizard state
@@ -388,20 +391,8 @@ function clearFileSelection() {
     // Remove the file-selected class
     fileUploadArea.classList.remove('file-selected');
 
-    // Reset the placeholder content
-    placeholder.innerHTML = `
-        <div class="upload-icon">
-            <i class="fas fa-cloud-upload-alt"></i>
-        </div>
-        <div class="upload-text">
-            <h3>Drop your mod file here</h3>
-            <p>or <span class="upload-link">click to browse</span></p>
-            <div class="upload-specs">
-                <span class="spec-item"><i class="fas fa-file-archive"></i> ZIP, RAR, 7Z</span>
-                <span class="spec-item"><i class="fas fa-weight-hanging"></i> Max 100MB</span>
-            </div>
-        </div>
-    `;
+    // Reset the placeholder content with dynamic file size limit
+    updateFileSizeLimitDisplay();
 }
 
 // Tags input
@@ -684,6 +675,41 @@ async function handleFormSubmission(e) {
 
 function saveDraft() {
     showNotification('Draft functionality coming soon!', 'info');
+}
+
+// Update file size limit display
+async function updateFileSizeLimitDisplay() {
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const placeholder = fileUploadArea?.querySelector('.upload-placeholder');
+
+    if (!placeholder) return;
+
+    // Get dynamic file size limit from server
+    let maxSizeMB = 100; // Default fallback
+    try {
+        const response = await fetch('/api/settings/public');
+        if (response.ok) {
+            const settings = await response.json();
+            maxSizeMB = settings.max_file_size_mb || 100;
+        }
+    } catch (error) {
+        console.warn('Could not fetch file size limit, using default 100MB');
+    }
+
+    // Update the placeholder content with the correct file size limit
+    placeholder.innerHTML = `
+        <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <div class="upload-text">
+            <h3>Drop your mod file here</h3>
+            <p>or <span class="upload-link">click to browse</span></p>
+            <div class="upload-specs">
+                <span class="spec-item"><i class="fas fa-file-archive"></i> ZIP, RAR, 7Z</span>
+                <span class="spec-item"><i class="fas fa-weight-hanging"></i> Max ${maxSizeMB}MB</span>
+            </div>
+        </div>
+    `;
 }
 
 // Utility functions
