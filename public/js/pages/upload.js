@@ -8,12 +8,17 @@ let currentUploadMethod = 'file'; // 'file' or 'url'
 
 // Initialize upload page event listeners
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[Upload] DOM Content Loaded - Initializing upload page...');
+
     // Initialize wizard to step 1
     initializeWizard();
     initializeStepNavigation();
     initializeFormValidation();
     initializeFileUploads();
+
+    console.log('[Upload] About to initialize upload method toggle...');
     initializeUploadMethodToggle();
+
     initializeTagsInput();
     initializeScreenshots();
     initializeCharacterCounters();
@@ -21,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load and update file size limit display
     updateFileSizeLimitDisplay();
+
+    console.log('[Upload] Upload page initialization complete');
 });
 
 // Initialize wizard state
@@ -458,12 +465,33 @@ function clearFileSelection() {
 
 // Upload method toggle
 function initializeUploadMethodToggle() {
+    console.log('[Upload] Initializing upload method toggle...');
+
     const toggleButtons = document.querySelectorAll('.toggle-btn');
     const fileUploadMethod = document.getElementById('fileUploadMethod');
     const urlUploadMethod = document.getElementById('urlUploadMethod');
 
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', function() {
+    console.log('[Upload] Found toggle buttons:', toggleButtons.length);
+    console.log('[Upload] File upload method element:', fileUploadMethod);
+    console.log('[Upload] URL upload method element:', urlUploadMethod);
+
+    if (toggleButtons.length === 0) {
+        console.error('[Upload] No toggle buttons found! Check HTML structure.');
+        return;
+    }
+
+    if (!fileUploadMethod || !urlUploadMethod) {
+        console.error('[Upload] Upload method containers not found!');
+        return;
+    }
+
+    toggleButtons.forEach((button, index) => {
+        console.log(`[Upload] Setting up button ${index}:`, button.dataset.method);
+
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('[Upload] Button clicked:', this.dataset.method);
+
             const method = this.dataset.method;
 
             // Update active state
@@ -472,11 +500,13 @@ function initializeUploadMethodToggle() {
 
             // Update current method
             currentUploadMethod = method;
+            console.log('[Upload] Current upload method set to:', currentUploadMethod);
 
             // Show/hide appropriate content
             if (method === 'file') {
                 fileUploadMethod.style.display = 'block';
                 urlUploadMethod.style.display = 'none';
+                console.log('[Upload] Switched to file upload mode');
 
                 // Clear external URL if switching away from it
                 const externalUrlInput = document.getElementById('externalUrl');
@@ -487,18 +517,19 @@ function initializeUploadMethodToggle() {
             } else if (method === 'url') {
                 fileUploadMethod.style.display = 'none';
                 urlUploadMethod.style.display = 'block';
+                console.log('[Upload] Switched to URL upload mode');
 
                 // Clear file input if switching away from it
                 clearFileSelection();
             }
-
-            console.log(`Upload method switched to: ${method}`);
         });
     });
 
     // Initialize external URL validation
     const externalUrlInput = document.getElementById('externalUrl');
     if (externalUrlInput) {
+        console.log('[Upload] Setting up external URL validation');
+
         externalUrlInput.addEventListener('input', function() {
             validateField(this);
         });
@@ -506,7 +537,11 @@ function initializeUploadMethodToggle() {
         externalUrlInput.addEventListener('blur', function() {
             validateField(this);
         });
+    } else {
+        console.warn('[Upload] External URL input not found');
     }
+
+    console.log('[Upload] Upload method toggle initialization complete');
 }
 
 // Tags input
