@@ -84,15 +84,20 @@
         <div class="mod-content">
             <div class="mod-main">
                 <!-- Screenshots -->
+                <!-- DEBUG: Screenshots data -->
+                <script>console.log('Screenshots data:', <%- JSON.stringify(mod.screenshots) %>);</script>
                 <% if (mod.screenshots && mod.screenshots.length > 0) { %>
                     <div class="content-section">
-                        <h2>Screenshots</h2>
+                        <h2>Screenshots (<%= mod.screenshots.length %>)</h2>
                         <div class="screenshots-gallery">
                             <% mod.screenshots.forEach(screenshot => { %>
                                 <img src="<%= screenshot %>" alt="Screenshot" class="screenshot" data-screenshot="<%= screenshot %>">
                             <% }); %>
                         </div>
                     </div>
+                <% } else { %>
+                    <!-- DEBUG: No screenshots found -->
+                    <script>console.log('No screenshots found. Screenshots:', <%- JSON.stringify(mod.screenshots) %>);</script>
                 <% } %>
 
                 <!-- Description -->

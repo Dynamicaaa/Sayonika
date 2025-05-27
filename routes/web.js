@@ -137,7 +137,9 @@ router.get('/mod/:identifier', async (req, res) => {
         }
 
         // Parse JSON fields
+        console.log(`[DEBUG] Raw screenshots data for mod ${mod.slug}:`, mod.screenshots);
         mod.screenshots = mod.screenshots ? JSON.parse(mod.screenshots) : [];
+        console.log(`[DEBUG] Parsed screenshots for mod ${mod.slug}:`, mod.screenshots);
         mod.tags = mod.tags ? JSON.parse(mod.tags) : [];
         mod.requirements = mod.requirements ? JSON.parse(mod.requirements) : {};
 
