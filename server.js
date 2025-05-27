@@ -240,16 +240,6 @@ app.use(passport.session());
 app.use(express.json({ limit: '10gb' }));
 app.use(express.urlencoded({ extended: true, limit: '10gb' }));
 
-// Configure server timeouts for large file uploads
-app.use((req, res, next) => {
-    // Set longer timeout for upload endpoints
-    if (req.path === '/api/mods' && req.method === 'POST') {
-        req.setTimeout(30 * 60 * 1000); // 30 minutes for mod uploads
-        res.setTimeout(30 * 60 * 1000); // 30 minutes for response
-    }
-    next();
-});
-
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

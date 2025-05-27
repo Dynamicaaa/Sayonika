@@ -562,6 +562,118 @@ body.dark-theme .thumbnail-upload-area {
   }
 }
 
+// Upload method toggle
+.upload-method-toggle {
+  margin-bottom: 1.5rem;
+
+  .toggle-buttons {
+    display: flex;
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+    border: 1px solid $border-color;
+    background-color: $light-surface;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    color: $light-text-muted;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    @include transition(all);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &:hover {
+      background-color: rgba($primary-pink, 0.05);
+      color: $primary-pink;
+    }
+
+    &.active {
+      background-color: $primary-pink;
+      color: white;
+    }
+
+    i {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+body.dark-theme .upload-method-toggle {
+  .toggle-buttons {
+    border-color: $dark-surface-light;
+    background-color: $dark-surface;
+  }
+
+  .toggle-btn {
+    color: $dark-text-muted;
+
+    &:hover {
+      background-color: rgba($primary-pink, 0.1);
+      color: $primary-pink;
+    }
+
+    &.active {
+      background-color: $primary-pink;
+      color: white;
+    }
+  }
+}
+
+// Upload method content
+.upload-method-content {
+  @include transition(all);
+}
+
+// External URL upload styles
+.url-upload-specs {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgba($primary-blue, 0.05);
+  border-radius: $border-radius-lg;
+  border-left: 4px solid $primary-blue;
+
+  .spec-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    i {
+      color: $primary-blue;
+      margin-top: 0.125rem;
+      flex-shrink: 0;
+    }
+
+    span {
+      color: $light-text;
+    }
+  }
+}
+
+body.dark-theme .url-upload-specs {
+  background-color: rgba($primary-blue, 0.1);
+  border-left-color: $primary-blue;
+
+  .spec-item {
+    span {
+      color: $dark-text;
+    }
+  }
+}
+
 // File upload area
 .file-upload-area {
   border: 2px dashed $border-color;
@@ -1418,228 +1530,5 @@ body.dark-theme .upload-page {
     &:not(.btn):not(.form-control):not(.upload-icon):not(.tag-item) {
       color: inherit;
     }
-  }
-}
-
-// Upload progress overlay styles
-.upload-progress-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  animation: fadeIn 0.3s ease-out;
-
-  .upload-progress-modal {
-    background: $light-surface;
-    border-radius: $border-radius-xl;
-    padding: 2rem;
-    min-width: 500px;
-    max-width: 600px;
-    box-shadow: $box-shadow-lg;
-    border: 1px solid $border-color;
-    animation: slideUp 0.3s ease-out;
-
-    .upload-progress-header {
-      text-align: center;
-      margin-bottom: 2rem;
-
-      h3 {
-        color: $light-text;
-        margin-bottom: 0.5rem;
-        font-size: 1.5rem;
-        font-weight: $font-weight-bold;
-
-        i {
-          margin-right: 0.5rem;
-          color: $primary-pink;
-        }
-      }
-
-      .upload-status {
-        color: $light-text-muted;
-        font-size: 1rem;
-        margin: 0;
-      }
-    }
-
-    .upload-progress-content {
-      margin-bottom: 2rem;
-
-      .progress-bar-container {
-        position: relative;
-        margin-bottom: 1.5rem;
-
-        .progress-bar {
-          width: 100%;
-          height: 12px;
-          background: rgba($light-text-muted, 0.1);
-          border-radius: 6px;
-          overflow: hidden;
-          border: 1px solid $border-color;
-
-          .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, $primary-pink, $primary-blue);
-            border-radius: 6px;
-            @include transition(width);
-            position: relative;
-
-            &::after {
-              content: '';
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.3),
-                transparent
-              );
-              animation: shimmer 2s infinite;
-            }
-          }
-        }
-
-        .progress-text {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-weight: $font-weight-bold;
-          color: $light-text;
-          font-size: 0.9rem;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-        }
-      }
-
-      .upload-details {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 1rem;
-        text-align: center;
-
-        > div {
-          padding: 0.75rem;
-          background: rgba($light-text, 0.05);
-          border-radius: $border-radius;
-          border: 1px solid $border-color;
-          font-size: 0.9rem;
-          color: $light-text-muted;
-        }
-
-        .upload-speed {
-          color: $success;
-        }
-
-        .upload-eta {
-          color: $warning;
-        }
-
-        .upload-size {
-          color: $info;
-        }
-      }
-    }
-
-    .upload-progress-footer {
-      text-align: center;
-
-      .cancel-upload-btn {
-        background: $danger;
-        border: none;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: $border-radius;
-        font-weight: $font-weight-semibold;
-        cursor: pointer;
-        @include transition(all);
-
-        &:hover {
-          background: color.adjust($danger, $lightness: -10%);
-          transform: translateY(-1px);
-        }
-
-        i {
-          margin-right: 0.5rem;
-        }
-      }
-    }
-  }
-}
-
-// Dark theme upload progress overlay
-body.dark-theme .upload-progress-overlay {
-  .upload-progress-modal {
-    background: $dark-surface;
-    border-color: $dark-surface-light;
-
-    .upload-progress-header {
-      h3 {
-        color: $dark-text;
-      }
-
-      .upload-status {
-        color: $dark-text-muted;
-      }
-    }
-
-    .upload-progress-content {
-      .progress-bar-container {
-        .progress-bar {
-          background: rgba($dark-text-muted, 0.1);
-          border-color: $dark-surface-light;
-        }
-
-        .progress-text {
-          color: $dark-text;
-        }
-      }
-
-      .upload-details {
-        > div {
-          background: rgba($dark-text, 0.05);
-          border-color: $dark-surface-light;
-          color: $dark-text-muted;
-        }
-      }
-    }
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
   }
 }

@@ -39,10 +39,7 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 10 * 1024 * 1024 * 1024, // 10GB limit to allow any reasonable file size
-        fieldSize: 10 * 1024 * 1024, // 10MB for form fields
-        fields: 20, // Maximum number of non-file fields
-        files: 10 // Maximum number of file fields
+        fileSize: 10 * 1024 * 1024 * 1024 // 10GB limit to allow any reasonable file size
     },
     fileFilter: (req, file, cb) => {
         const ext = path.extname(file.originalname).toLowerCase();
@@ -137,45 +134,11 @@ router.get('/mods/:identifier', optionalAuth, async (req, res) => {
     }
 });
 
-// Create new mod with enhanced error handling
-router.post('/mods', requireAuth, (req, res, next) => {
-    // Set longer timeout for this specific route
-    req.setTimeout(30 * 60 * 1000); // 30 minutes
-    res.setTimeout(30 * 60 * 1000); // 30 minutes
-
-    // Handle multer errors
-    upload.fields([
-        { name: 'modFile', maxCount: 1 },
-        { name: 'thumbnail', maxCount: 1 }
-    ])(req, res, (err) => {
-        if (err) {
-            console.error('Multer upload error:', err);
-
-            if (err.code === 'LIMIT_FILE_SIZE') {
-                return res.status(413).json({
-                    error: 'File too large. Please check the file size limits in the admin panel.'
-                });
-            } else if (err.code === 'LIMIT_FIELD_VALUE') {
-                return res.status(413).json({
-                    error: 'Form field value too large.'
-                });
-            } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-                return res.status(400).json({
-                    error: 'Unexpected file field.'
-                });
-            } else if (err.message.includes('Only')) {
-                return res.status(400).json({
-                    error: err.message
-                });
-            } else {
-                return res.status(500).json({
-                    error: 'File upload failed. Please try again.'
-                });
-            }
-        }
-        next();
-    });
-}, [
+// Create new mod
+router.post('/mods', requireAuth, upload.fields([
+    { name: 'modFile', maxCount: 1 },
+    { name: 'thumbnail', maxCount: 1 }
+]), [
     body('title').isLength({ min: 1, max: 255 }).withMessage('Title is required and must be less than 255 characters'),
     body('description').isLength({ min: 1 }).withMessage('Description is required'),
     body('short_description').optional().isLength({ max: 500 }).withMessage('Short description must be less than 500 characters'),
@@ -186,7 +149,6 @@ router.post('/mods', requireAuth, (req, res, next) => {
 ], async (req, res) => {
     try {
         // Debug logging
-        console.log(`[Upload] Starting upload process for user ${req.user.username} (ID: ${req.user.id})`);
         console.log('Upload request body:', req.body);
         console.log('Upload request files:', req.files);
 
@@ -197,7 +159,6 @@ router.post('/mods', requireAuth, (req, res, next) => {
         }
 
         if (!req.files || !req.files.modFile || req.files.modFile.length === 0) {
-            console.log('[Upload] No mod file provided');
             return res.status(400).json({ error: 'Mod file is required' });
         }
 
