@@ -447,10 +447,7 @@ router.get('/user/mods', requireAuth, async (req, res) => {
 });
 
 // User: Update own mod
-router.patch('/user/mods/:id', detectReverseProxy, upload.fields([
-    { name: 'modFile', maxCount: 1 },
-    { name: 'thumbnail', maxCount: 1 }
-]), [
+router.patch('/user/mods/:id', detectReverseProxy, upload.any(), [
     body('title').optional().isLength({ min: 1, max: 255 }).withMessage('Title must be 1-255 characters'),
     body('description').optional().isLength({ min: 1 }).withMessage('Description is required'),
     body('short_description').optional().isLength({ max: 500 }).withMessage('Short description must be less than 500 characters'),
@@ -482,8 +479,9 @@ router.patch('/user/mods/:id', detectReverseProxy, upload.fields([
         }
 
         // Handle file uploads
-        const modFile = req.files && req.files.modFile ? req.files.modFile[0] : null;
-        const thumbnailFile = req.files && req.files.thumbnail ? req.files.thumbnail[0] : null;
+        const modFile = req.files ? req.files.find(f => f.fieldname === 'modFile') : null;
+        const thumbnailFile = req.files ? req.files.find(f => f.fieldname === 'thumbnail') : null;
+        const screenshotFiles = req.files ? req.files.filter(f => f.fieldname.startsWith('screenshot_')) : [];
 
         // Check file size against proxy-aware limits (only for file uploads)
         if (modFile) {
@@ -533,6 +531,11 @@ router.patch('/user/mods/:id', detectReverseProxy, upload.fields([
                 return res.status(400).json({ error: 'Invalid removed screenshots format' });
             }
         }
+
+        // Handle new screenshot uploads
+        const newScreenshots = screenshotFiles.map(file => `/uploads/mods/${file.filename}`);
+        screenshots = screenshots.concat(newScreenshots);
+        console.log(`Processed ${newScreenshots.length} new screenshots for mod edit`);
 
         const updateData = {
             title: req.body.title || mod.title,

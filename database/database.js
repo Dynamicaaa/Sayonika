@@ -682,19 +682,24 @@ class Database {
     async updateMod(modId, modData) {
         const {
             title, description, short_description, category_id,
-            version, is_nsfw, tags, requirements
+            version, is_nsfw, tags, requirements, screenshots,
+            thumbnail_url, file_path, file_size, external_url, changelog
         } = modData;
 
         const sql = `
             UPDATE mods
             SET title = ?, description = ?, short_description = ?, category_id = ?,
-                version = ?, is_nsfw = ?, tags = ?, requirements = ?, updated_at = CURRENT_TIMESTAMP
+                version = ?, is_nsfw = ?, tags = ?, requirements = ?, screenshots = ?,
+                thumbnail_url = ?, file_path = ?, file_size = ?, external_url = ?,
+                changelog = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         `;
 
         return await this.run(sql, [
             title, description, short_description, category_id,
-            version, is_nsfw, JSON.stringify(tags), JSON.stringify(requirements), modId
+            version, is_nsfw, JSON.stringify(tags), JSON.stringify(requirements),
+            JSON.stringify(screenshots), thumbnail_url, file_path, file_size,
+            external_url, changelog, modId
         ]);
     }
 

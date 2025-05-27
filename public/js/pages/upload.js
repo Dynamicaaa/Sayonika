@@ -576,7 +576,9 @@ async function handleFormSubmit(e) {
         }
 
         // Add screenshots
+        console.log(`Adding ${selectedScreenshots.length} screenshots to upload`);
         selectedScreenshots.forEach((screenshot, index) => {
+            console.log(`Adding screenshot ${index}:`, screenshot.name, screenshot.size);
             formData.append(`screenshot_${index}`, screenshot);
         });
 
@@ -592,7 +594,7 @@ async function handleFormSubmit(e) {
 
             // Redirect to the mod page after a short delay
             setTimeout(() => {
-                window.location.href = `/mod/${result.mod.slug}`;
+                window.location.href = `/mod/${result.slug}`;
             }, 1500);
         } else {
             throw new Error(result.error || 'Failed to upload mod');

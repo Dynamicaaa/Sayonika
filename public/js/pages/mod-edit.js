@@ -14,7 +14,7 @@ let currentSection = 1;
 let maxSections = 4;
 let existingTags = [];
 let removedScreenshots = [];
-let newScreenshots = [];
+let selectedScreenshots = [];
 
 function initializeEditForm() {
     // Section navigation
@@ -264,6 +264,12 @@ function initializeScreenshots() {
 
     // Initialize screenshot upload slots
     generateScreenshotSlots();
+
+    // Handle screenshot file input
+    const screenshotInput = document.getElementById('screenshotInput');
+    if (screenshotInput) {
+        screenshotInput.addEventListener('change', handleScreenshotSelect);
+    }
 }
 
 function removeCurrentScreenshot(screenshotUrl) {
@@ -298,6 +304,64 @@ function generateScreenshotSlots() {
 
         slotsContainer.appendChild(slot);
     }
+}
+
+function handleScreenshotSelect(e) {
+    const files = Array.from(e.target.files);
+
+    files.forEach(file => {
+        if (selectedScreenshots.length < 5) {
+            selectedScreenshots.push(file);
+            displayScreenshotPreview(file);
+        }
+    });
+
+    // Clear the input so the same file can be selected again
+    e.target.value = '';
+}
+
+function displayScreenshotPreview(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Find the first empty slot
+        const emptySlot = document.querySelector('.screenshot-slot:not(.has-image)');
+        if (emptySlot) {
+            emptySlot.classList.add('has-image');
+            emptySlot.innerHTML = `
+                <img src="${e.target.result}" alt="Screenshot preview">
+                <div class="screenshot-overlay">
+                    <button type="button" class="btn btn-sm btn-danger remove-screenshot" data-index="${selectedScreenshots.length - 1}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            // Add remove functionality
+            emptySlot.querySelector('.remove-screenshot').addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                removeScreenshot(index, emptySlot);
+            });
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeScreenshot(index, slotElement) {
+    selectedScreenshots.splice(index, 1);
+
+    // Reset the slot
+    slotElement.classList.remove('has-image');
+    slotElement.innerHTML = `
+        <div class="screenshot-placeholder">
+            <i class="fas fa-plus"></i>
+            <span>Add Screenshot</span>
+        </div>
+    `;
+
+    // Re-add click listener
+    slotElement.addEventListener('click', () => {
+        document.getElementById('screenshotInput').click();
+    });
 }
 
 function initializeCharCounters() {
@@ -393,6 +457,13 @@ async function handleFormSubmit(e) {
     if (form.thumbnail.files[0]) {
         formData.append('thumbnail', form.thumbnail.files[0]);
     }
+
+    // Add new screenshots
+    console.log(`Adding ${selectedScreenshots.length} new screenshots to mod edit`);
+    selectedScreenshots.forEach((screenshot, index) => {
+        console.log(`Adding screenshot ${index}:`, screenshot.name, screenshot.size);
+        formData.append(`screenshot_${index}`, screenshot);
+    });
 
     // Add external URL if using URL method
     const activeMethod = document.querySelector('.toggle-btn.active').dataset.method;
