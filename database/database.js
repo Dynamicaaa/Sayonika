@@ -274,21 +274,21 @@ class Database {
     async createMod(modData) {
         const {
             title, slug, description, short_description, author_id,
-            category_id, version, file_path, file_size, thumbnail_url,
+            category_id, version, file_path, file_size, external_url, thumbnail_url,
             screenshots, tags, requirements, is_nsfw
         } = modData;
 
         const sql = `
             INSERT INTO mods (
                 title, slug, description, short_description, author_id,
-                category_id, version, file_path, file_size, thumbnail_url,
+                category_id, version, file_path, file_size, external_url, thumbnail_url,
                 screenshots, tags, requirements, is_nsfw
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         return await this.run(sql, [
             title, slug, description, short_description, author_id,
-            category_id, version, file_path, file_size, thumbnail_url,
+            category_id, version, file_path, file_size, external_url, thumbnail_url,
             JSON.stringify(screenshots), JSON.stringify(tags),
             JSON.stringify(requirements), is_nsfw
         ]);

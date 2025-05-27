@@ -4,6 +4,7 @@ let currentStep = 1;
 let currentScreenshotIndex = 0;
 let screenshots = [];
 let tags = [];
+let currentUploadMethod = 'file'; // 'file' or 'url'
 
 // Initialize upload page event listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeStepNavigation();
     initializeFormValidation();
     initializeFileUploads();
+    initializeUploadMethodToggle();
     initializeTagsInput();
     initializeScreenshots();
     initializeCharacterCounters();
@@ -183,17 +185,48 @@ function validateBasicInfo() {
 }
 
 function validateFileUpload() {
-    const modFile = document.getElementById('modFile').files[0];
     const version = document.getElementById('version').value.trim();
-
-    if (!modFile) {
-        showNotification('Please select a mod file to upload.', 'error');
-        return false;
-    }
 
     if (!version) {
         showNotification('Please enter a version number.', 'error');
         return false;
+    }
+
+    if (currentUploadMethod === 'file') {
+        const modFile = document.getElementById('modFile').files[0];
+        if (!modFile) {
+            showNotification('Please select a mod file to upload.', 'error');
+            return false;
+        }
+    } else if (currentUploadMethod === 'url') {
+        const externalUrl = document.getElementById('externalUrl').value.trim();
+        if (!externalUrl) {
+            showNotification('Please enter an external URL for your mod file.', 'error');
+            return false;
+        }
+
+        // Basic URL validation
+        try {
+            const url = new URL(externalUrl);
+            if (!['http:', 'https:'].includes(url.protocol)) {
+                showNotification('Please enter a valid HTTP or HTTPS URL.', 'error');
+                return false;
+            }
+
+            // Check if URL ends with supported file extensions
+            const supportedExtensions = ['.zip', '.rar', '.7z'];
+            const hasValidExtension = supportedExtensions.some(ext =>
+                url.pathname.toLowerCase().endsWith(ext)
+            );
+
+            if (!hasValidExtension) {
+                showNotification('URL must point to a valid mod file (.zip, .rar, or .7z).', 'error');
+                return false;
+            }
+        } catch (error) {
+            showNotification('Please enter a valid URL.', 'error');
+            return false;
+        }
     }
 
     return true;
@@ -423,6 +456,59 @@ function clearFileSelection() {
     updateFileSizeLimitDisplay();
 }
 
+// Upload method toggle
+function initializeUploadMethodToggle() {
+    const toggleButtons = document.querySelectorAll('.toggle-btn');
+    const fileUploadMethod = document.getElementById('fileUploadMethod');
+    const urlUploadMethod = document.getElementById('urlUploadMethod');
+
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const method = this.dataset.method;
+
+            // Update active state
+            toggleButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            // Update current method
+            currentUploadMethod = method;
+
+            // Show/hide appropriate content
+            if (method === 'file') {
+                fileUploadMethod.style.display = 'block';
+                urlUploadMethod.style.display = 'none';
+
+                // Clear external URL if switching away from it
+                const externalUrlInput = document.getElementById('externalUrl');
+                if (externalUrlInput) {
+                    externalUrlInput.value = '';
+                    externalUrlInput.classList.remove('valid', 'invalid');
+                }
+            } else if (method === 'url') {
+                fileUploadMethod.style.display = 'none';
+                urlUploadMethod.style.display = 'block';
+
+                // Clear file input if switching away from it
+                clearFileSelection();
+            }
+
+            console.log(`Upload method switched to: ${method}`);
+        });
+    });
+
+    // Initialize external URL validation
+    const externalUrlInput = document.getElementById('externalUrl');
+    if (externalUrlInput) {
+        externalUrlInput.addEventListener('input', function() {
+            validateField(this);
+        });
+
+        externalUrlInput.addEventListener('blur', function() {
+            validateField(this);
+        });
+    }
+}
+
 // Tags input
 function initializeTagsInput() {
     const tagsInput = document.getElementById('tags');
@@ -618,9 +704,20 @@ function updateReviewSection() {
     const shortDesc = document.getElementById('short_description').value || 'Not specified';
     const version = document.getElementById('version').value || 'Not specified';
     const modFile = document.getElementById('modFile').files[0];
+    const externalUrl = document.getElementById('externalUrl').value.trim();
     const thumbnail = document.getElementById('thumbnail').files[0];
     const changelog = document.getElementById('changelog').value || 'None';
     const isNsfw = document.getElementById('is_nsfw').checked;
+
+    // Determine mod file display based on upload method
+    let modFileDisplay;
+    if (currentUploadMethod === 'file' && modFile) {
+        modFileDisplay = `${modFile.name} (${formatFileSize(modFile.size)})`;
+    } else if (currentUploadMethod === 'url' && externalUrl) {
+        modFileDisplay = `External URL: ${externalUrl}`;
+    } else {
+        modFileDisplay = 'Not selected';
+    }
 
     summaryContainer.innerHTML = `
         <div class="summary-item">
@@ -641,7 +738,7 @@ function updateReviewSection() {
         </div>
         <div class="summary-item">
             <span class="summary-label">Mod File:</span>
-            <span class="summary-value">${modFile ? `${modFile.name} (${formatFileSize(modFile.size)})` : 'Not selected'}</span>
+            <span class="summary-value">${modFileDisplay}</span>
         </div>
         <div class="summary-item">
             <span class="summary-label">Thumbnail:</span>
@@ -678,6 +775,22 @@ async function handleFormSubmission(e) {
     const form = e.target;
     const formData = new FormData(form);
     const submitBtn = form.querySelector('button[type="submit"]');
+
+    // Add upload method information
+    formData.set('uploadMethod', currentUploadMethod);
+
+    // Handle external URL if that's the selected method
+    if (currentUploadMethod === 'url') {
+        const externalUrl = document.getElementById('externalUrl').value.trim();
+        if (externalUrl) {
+            formData.set('externalUrl', externalUrl);
+        }
+        // Remove the file input since we're using external URL
+        formData.delete('modFile');
+    } else if (currentUploadMethod === 'file') {
+        // Remove external URL if using file upload
+        formData.delete('externalUrl');
+    }
 
     // Add tags as JSON
     if (tags.length > 0) {

@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS mods (
     version VARCHAR(20) NOT NULL,
     file_path VARCHAR(500),
     file_size INTEGER,
+    external_url VARCHAR(500),
     download_count INTEGER DEFAULT 0,
     rating_average DECIMAL(3,2) DEFAULT 0.00,
     rating_count INTEGER DEFAULT 0,

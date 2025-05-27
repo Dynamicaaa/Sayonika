@@ -158,41 +158,75 @@ router.post('/mods', requireAuth, upload.fields([
             return res.status(400).json({ errors: errors.array() });
         }
 
-        if (!req.files || !req.files.modFile || req.files.modFile.length === 0) {
-            return res.status(400).json({ error: 'Mod file is required' });
-        }
+        const uploadMethod = req.body.uploadMethod || 'file';
+        const externalUrl = req.body.externalUrl;
 
-        const modFile = req.files.modFile[0];
-        const thumbnailFile = req.files.thumbnail ? req.files.thumbnail[0] : null;
-
-        // Check file size against database setting
-        const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
-
-        if (maxFileSizeMB === null || maxFileSizeMB === undefined) {
-            console.error('[Upload] max_file_size_mb setting not found in database');
-            return res.status(500).json({
-                error: 'File size limit setting not configured. Please contact administrator.'
-            });
-        }
-
-        const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
-
-        console.log(`[Upload] File size check - File: ${(modFile.size / 1024 / 1024).toFixed(2)}MB, Limit: ${maxFileSizeMB}MB`);
-
-        if (modFile.size > maxFileSizeBytes) {
-            console.log(`[Upload] File size exceeded limit - rejecting upload`);
-            // Delete the uploaded file since it exceeds the limit
-            try {
-                await fs.unlink(modFile.path);
-            } catch (unlinkError) {
-                console.error('Error deleting oversized file:', unlinkError);
+        // Validate that either file upload or external URL is provided
+        if (uploadMethod === 'file') {
+            if (!req.files || !req.files.modFile || req.files.modFile.length === 0) {
+                return res.status(400).json({ error: 'Mod file is required when using file upload method' });
             }
-            return res.status(400).json({
-                error: `File size exceeds the maximum limit of ${maxFileSizeMB}MB`
-            });
+        } else if (uploadMethod === 'url') {
+            if (!externalUrl || !externalUrl.trim()) {
+                return res.status(400).json({ error: 'External URL is required when using URL upload method' });
+            }
+
+            // Validate external URL format
+            try {
+                const url = new URL(externalUrl);
+                if (!['http:', 'https:'].includes(url.protocol)) {
+                    return res.status(400).json({ error: 'External URL must use HTTP or HTTPS protocol' });
+                }
+
+                // Check if URL ends with supported file extensions
+                const supportedExtensions = ['.zip', '.rar', '.7z'];
+                const hasValidExtension = supportedExtensions.some(ext =>
+                    url.pathname.toLowerCase().endsWith(ext)
+                );
+
+                if (!hasValidExtension) {
+                    return res.status(400).json({ error: 'External URL must point to a valid mod file (.zip, .rar, or .7z)' });
+                }
+            } catch (error) {
+                return res.status(400).json({ error: 'Invalid external URL format' });
+            }
+        } else {
+            return res.status(400).json({ error: 'Invalid upload method. Must be "file" or "url"' });
         }
 
-        console.log(`[Upload] File size check passed - proceeding with upload`);
+        const modFile = (uploadMethod === 'file' && req.files && req.files.modFile) ? req.files.modFile[0] : null;
+        const thumbnailFile = req.files && req.files.thumbnail ? req.files.thumbnail[0] : null;
+
+        // Check file size against database setting (only for file uploads)
+        if (uploadMethod === 'file' && modFile) {
+            const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
+
+            if (maxFileSizeMB === null || maxFileSizeMB === undefined) {
+                console.error('[Upload] max_file_size_mb setting not found in database');
+                return res.status(500).json({
+                    error: 'File size limit setting not configured. Please contact administrator.'
+                });
+            }
+
+            const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
+
+            console.log(`[Upload] File size check - File: ${(modFile.size / 1024 / 1024).toFixed(2)}MB, Limit: ${maxFileSizeMB}MB`);
+
+            if (modFile.size > maxFileSizeBytes) {
+                console.log(`[Upload] File size exceeded limit - rejecting upload`);
+                // Delete the uploaded file since it exceeds the limit
+                try {
+                    await fs.unlink(modFile.path);
+                } catch (unlinkError) {
+                    console.error('Error deleting oversized file:', unlinkError);
+                }
+                return res.status(400).json({
+                    error: `File size exceeds the maximum limit of ${maxFileSizeMB}MB`
+                });
+            }
+
+            console.log(`[Upload] File size check passed - proceeding with upload`);
+        }
 
         const {
             title, description, short_description, category_id,
@@ -227,8 +261,9 @@ router.post('/mods', requireAuth, upload.fields([
             author_id: req.user.id,
             category_id: parseInt(category_id),
             version,
-            file_path: modFile.path,
-            file_size: modFile.size,
+            file_path: uploadMethod === 'file' && modFile ? modFile.path : null,
+            file_size: uploadMethod === 'file' && modFile ? modFile.size : null,
+            external_url: uploadMethod === 'url' ? externalUrl : null,
             thumbnail_url: thumbnailUrl,
             screenshots: [],
             tags: tags ? JSON.parse(tags) : [],
