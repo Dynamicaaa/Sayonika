@@ -275,6 +275,9 @@ CREATE TABLE IF NOT EXISTS support_tickets (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+-- Indexes for site settings table
+CREATE INDEX IF NOT EXISTS idx_site_settings_key ON site_settings(setting_key);
+
 -- Indexes for support tickets table
 CREATE INDEX IF NOT EXISTS idx_support_tickets_user_id ON support_tickets(user_id);
 CREATE INDEX IF NOT EXISTS idx_support_tickets_status ON support_tickets(status);
@@ -284,7 +287,7 @@ CREATE INDEX IF NOT EXISTS idx_support_tickets_created_at ON support_tickets(cre
 -- Insert default site settings
 INSERT OR IGNORE INTO site_settings (setting_key, setting_value, setting_type, description) VALUES
 ('maintenance_mode', 'false', 'boolean', 'Enable maintenance mode to prevent new uploads and registrations'),
-('max_file_size_mb', '100', 'number', 'Maximum file size for mod uploads in megabytes'),
+('max_file_size_mb', '1024', 'number', 'Maximum file size for mod uploads in megabytes'),
 ('featured_mods_count', '6', 'number', 'Number of featured mods to display on the homepage'),
 ('maintenance_message', 'Sayonika is currently undergoing maintenance. Please check back later!', 'string', 'Message displayed to users during maintenance mode');
 
