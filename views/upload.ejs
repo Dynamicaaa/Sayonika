@@ -186,24 +186,36 @@
 
                             <!-- External URL input -->
                             <div class="upload-method-content" id="urlUploadMethod" style="display: none;">
-                                <div class="input-wrapper">
-                                    <input
-                                        type="url"
-                                        id="externalUrl"
-                                        name="externalUrl"
-                                        class="form-control"
-                                        placeholder="https://example.com/my-mod.zip"
-                                    >
-                                    <div class="input-feedback"></div>
+                                <div class="url-input-section">
+                                    <div class="url-input-header">
+                                        <h4><i class="fas fa-link"></i> External Download URL</h4>
+                                        <p>Provide a direct link to your mod file hosted elsewhere</p>
+                                    </div>
+
+                                    <div class="input-wrapper">
+                                        <input
+                                            type="url"
+                                            id="externalUrl"
+                                            name="externalUrl"
+                                            class="form-control"
+                                            placeholder="https://github.com/username/mod/releases/download/v1.0.0/my-mod.zip"
+                                        >
+                                        <div class="input-feedback"></div>
+                                    </div>
                                 </div>
+
                                 <div class="url-upload-specs">
                                     <div class="spec-item">
-                                        <i class="fas fa-info-circle"></i>
-                                        <span>Direct download link to your mod file (.zip, .rar, .7z)</span>
+                                        <i class="fas fa-download"></i>
+                                        <span>Must be a direct download link to your mod file (.zip, .rar, .7z)</span>
                                     </div>
                                     <div class="spec-item">
                                         <i class="fas fa-shield-alt"></i>
-                                        <span>URL must be publicly accessible and secure (HTTPS recommended)</span>
+                                        <span>URL must be publicly accessible and secure (HTTPS strongly recommended)</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <i class="fas fa-cloud"></i>
+                                        <span>Popular hosting: GitHub Releases, Google Drive, Dropbox, MediaFire, MEGA</span>
                                     </div>
                                 </div>
                             </div>
