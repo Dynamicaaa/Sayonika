@@ -538,6 +538,8 @@ async function loadSiteSettings() {
         // Update form fields with current settings
         const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
         const maxFileSizeInput = document.getElementById('maxFileSize');
+        const maxThumbnailSizeInput = document.getElementById('maxThumbnailSize');
+        const maxScreenshotSizeInput = document.getElementById('maxScreenshotSize');
         const featuredModsCountInput = document.getElementById('featuredModsCount');
 
         if (maintenanceModeCheckbox && 'maintenance_mode' in settings) {
@@ -551,6 +553,14 @@ async function loadSiteSettings() {
 
         if (maxFileSizeInput && 'max_file_size_mb' in settings) {
             maxFileSizeInput.value = settings.max_file_size_mb;
+        }
+
+        if (maxThumbnailSizeInput && 'max_thumbnail_size_mb' in settings) {
+            maxThumbnailSizeInput.value = settings.max_thumbnail_size_mb;
+        }
+
+        if (maxScreenshotSizeInput && 'max_screenshot_size_mb' in settings) {
+            maxScreenshotSizeInput.value = settings.max_screenshot_size_mb;
         }
 
         if (featuredModsCountInput && 'featured_mods_count' in settings) {
@@ -573,6 +583,8 @@ async function saveSiteSettings() {
     try {
         const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
         const maxFileSizeInput = document.getElementById('maxFileSize');
+        const maxThumbnailSizeInput = document.getElementById('maxThumbnailSize');
+        const maxScreenshotSizeInput = document.getElementById('maxScreenshotSize');
         const featuredModsCountInput = document.getElementById('featuredModsCount');
 
         const settings = {};
@@ -589,6 +601,24 @@ async function saveSiteSettings() {
             }
             settings.max_file_size_mb = maxFileSize;
             serverLog('debug', `Max file size setting: ${settings.max_file_size_mb}MB`);
+        }
+
+        if (maxThumbnailSizeInput) {
+            const maxThumbnailSize = parseInt(maxThumbnailSizeInput.value);
+            if (isNaN(maxThumbnailSize) || maxThumbnailSize < 1) {
+                throw new Error('Maximum thumbnail size must be a positive number');
+            }
+            settings.max_thumbnail_size_mb = maxThumbnailSize;
+            serverLog('debug', `Max thumbnail size setting: ${settings.max_thumbnail_size_mb}MB`);
+        }
+
+        if (maxScreenshotSizeInput) {
+            const maxScreenshotSize = parseInt(maxScreenshotSizeInput.value);
+            if (isNaN(maxScreenshotSize) || maxScreenshotSize < 1) {
+                throw new Error('Maximum screenshot size must be a positive number');
+            }
+            settings.max_screenshot_size_mb = maxScreenshotSize;
+            serverLog('debug', `Max screenshot size setting: ${settings.max_screenshot_size_mb}MB`);
         }
 
         if (featuredModsCountInput) {

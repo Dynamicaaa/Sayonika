@@ -288,6 +288,8 @@ CREATE INDEX IF NOT EXISTS idx_support_tickets_created_at ON support_tickets(cre
 INSERT OR IGNORE INTO site_settings (setting_key, setting_value, setting_type, description) VALUES
 ('maintenance_mode', 'false', 'boolean', 'Enable maintenance mode to prevent new uploads and registrations'),
 ('max_file_size_mb', '1024', 'number', 'Maximum file size for mod uploads in megabytes'),
+('max_thumbnail_size_mb', '5', 'number', 'Maximum file size for thumbnail images in megabytes'),
+('max_screenshot_size_mb', '5', 'number', 'Maximum file size for screenshot images in megabytes'),
 ('featured_mods_count', '6', 'number', 'Number of featured mods to display on the homepage'),
 ('maintenance_message', 'Sayonika is currently undergoing maintenance. Please check back later!', 'string', 'Message displayed to users during maintenance mode');
 

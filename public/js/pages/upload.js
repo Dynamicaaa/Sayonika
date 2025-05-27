@@ -287,9 +287,9 @@ function initializeFileUploads() {
     if (thumbnailUploadArea && thumbnailInput) {
         thumbnailUploadArea.addEventListener('click', () => thumbnailInput.click());
 
-        thumbnailInput.addEventListener('change', (e) => {
+        thumbnailInput.addEventListener('change', async (e) => {
             if (e.target.files.length > 0) {
-                handleThumbnailSelect(e.target.files[0]);
+                await handleThumbnailSelect(e.target.files[0]);
             }
         });
     }
@@ -352,13 +352,32 @@ async function handleFileSelect(file) {
     `;
 }
 
-function handleThumbnailSelect(file) {
+async function handleThumbnailSelect(file) {
     const thumbnailUploadArea = document.getElementById('thumbnailUploadArea');
     const placeholder = thumbnailUploadArea.querySelector('.thumbnail-placeholder');
     const preview = thumbnailUploadArea.querySelector('.thumbnail-preview');
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit for images
-        showNotification('Thumbnail image must be less than 5MB', 'error');
+    // Get thumbnail size limit from global settings or fetch from server
+    let maxThumbnailSizeMB;
+    if (window.uploadSettings && window.uploadSettings.maxThumbnailSizeMB) {
+        maxThumbnailSizeMB = window.uploadSettings.maxThumbnailSizeMB;
+    } else {
+        try {
+            const response = await fetch('/api/settings/public');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch settings: ${response.status} ${response.statusText}`);
+            }
+            const settings = await response.json();
+            maxThumbnailSizeMB = settings.max_thumbnail_size_mb || 5; // fallback to 5MB
+        } catch (error) {
+            console.error('[Upload] Failed to fetch thumbnail size limit:', error);
+            maxThumbnailSizeMB = 5; // fallback to 5MB
+        }
+    }
+
+    const maxThumbnailSizeBytes = maxThumbnailSizeMB * 1024 * 1024;
+    if (file.size > maxThumbnailSizeBytes) {
+        showNotification(`Thumbnail image must be less than ${maxThumbnailSizeMB}MB`, 'error');
         return;
     }
 
@@ -464,18 +483,38 @@ function initializeScreenshots() {
 
     const screenshotInput = document.getElementById('screenshotInput');
     if (screenshotInput) {
-        screenshotInput.addEventListener('change', function() {
-            handleScreenshots(this.files);
+        screenshotInput.addEventListener('change', async function() {
+            await handleScreenshots(this.files);
         });
     }
 }
 
-function handleScreenshots(files) {
+async function handleScreenshots(files) {
+    // Get screenshot size limit from global settings or fetch from server
+    let maxScreenshotSizeMB;
+    if (window.uploadSettings && window.uploadSettings.maxScreenshotSizeMB) {
+        maxScreenshotSizeMB = window.uploadSettings.maxScreenshotSizeMB;
+    } else {
+        try {
+            const response = await fetch('/api/settings/public');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch settings: ${response.status} ${response.statusText}`);
+            }
+            const settings = await response.json();
+            maxScreenshotSizeMB = settings.max_screenshot_size_mb || 5; // fallback to 5MB
+        } catch (error) {
+            console.error('[Upload] Failed to fetch screenshot size limit:', error);
+            maxScreenshotSizeMB = 5; // fallback to 5MB
+        }
+    }
+
+    const maxScreenshotSizeBytes = maxScreenshotSizeMB * 1024 * 1024;
+
     Array.from(files).forEach((file, index) => {
         if (screenshots.length >= 5) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-            showNotification(`Screenshot ${file.name} is too large (max 5MB)`, 'error');
+        if (file.size > maxScreenshotSizeBytes) {
+            showNotification(`Screenshot ${file.name} is too large (max ${maxScreenshotSizeMB}MB)`, 'error');
             return;
         }
 
@@ -693,8 +732,8 @@ async function updateFileSizeLimitDisplay() {
 
     if (!placeholder) return;
 
-    // Get dynamic file size limit from server
-    let maxSizeMB;
+    // Get dynamic file size limits from server
+    let maxSizeMB, maxThumbnailSizeMB, maxScreenshotSizeMB;
     try {
         const response = await fetch('/api/settings/public');
         if (!response.ok) {
@@ -702,16 +741,28 @@ async function updateFileSizeLimitDisplay() {
         }
 
         const settings = await response.json();
-        if (!settings.max_file_size_mb) {
-            throw new Error('max_file_size_mb setting not found in database');
+        if (!settings.max_file_size_mb || !settings.max_thumbnail_size_mb || !settings.max_screenshot_size_mb) {
+            throw new Error('File size settings not found in database');
         }
 
         maxSizeMB = settings.max_file_size_mb;
-        console.log(`[Upload] Retrieved file size limit for display: ${maxSizeMB}MB`);
+        maxThumbnailSizeMB = settings.max_thumbnail_size_mb;
+        maxScreenshotSizeMB = settings.max_screenshot_size_mb;
+
+        console.log(`[Upload] Retrieved file size limits for display - Mod: ${maxSizeMB}MB, Thumbnail: ${maxThumbnailSizeMB}MB, Screenshot: ${maxScreenshotSizeMB}MB`);
+
+        // Store globally for use in validation functions
+        window.uploadSettings = {
+            maxFileSizeMB: maxSizeMB,
+            maxThumbnailSizeMB: maxThumbnailSizeMB,
+            maxScreenshotSizeMB: maxScreenshotSizeMB
+        };
     } catch (error) {
-        console.error('[Upload] Failed to fetch file size limit for display:', error);
+        console.error('[Upload] Failed to fetch file size limits for display:', error);
         // For display purposes, we can show a generic message but still allow the form to load
         maxSizeMB = 'Unknown';
+        maxThumbnailSizeMB = 'Unknown';
+        maxScreenshotSizeMB = 'Unknown';
     }
 
     // Update the placeholder content with the correct file size limit
@@ -728,6 +779,18 @@ async function updateFileSizeLimitDisplay() {
             </div>
         </div>
     `;
+
+    // Update thumbnail placeholder text
+    const thumbnailPlaceholder = document.querySelector('.thumbnail-placeholder small');
+    if (thumbnailPlaceholder) {
+        thumbnailPlaceholder.textContent = `300x200px recommended, max ${maxThumbnailSizeMB}MB`;
+    }
+
+    // Update screenshots section text
+    const screenshotsDescription = document.querySelector('.screenshots-section p');
+    if (screenshotsDescription) {
+        screenshotsDescription.textContent = `Add up to 5 screenshots to help users preview your mod (max ${maxScreenshotSizeMB}MB each)`;
+    }
 }
 
 // Utility functions

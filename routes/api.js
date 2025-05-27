@@ -331,17 +331,33 @@ router.get('/categories', async (req, res) => {
 router.get('/settings/public', async (req, res) => {
     try {
         const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
+        const maxThumbnailSizeMB = await db.getSiteSetting('max_thumbnail_size_mb');
+        const maxScreenshotSizeMB = await db.getSiteSetting('max_screenshot_size_mb');
 
+        // Check if all required settings exist
+        const missingSettings = [];
         if (maxFileSizeMB === null || maxFileSizeMB === undefined) {
-            console.error('[API] max_file_size_mb setting not found in database');
+            missingSettings.push('max_file_size_mb');
+        }
+        if (maxThumbnailSizeMB === null || maxThumbnailSizeMB === undefined) {
+            missingSettings.push('max_thumbnail_size_mb');
+        }
+        if (maxScreenshotSizeMB === null || maxScreenshotSizeMB === undefined) {
+            missingSettings.push('max_screenshot_size_mb');
+        }
+
+        if (missingSettings.length > 0) {
+            console.error(`[API] Missing file size settings in database: ${missingSettings.join(', ')}`);
             return res.status(500).json({
-                error: 'File size limit setting not found in database. Please contact administrator.'
+                error: `File size limit settings not found in database: ${missingSettings.join(', ')}. Please contact administrator.`
             });
         }
 
-        console.log(`[API] Retrieved max_file_size_mb from database: ${maxFileSizeMB}MB`);
+        console.log(`[API] Retrieved file size limits from database - Mod: ${maxFileSizeMB}MB, Thumbnail: ${maxThumbnailSizeMB}MB, Screenshot: ${maxScreenshotSizeMB}MB`);
         res.json({
-            max_file_size_mb: maxFileSizeMB
+            max_file_size_mb: maxFileSizeMB,
+            max_thumbnail_size_mb: maxThumbnailSizeMB,
+            max_screenshot_size_mb: maxScreenshotSizeMB
         });
     } catch (error) {
         console.error('[API] Get public settings error:', error);
@@ -898,6 +914,22 @@ router.put('/admin/settings', requireAuth, requireAdmin, async (req, res) => {
             settings.max_file_size_mb = maxFileSize;
         }
 
+        if ('max_thumbnail_size_mb' in settings) {
+            const maxThumbnailSize = parseInt(settings.max_thumbnail_size_mb);
+            if (isNaN(maxThumbnailSize) || maxThumbnailSize < 1) {
+                return res.status(400).json({ error: 'Maximum thumbnail size must be a positive number' });
+            }
+            settings.max_thumbnail_size_mb = maxThumbnailSize;
+        }
+
+        if ('max_screenshot_size_mb' in settings) {
+            const maxScreenshotSize = parseInt(settings.max_screenshot_size_mb);
+            if (isNaN(maxScreenshotSize) || maxScreenshotSize < 1) {
+                return res.status(400).json({ error: 'Maximum screenshot size must be a positive number' });
+            }
+            settings.max_screenshot_size_mb = maxScreenshotSize;
+        }
+
         // Update each setting
         for (const [key, value] of Object.entries(settings)) {
             let type = 'string';
@@ -922,6 +954,14 @@ router.put('/admin/settings', requireAuth, requireAdmin, async (req, res) => {
 
         if ('max_file_size_mb' in settings) {
             console.log(`[Admin] Maximum file size limit updated to ${settings.max_file_size_mb}MB by admin ${req.user.username}`);
+        }
+
+        if ('max_thumbnail_size_mb' in settings) {
+            console.log(`[Admin] Maximum thumbnail size limit updated to ${settings.max_thumbnail_size_mb}MB by admin ${req.user.username}`);
+        }
+
+        if ('max_screenshot_size_mb' in settings) {
+            console.log(`[Admin] Maximum screenshot size limit updated to ${settings.max_screenshot_size_mb}MB by admin ${req.user.username}`);
         }
 
         console.log(`[Admin] All settings updated successfully by admin ${req.user.username}`);
