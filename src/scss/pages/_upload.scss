@@ -1,0 +1,1174 @@
+// Upload Page Styles - Minimal Theme
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// Define missing variables for consistency
+$primary-color: $primary-pink;
+$secondary-color: $primary-blue;
+$text-primary: $light-text;
+$text-secondary: $light-text-muted;
+$text-primary-dark: $dark-text;
+$text-secondary-dark: $dark-text-muted;
+$border-color-dark: $dark-surface-light;
+$card-bg-dark: $dark-surface;
+$card-bg-secondary-dark: $dark-surface-light;
+$light-bg-secondary: $light-surface-dark;
+$success-color: $success;
+$danger-color: $danger;
+$warning-color: $warning;
+$info-color: $info;
+
+.upload-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #{$light-bg} 0%, #{$light-surface} 100%);
+    padding: 2rem 0;
+
+    .dark-theme & {
+        background: linear-gradient(135deg, #{$dark-bg} 0%, #{$dark-surface} 100%);
+    }
+}
+
+// Upload Header
+.upload-header {
+    text-align: center;
+    margin-bottom: 3rem;
+
+    &-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: $light-text;
+
+        .dark-theme & {
+            color: $dark-text;
+        }
+    }
+
+    p {
+        font-size: 1.125rem;
+        color: $light-text-muted;
+        margin-bottom: 2rem;
+
+        .dark-theme & {
+            color: $dark-text-muted;
+        }
+    }
+}
+
+.upload-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, $primary-pink, $primary-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0.5rem 2rem rgba($primary-pink, 0.3);
+
+    i {
+        font-size: 2rem;
+        color: white;
+    }
+}
+
+// Upload Steps
+.upload-steps {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 100px;
+
+    &.active {
+        background: rgba($primary-pink, 0.1);
+        border: 2px solid $primary-pink;
+    }
+
+    &:not(.active) {
+        background: rgba(0, 0, 0, 0.05);
+        border: 2px solid transparent;
+
+        .dark-theme & {
+            background: rgba(255, 255, 255, 0.05);
+        }
+    }
+
+    &-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    &.active &-number {
+        background: $primary-pink;
+        color: white;
+    }
+
+    &:not(.active) &-number {
+        background: $border-color;
+        color: $light-text-muted;
+
+        .dark-theme & {
+            background: $dark-surface-light;
+            color: $dark-text-muted;
+        }
+    }
+
+    &-text {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $light-text;
+
+        .dark-theme & {
+            color: $dark-text;
+        }
+    }
+
+    &.active &-text {
+        color: $primary-pink;
+    }
+}
+
+// Upload Content
+.upload-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.upload-form {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .dark-theme & {
+        background: $dark-surface;
+        box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.3);
+    }
+}
+
+// Form Progress
+.form-progress {
+    padding: 1.5rem 2rem;
+    background: $light-surface;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .dark-theme & {
+        background: $dark-surface-light;
+        border-bottom-color: $dark-surface-light;
+    }
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: $border-color;
+    border-radius: 4px;
+    overflow: hidden;
+
+    .dark-theme & {
+        background: $dark-surface-light;
+    }
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $primary-pink, $primary-blue);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $light-text-muted;
+    white-space: nowrap;
+
+    .dark-theme & {
+        color: $dark-text-muted;
+    }
+}
+
+// Form Sections
+.form-section {
+    display: none;
+    padding: 2rem;
+
+    &.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: $light-text;
+
+        .dark-theme & {
+            color: $dark-text;
+        }
+    }
+
+    p {
+        color: $light-text-muted;
+        font-size: 1rem;
+
+        .dark-theme & {
+            color: $dark-text-muted;
+        }
+    }
+}
+
+// Form Grid
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// Enhanced Form Controls
+.label-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: $light-text-muted;
+    font-weight: 400;
+    margin-top: 0.25rem;
+
+    .dark-theme & {
+        color: $dark-text-muted;
+    }
+}
+
+.input-wrapper,
+.textarea-wrapper {
+    position: relative;
+}
+
+.input-feedback {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &.error {
+        color: $danger;
+        opacity: 1;
+    }
+
+    &.success {
+        color: $success;
+        opacity: 1;
+    }
+}
+
+// Select Wrapper
+.select-wrapper {
+    position: relative;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $light-text-muted;
+    pointer-events: none;
+    font-size: 0.875rem;
+
+    .dark-theme & {
+        color: $dark-text-muted;
+    }
+}
+
+// Character Counter
+.char-counter {
+    text-align: right;
+    font-size: 0.75rem;
+    color: $light-text-muted;
+    margin-top: 0.25rem;
+
+    .dark-theme & {
+        color: $dark-text-muted;
+    }
+}
+
+.formatting-help {
+    margin-top: 0.5rem;
+
+    small {
+        color: $light-text-muted;
+        font-size: 0.75rem;
+
+        .dark-theme & {
+            color: $dark-text-muted;
+        }
+    }
+}
+
+// Upload Grid
+.upload-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// Upload Method Toggle
+.upload-method-toggle {
+    margin-bottom: 1rem;
+}
+
+.toggle-buttons {
+    display: flex;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid $border-color;
+
+    .dark-theme & {
+        border-color: $border-color-dark;
+    }
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: $light-bg;
+    border: none;
+    color: $text-secondary;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    .dark-theme & {
+        background: $card-bg-secondary-dark;
+        color: $text-secondary-dark;
+    }
+
+    &.active {
+        background: $primary-color;
+        color: white;
+    }
+
+    &:hover:not(.active) {
+        background: $light-bg-secondary;
+
+        .dark-theme & {
+            background: $border-color-dark;
+        }
+    }
+}
+
+// File Upload Area
+.file-upload-area {
+    border: 2px dashed $border-color;
+    border-radius: 0.75rem;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: $light-bg;
+
+    .dark-theme & {
+        border-color: $border-color-dark;
+        background: $card-bg-secondary-dark;
+    }
+
+    &:hover,
+    &.drag-over {
+        border-color: $primary-color;
+        background: rgba($primary-color, 0.05);
+        transform: translateY(-2px);
+    }
+
+    .upload-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, $primary-color, $secondary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+
+        i {
+            font-size: 1.5rem;
+            color: white;
+        }
+    }
+
+    .upload-text {
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: $text-primary;
+
+            .dark-theme & {
+                color: $text-primary-dark;
+            }
+        }
+
+        p {
+            color: $text-secondary;
+            margin-bottom: 1rem;
+
+            .dark-theme & {
+                color: $text-secondary-dark;
+            }
+        }
+    }
+
+    .upload-link {
+        color: $primary-color;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .upload-specs {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+}
+
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: $text-secondary;
+    background: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid $border-color;
+
+    .dark-theme & {
+        color: $text-secondary-dark;
+        background: $card-bg-dark;
+        border-color: $border-color-dark;
+    }
+}
+
+// File Info Display
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid $border-color;
+    border-radius: 0.75rem;
+    margin-top: 1rem;
+
+    .dark-theme & {
+        background: $card-bg-dark;
+        border-color: $border-color-dark;
+    }
+
+    .file-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, $primary-color, $secondary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        i {
+            font-size: 1.25rem;
+            color: white;
+        }
+    }
+
+    .file-details {
+        flex: 1;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: $text-primary;
+        margin-bottom: 0.25rem;
+        word-break: break-all;
+
+        .dark-theme & {
+            color: $text-primary-dark;
+        }
+    }
+
+    .file-size {
+        font-size: 0.875rem;
+        color: $text-secondary;
+
+        .dark-theme & {
+            color: $text-secondary-dark;
+        }
+    }
+
+    .remove-file {
+        flex-shrink: 0;
+    }
+}
+
+// URL Input Section
+.url-input-section {
+    padding: 2rem;
+    border: 1px solid $border-color;
+    border-radius: 0.75rem;
+    background: $light-bg;
+
+    .dark-theme & {
+        border-color: $border-color-dark;
+        background: $card-bg-secondary-dark;
+    }
+
+    .url-input-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: $text-primary;
+
+            .dark-theme & {
+                color: $text-primary-dark;
+            }
+        }
+
+        p {
+            color: $text-secondary;
+            font-size: 0.875rem;
+
+            .dark-theme & {
+                color: $text-secondary-dark;
+            }
+        }
+    }
+}
+
+// Thumbnail Upload
+.thumbnail-upload-area {
+    border: 2px dashed $border-color;
+    border-radius: 0.75rem;
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: $light-bg;
+    position: relative;
+    overflow: hidden;
+
+    .dark-theme & {
+        border-color: $border-color-dark;
+        background: $card-bg-secondary-dark;
+    }
+
+    &:hover {
+        border-color: $primary-color;
+        background: rgba($primary-color, 0.05);
+    }
+
+    .thumbnail-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, $primary-color, $secondary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+
+        i {
+            font-size: 1.25rem;
+            color: white;
+        }
+    }
+
+    .thumbnail-placeholder {
+        p {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: $text-primary;
+
+            .dark-theme & {
+                color: $text-primary-dark;
+            }
+        }
+
+        small {
+            color: $text-secondary;
+            font-size: 0.75rem;
+
+            .dark-theme & {
+                color: $text-secondary-dark;
+            }
+        }
+    }
+
+    .thumbnail-preview {
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+
+        .thumbnail-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 0.5rem;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+// Version Group
+.version-group {
+    max-width: 300px;
+
+    .version-examples {
+        margin-top: 0.5rem;
+
+        small {
+            color: $text-secondary;
+            font-size: 0.75rem;
+
+            .dark-theme & {
+                color: $text-secondary-dark;
+            }
+        }
+    }
+}
+
+// Tags Input
+.tags-input-wrapper {
+    position: relative;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    min-height: 2rem;
+}
+
+.tag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: $primary-color;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    .remove-tag {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    }
+}
+
+.tags-suggestions {
+    margin-top: 0.5rem;
+
+    small {
+        color: $text-secondary;
+        font-size: 0.75rem;
+
+        .dark-theme & {
+            color: $text-secondary-dark;
+        }
+    }
+}
+
+// Content Rating
+.content-rating-section {
+    margin-top: 2rem;
+
+    h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: $text-primary;
+
+        .dark-theme & {
+            color: $text-primary-dark;
+        }
+    }
+
+    .rating-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .rating-option {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 1px solid $border-color;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        .dark-theme & {
+            border-color: $border-color-dark;
+        }
+
+        &:hover {
+            border-color: $primary-color;
+            background: rgba($primary-color, 0.05);
+        }
+
+        .rating-info {
+            flex: 1;
+        }
+
+        .rating-title {
+            display: block;
+            font-weight: 600;
+            color: $text-primary;
+            margin-bottom: 0.25rem;
+
+            .dark-theme & {
+                color: $text-primary-dark;
+            }
+        }
+
+        .rating-desc {
+            display: block;
+            font-size: 0.875rem;
+            color: $text-secondary;
+
+            .dark-theme & {
+                color: $text-secondary-dark;
+            }
+        }
+
+        .rating-icon {
+            color: $warning-color;
+            font-size: 1.25rem;
+        }
+    }
+}
+
+// Screenshots
+.screenshots-section {
+    margin-bottom: 2rem;
+
+    h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: $text-primary;
+
+        .dark-theme & {
+            color: $text-primary-dark;
+        }
+    }
+
+    p {
+        color: $text-secondary;
+        margin-bottom: 1.5rem;
+
+        .dark-theme & {
+            color: $text-secondary-dark;
+        }
+    }
+}
+
+.screenshot-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.screenshot-slot {
+    aspect-ratio: 16/9;
+    border: 2px dashed $border-color;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: $light-bg;
+
+    .dark-theme & {
+        border-color: $border-color-dark;
+        background: $card-bg-secondary-dark;
+    }
+
+    &:hover {
+        border-color: $primary-color;
+        background: rgba($primary-color, 0.05);
+    }
+
+    .screenshot-placeholder {
+        text-align: center;
+        color: $text-secondary;
+
+        .dark-theme & {
+            color: $text-secondary-dark;
+        }
+
+        i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        span {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+    }
+}
+
+// Review Section
+.review-section {
+    margin-bottom: 2rem;
+
+    h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: $text-primary;
+
+        .dark-theme & {
+            color: $text-primary-dark;
+        }
+    }
+}
+
+.submission-summary {
+    background: $light-bg;
+    border: 1px solid $border-color;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+
+    .dark-theme & {
+        background: $card-bg-secondary-dark;
+        border-color: $border-color-dark;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid $border-color;
+
+        .dark-theme & {
+            border-bottom-color: $border-color-dark;
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-weight: 500;
+            color: $text-primary;
+
+            .dark-theme & {
+                color: $text-primary-dark;
+            }
+        }
+
+        .summary-value {
+            color: $text-secondary;
+            text-align: right;
+
+            .dark-theme & {
+                color: $text-secondary-dark;
+            }
+        }
+    }
+}
+
+// Section Actions
+.section-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid $border-color;
+
+    .dark-theme & {
+        border-top-color: $border-color-dark;
+    }
+
+    .btn {
+        min-width: 140px;
+
+        &-lg {
+            min-width: 180px;
+            padding: 0.75rem 2rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+    }
+}
+
+// Terms Notice
+.terms-notice {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: $light-bg;
+    border: 1px solid $border-color;
+    border-radius: 0.75rem;
+
+    .dark-theme & {
+        background: $card-bg-secondary-dark;
+        border-color: $border-color-dark;
+    }
+
+    .terms-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+
+        i {
+            color: $info-color;
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        p {
+            margin: 0;
+            color: $text-secondary;
+            font-size: 0.875rem;
+            line-height: 1.5;
+
+            .dark-theme & {
+                color: $text-secondary-dark;
+            }
+        }
+
+        a {
+            color: $primary-color;
+            font-weight: 500;
+        }
+    }
+}
+
+// Animations
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Loading states
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+
+    &::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        margin: auto;
+        border: 2px solid transparent;
+        border-top-color: currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .btn-text {
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+// Responsive Design
+@include media-breakpoint-down(md) {
+    .upload-page {
+        padding: 1rem 0;
+    }
+
+    .upload-header h1 {
+        font-size: 2rem;
+    }
+
+    .upload-steps {
+        gap: 0.5rem;
+    }
+
+    .step {
+        min-width: 80px;
+        padding: 0.75rem 0.5rem;
+
+        &-text {
+            font-size: 0.75rem;
+        }
+    }
+
+    .upload-form {
+        border-radius: 0.75rem;
+        margin: 0 1rem;
+    }
+
+    .form-section {
+        padding: 1.5rem;
+    }
+
+    .section-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .btn {
+            width: 100%;
+            min-width: auto;
+        }
+    }
+
+    .upload-grid {
+        gap: 1.5rem;
+    }
+
+    .file-upload-area {
+        padding: 2rem 1rem;
+    }
+
+    .upload-specs {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .screenshot-slots {
+        grid-template-columns: 1fr;
+    }
+
+    .form-progress {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+    }
+
+    .toggle-buttons {
+        flex-direction: column;
+    }
+
+    .terms-content {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .upload-steps {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .step {
+        flex: 1;
+        min-width: 70px;
+    }
+}
