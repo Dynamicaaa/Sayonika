@@ -27,6 +27,9 @@
     <% if ((locals.currentPath || currentPath) === '/contact') { %>
         <link rel="stylesheet" href="/css/contact.css">
     <% } %>
+    <% if ((locals.currentPath || currentPath) === '/upload') { %>
+        <link rel="stylesheet" href="/css/upload.css">
+    <% } %>
 </head>
 <body class="<%= locals.bodyClass || '' %>">
     <!-- Navigation -->

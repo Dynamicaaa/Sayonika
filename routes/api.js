@@ -59,6 +59,13 @@ const upload = multer({
             } else {
                 cb(new Error('Only image files (JPG, JPEG, PNG, GIF, WebP) are allowed for thumbnails'));
             }
+        } else if (file.fieldname.startsWith('screenshot_')) {
+            const allowedImageTypes = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+            if (allowedImageTypes.includes(ext)) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only image files (JPG, JPEG, PNG, GIF, WebP) are allowed for screenshots'));
+            }
         } else {
             cb(new Error('Unexpected field'));
         }
@@ -136,10 +143,7 @@ router.get('/mods/:identifier', optionalAuth, async (req, res) => {
 });
 
 // Create new mod
-router.post('/mods', requireAuth, detectReverseProxy, upload.fields([
-    { name: 'modFile', maxCount: 1 },
-    { name: 'thumbnail', maxCount: 1 }
-]), [
+router.post('/mods', requireAuth, detectReverseProxy, upload.any(), [
     body('title').isLength({ min: 1, max: 255 }).withMessage('Title is required and must be less than 255 characters'),
     body('description').isLength({ min: 1 }).withMessage('Description is required'),
     body('short_description').optional().isLength({ max: 500 }).withMessage('Short description must be less than 500 characters'),
@@ -195,8 +199,10 @@ router.post('/mods', requireAuth, detectReverseProxy, upload.fields([
             return res.status(400).json({ error: 'Invalid upload method. Must be "file" or "url"' });
         }
 
-        const modFile = (uploadMethod === 'file' && req.files && req.files.modFile) ? req.files.modFile[0] : null;
-        const thumbnailFile = req.files && req.files.thumbnail ? req.files.thumbnail[0] : null;
+        // Process uploaded files
+        const modFile = (uploadMethod === 'file' && req.files) ? req.files.find(f => f.fieldname === 'modFile') : null;
+        const thumbnailFile = req.files ? req.files.find(f => f.fieldname === 'thumbnail') : null;
+        const screenshotFiles = req.files ? req.files.filter(f => f.fieldname.startsWith('screenshot_')) : [];
 
         // Check file size against database setting (only for file uploads)
         if (uploadMethod === 'file' && modFile) {
@@ -254,6 +260,10 @@ router.post('/mods', requireAuth, detectReverseProxy, upload.fields([
             console.log(`Using uploaded thumbnail: ${thumbnailUrl}`);
         }
 
+        // Handle screenshots
+        const screenshots = screenshotFiles.map(file => `/uploads/mods/${file.filename}`);
+        console.log(`Processed ${screenshots.length} screenshots`);
+
         const modData = {
             title,
             slug,
@@ -266,7 +276,7 @@ router.post('/mods', requireAuth, detectReverseProxy, upload.fields([
             file_size: uploadMethod === 'file' && modFile ? modFile.size : null,
             external_url: uploadMethod === 'url' ? externalUrl : null,
             thumbnail_url: thumbnailUrl,
-            screenshots: [],
+            screenshots: screenshots,
             tags: tags ? JSON.parse(tags) : [],
             requirements: {},
             is_nsfw: is_nsfw === 'true'

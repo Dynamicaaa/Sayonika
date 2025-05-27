@@ -248,7 +248,8 @@ router.get('/upload', async (req, res) => {
         res.render('upload', {
             title: 'Upload Mod - Sayonika',
             user: req.user,
-            categories
+            categories,
+            currentPath: req.path
         });
     } catch (error) {
         console.error('Upload page error:', error);

@@ -1,467 +1,583 @@
-// Redesigned Upload Page JavaScript
-let currentStep = 1;
-let maxSizeMB = 500;
-let maxThumbnailSizeMB = 10;
-let uploadedFiles = {};
-let tags = [];
-
-// Initialize upload page
+// Upload page functionality
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[Upload] Initializing redesigned upload page...');
-    
-    initializeStepNavigation();
-    initializeFileUploads();
-    initializeFormValidation();
-    initializeTagsInput();
-    initializeCharacterCounters();
+    // Initialize the upload form
+    initializeUploadForm();
+
+    // Initialize file size limits
     loadFileSizeLimits();
-    
-    console.log('[Upload] Redesigned upload page initialized');
 });
 
-// Step Navigation
-function initializeStepNavigation() {
-    // Progress step clicks
-    document.querySelectorAll('.progress-step').forEach(step => {
-        step.addEventListener('click', function() {
-            const stepNumber = parseInt(this.dataset.step);
-            if (stepNumber <= currentStep || validateStepsUpTo(stepNumber - 1)) {
-                goToStep(stepNumber);
+let currentSection = 1;
+let maxSections = 4;
+let selectedTags = [];
+let selectedScreenshots = [];
+
+function initializeUploadForm() {
+    // Section navigation
+    document.querySelectorAll('.next-section').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const nextSection = parseInt(this.dataset.next);
+            if (validateCurrentSection()) {
+                goToSection(nextSection);
             }
         });
     });
 
-    // Next/Previous buttons
-    document.querySelectorAll('.next-step').forEach(btn => {
+    document.querySelectorAll('.prev-section').forEach(btn => {
         btn.addEventListener('click', function() {
-            const nextStep = parseInt(this.dataset.next);
-            if (validateCurrentStep()) {
-                goToStep(nextStep);
-            }
+            const prevSection = parseInt(this.dataset.prev);
+            goToSection(prevSection);
         });
     });
 
-    document.querySelectorAll('.prev-step').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const prevStep = parseInt(this.dataset.prev);
-            goToStep(prevStep);
-        });
-    });
+    // Form submission
+    document.getElementById('uploadForm').addEventListener('submit', handleFormSubmit);
+
+    // File upload handlers
+    initializeFileUploads();
+
+    // Tags functionality
+    initializeTagsInput();
+
+    // Screenshots functionality
+    initializeScreenshots();
+
+    // Character counters
+    initializeCharCounters();
+
+    // Upload method toggle
+    initializeUploadMethodToggle();
+
+    // Generate initial screenshot slots
+    generateScreenshotSlots();
 }
 
-// Go to specific step
-function goToStep(step) {
-    console.log(`[Upload] Going to step ${step}`);
-    
-    // Hide all steps
-    document.querySelectorAll('.form-step').forEach(stepEl => {
-        stepEl.classList.remove('active');
-    });
-    
-    // Show target step
-    const targetStep = document.querySelector(`[data-step="${step}"]`);
-    if (targetStep) {
-        targetStep.classList.add('active');
-    }
-    
-    // Update progress
-    updateProgress(step);
-    
-    // Update current step
-    currentStep = step;
-}
-
-// Update progress indicator
-function updateProgress(step) {
-    const percentage = (step / 4) * 100;
-    
-    // Update progress bar
-    const progressFill = document.getElementById('progressFill');
-    if (progressFill) {
-        progressFill.style.width = `${percentage}%`;
-    }
-    
-    // Update step indicators
-    document.querySelectorAll('.progress-step').forEach((stepEl, index) => {
-        stepEl.classList.toggle('active', index + 1 === step);
-    });
-}
-
-// File Upload Handling
-function initializeFileUploads() {
-    // Mod file upload
-    const modFileUpload = document.getElementById('modFileUpload');
-    const modFileInput = document.getElementById('modFile');
-    
-    if (modFileUpload && modFileInput) {
-        setupFileUpload(modFileUpload, modFileInput, 'mod');
-    }
-    
-    // Thumbnail upload
-    const thumbnailUpload = document.getElementById('thumbnailUpload');
-    const thumbnailInput = document.getElementById('thumbnail');
-    
-    if (thumbnailUpload && thumbnailInput) {
-        setupThumbnailUpload(thumbnailUpload, thumbnailInput);
-    }
-}
-
-// Setup file upload area
-function setupFileUpload(uploadArea, fileInput, type) {
-    // Click to browse
-    uploadArea.addEventListener('click', () => {
-        fileInput.click();
-    });
-    
-    // File input change
-    fileInput.addEventListener('change', (e) => {
-        handleFileSelect(e.target.files[0], type, uploadArea);
-    });
-    
-    // Drag and drop
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-    
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('dragover');
-    });
-    
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            handleFileSelect(files[0], type, uploadArea);
-        }
-    });
-}
-
-// Handle file selection
-function handleFileSelect(file, type, uploadArea) {
-    if (!file) return;
-    
-    console.log(`[Upload] File selected: ${file.name} (${file.size} bytes)`);
-    
-    // Validate file size
-    const maxSize = type === 'mod' ? maxSizeMB : maxThumbnailSizeMB;
-    if (file.size > maxSize * 1024 * 1024) {
-        showError(`File size exceeds the maximum limit of ${maxSize}MB`);
-        return;
-    }
-    
-    // Store file
-    uploadedFiles[type] = file;
-    
-    // Update UI
-    updateFileUploadUI(uploadArea, file, type);
-}
-
-// Update file upload UI
-function updateFileUploadUI(uploadArea, file, type) {
-    const uploadZone = uploadArea.querySelector('.upload-zone');
-    const fileInfo = uploadArea.querySelector('.file-info');
-    
-    if (uploadZone) uploadZone.style.display = 'none';
-    if (fileInfo) {
-        fileInfo.style.display = 'flex';
-        
-        const fileName = fileInfo.querySelector('.file-name');
-        const fileSize = fileInfo.querySelector('.file-size');
-        
-        if (fileName) fileName.textContent = file.name;
-        if (fileSize) fileSize.textContent = formatFileSize(file.size);
-        
-        // Remove file button
-        const removeBtn = fileInfo.querySelector('.remove-file');
-        if (removeBtn) {
-            removeBtn.onclick = () => removeFile(type, uploadArea);
-        }
-    }
-}
-
-// Remove file
-function removeFile(type, uploadArea) {
-    delete uploadedFiles[type];
-    
-    const uploadZone = uploadArea.querySelector('.upload-zone');
-    const fileInfo = uploadArea.querySelector('.file-info');
-    
-    if (uploadZone) uploadZone.style.display = 'block';
-    if (fileInfo) fileInfo.style.display = 'none';
-    
-    // Clear file input
-    const fileInput = uploadArea.querySelector('input[type="file"]');
-    if (fileInput) fileInput.value = '';
-}
-
-// Setup thumbnail upload
-function setupThumbnailUpload(uploadArea, fileInput) {
-    const thumbnailZone = uploadArea.querySelector('.thumbnail-zone');
-    
-    thumbnailZone.addEventListener('click', () => {
-        fileInput.click();
-    });
-    
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            handleThumbnailSelect(file, uploadArea);
-        }
-    });
-}
-
-// Handle thumbnail selection
-function handleThumbnailSelect(file, uploadArea) {
-    if (file.size > maxThumbnailSizeMB * 1024 * 1024) {
-        showError(`Thumbnail size exceeds the maximum limit of ${maxThumbnailSizeMB}MB`);
-        return;
-    }
-    
-    uploadedFiles.thumbnail = file;
-    
-    // Show preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const thumbnailZone = uploadArea.querySelector('.thumbnail-zone');
-        thumbnailZone.innerHTML = `
-            <img src="${e.target.result}" alt="Thumbnail preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
-        `;
-    };
-    reader.readAsDataURL(file);
-}
-
-// Tags Input
-function initializeTagsInput() {
-    const tagsInput = document.getElementById('tagsInput');
-    const tagsContainer = document.getElementById('tagsContainer');
-    
-    if (!tagsInput || !tagsContainer) return;
-    
-    tagsInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ',') {
-            e.preventDefault();
-            addTag(tagsInput.value.trim());
-            tagsInput.value = '';
-        }
-    });
-}
-
-// Add tag
-function addTag(tagText) {
-    if (!tagText || tags.includes(tagText)) return;
-    
-    tags.push(tagText);
-    renderTags();
-}
-
-// Remove tag
-function removeTag(tagText) {
-    tags = tags.filter(tag => tag !== tagText);
-    renderTags();
-}
-
-// Render tags
-function renderTags() {
-    const tagsContainer = document.getElementById('tagsContainer');
-    if (!tagsContainer) return;
-    
-    tagsContainer.innerHTML = tags.map(tag => `
-        <div class="tag-item">
-            <span>${tag}</span>
-            <button type="button" class="remove-tag" onclick="removeTag('${tag}')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `).join('');
-}
-
-// Character Counters
-function initializeCharacterCounters() {
-    const shortDesc = document.getElementById('short_description');
-    if (shortDesc) {
-        const counter = shortDesc.parentElement.querySelector('.char-count');
-        if (counter) {
-            shortDesc.addEventListener('input', () => {
-                counter.textContent = shortDesc.value.length;
-            });
-        }
-    }
-}
-
-// Form Validation
-function initializeFormValidation() {
-    const form = document.getElementById('uploadForm');
-    if (form) {
-        form.addEventListener('submit', handleFormSubmit);
-    }
-}
-
-// Validate current step
-function validateCurrentStep() {
-    switch (currentStep) {
-        case 1:
-            return validateBasicInfo();
-        case 2:
-            return validateFiles();
-        case 3:
-            return validateDetails();
-        case 4:
-            return validateReview();
-        default:
-            return true;
-    }
-}
-
-// Validate basic info
-function validateBasicInfo() {
-    const title = document.getElementById('title').value.trim();
-    const category = document.getElementById('category_id').value;
-    const shortDesc = document.getElementById('short_description').value.trim();
-    const description = document.getElementById('description').value.trim();
-    
-    if (!title || !category || !shortDesc || !description) {
-        showError('Please fill in all required fields');
-        return false;
-    }
-    
-    return true;
-}
-
-// Validate files
-function validateFiles() {
-    if (!uploadedFiles.mod) {
-        showError('Please upload a mod file');
-        return false;
-    }
-    
-    return true;
-}
-
-// Validate details
-function validateDetails() {
-    const version = document.getElementById('version').value.trim();
-    
-    if (!version) {
-        showError('Please enter a version number');
-        return false;
-    }
-    
-    return true;
-}
-
-// Validate review
-function validateReview() {
-    const terms = document.getElementById('terms').checked;
-    
-    if (!terms) {
-        showError('Please agree to the terms and conditions');
-        return false;
-    }
-    
-    return true;
-}
-
-// Load file size limits
 async function loadFileSizeLimits() {
     try {
         const response = await fetch('/api/settings/public');
         const settings = await response.json();
-        
-        maxSizeMB = settings.max_file_size_mb;
-        maxThumbnailSizeMB = settings.max_thumbnail_size_mb;
-        
-        // Update UI hints
-        const fileSizeHint = document.getElementById('fileSizeHint');
-        if (fileSizeHint) {
-            fileSizeHint.textContent = `Maximum file size: ${maxSizeMB}MB`;
-        }
-        
-        console.log(`[Upload] File size limits loaded: ${maxSizeMB}MB mod, ${maxThumbnailSizeMB}MB thumbnail`);
+
+        const maxFileSize = settings.max_file_size_mb || 1024;
+        const maxThumbnailSize = settings.max_thumbnail_size_mb || 5;
+        const maxScreenshotSize = settings.max_screenshot_size_mb || 5;
+
+        // Update file size displays
+        document.querySelectorAll('.upload-specs .spec-item').forEach(item => {
+            if (item.textContent.includes('Max Loading...')) {
+                item.innerHTML = `<i class="fas fa-weight-hanging"></i> Max ${maxFileSize}MB`;
+            }
+        });
+
+        document.querySelectorAll('small').forEach(small => {
+            if (small.textContent.includes('max Loading...')) {
+                if (small.textContent.includes('thumbnail')) {
+                    small.textContent = small.textContent.replace('max Loading...', `max ${maxThumbnailSize}MB`);
+                } else {
+                    small.textContent = small.textContent.replace('max Loading...', `max ${maxScreenshotSize}MB`);
+                }
+            }
+        });
+
     } catch (error) {
-        console.error('[Upload] Error loading file size limits:', error);
+        console.error('Failed to load file size limits:', error);
     }
 }
 
-// Utility functions
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
+function goToSection(sectionNumber) {
+    // Hide all sections
+    document.querySelectorAll('.form-section').forEach(section => {
+        section.classList.remove('active');
+    });
 
-function showError(message) {
-    // You can implement a toast notification system here
-    alert(message);
-}
+    // Show target section
+    document.querySelector(`[data-section="${sectionNumber}"]`).classList.add('active');
 
-function showSuccess(message) {
-    // You can implement a toast notification system here
-    alert(message);
-}
+    // Update steps
+    document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active');
+    });
+    document.querySelector(`[data-step="${sectionNumber}"]`).classList.add('active');
 
-// Form submission
-function handleFormSubmit(e) {
-    e.preventDefault();
-    
-    if (!validateCurrentStep()) {
-        return;
+    // Update progress
+    const progress = (sectionNumber / maxSections) * 100;
+    document.querySelector('.progress-fill').style.width = `${progress}%`;
+    document.querySelector('.progress-text').textContent = `Step ${sectionNumber} of ${maxSections}`;
+
+    currentSection = sectionNumber;
+
+    // Update submission summary if on final section
+    if (sectionNumber === 4) {
+        updateSubmissionSummary();
     }
-    
-    // Create FormData
-    const formData = new FormData();
-    
-    // Add form fields
-    const formElements = e.target.elements;
-    for (let element of formElements) {
-        if (element.name && element.type !== 'file') {
-            if (element.type === 'checkbox') {
-                formData.append(element.name, element.checked);
-            } else {
-                formData.append(element.name, element.value);
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateCurrentSection() {
+    const section = document.querySelector(`[data-section="${currentSection}"]`);
+    const requiredFields = section.querySelectorAll('[required]');
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('error');
+            isValid = false;
+        } else {
+            field.classList.remove('error');
+        }
+    });
+
+    // Special validation for section 2 (files)
+    if (currentSection === 2) {
+        const activeMethod = document.querySelector('.toggle-btn.active').dataset.method;
+        if (activeMethod === 'file') {
+            const modFile = document.getElementById('modFile').files[0];
+            if (!modFile) {
+                showNotification('Please select a mod file to upload', 'error');
+                isValid = false;
+            }
+        } else if (activeMethod === 'url') {
+            const externalUrl = document.getElementById('externalUrl').value.trim();
+            if (!externalUrl) {
+                showNotification('Please provide an external URL for your mod', 'error');
+                isValid = false;
             }
         }
     }
-    
-    // Add files
-    if (uploadedFiles.mod) {
-        formData.append('modFile', uploadedFiles.mod);
+
+    if (!isValid) {
+        showNotification('Please fill in all required fields', 'error');
     }
-    if (uploadedFiles.thumbnail) {
-        formData.append('thumbnail', uploadedFiles.thumbnail);
-    }
-    
-    // Add tags
-    formData.append('tags', tags.join(','));
-    
-    // Submit form
-    submitForm(formData);
+
+    return isValid;
 }
 
-// Submit form to server
-async function submitForm(formData) {
+function initializeFileUploads() {
+    // Mod file upload
+    const modFileInput = document.getElementById('modFile');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+
+    if (fileUploadArea) {
+        fileUploadArea.addEventListener('click', () => modFileInput.click());
+        fileUploadArea.addEventListener('dragover', handleDragOver);
+        fileUploadArea.addEventListener('drop', (e) => handleFileDrop(e, modFileInput));
+        fileUploadArea.addEventListener('dragleave', handleDragLeave);
+    }
+
+    if (modFileInput) {
+        modFileInput.addEventListener('change', (e) => handleFileSelect(e, 'mod'));
+    }
+
+    // Thumbnail upload
+    const thumbnailInput = document.getElementById('thumbnail');
+    const thumbnailUploadArea = document.getElementById('thumbnailUploadArea');
+
+    if (thumbnailUploadArea) {
+        thumbnailUploadArea.addEventListener('click', () => thumbnailInput.click());
+    }
+
+    if (thumbnailInput) {
+        thumbnailInput.addEventListener('change', (e) => handleFileSelect(e, 'thumbnail'));
+    }
+
+    // Remove thumbnail button
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-thumbnail')) {
+            removeThumbnail();
+        }
+    });
+}
+
+function initializeUploadMethodToggle() {
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const method = this.dataset.method;
+
+            // Update button states
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show/hide upload methods
+            document.getElementById('fileUploadMethod').style.display = method === 'file' ? 'block' : 'none';
+            document.getElementById('urlUploadMethod').style.display = method === 'url' ? 'block' : 'none';
+        });
+    });
+}
+
+function initializeTagsInput() {
+    const tagsInput = document.getElementById('tags');
+
+    if (tagsInput) {
+        tagsInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag(this.value.trim());
+                this.value = '';
+            }
+        });
+    }
+}
+
+function addTag(tagText) {
+    if (!tagText || selectedTags.includes(tagText) || selectedTags.length >= 10) return;
+
+    selectedTags.push(tagText);
+
+    const tagElement = document.createElement('span');
+    tagElement.className = 'tag-item';
+    tagElement.innerHTML = `
+        ${tagText}
+        <button type="button" class="remove-tag" data-tag="${tagText}">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    document.getElementById('tagsContainer').appendChild(tagElement);
+
+    // Add event listener to remove button
+    tagElement.querySelector('.remove-tag').addEventListener('click', function() {
+        removeTag(tagText);
+    });
+}
+
+function removeTag(tagText) {
+    selectedTags = selectedTags.filter(tag => tag !== tagText);
+
+    // Remove from DOM
+    const tagElements = document.querySelectorAll('.tag-item');
+    tagElements.forEach(element => {
+        if (element.textContent.trim().startsWith(tagText)) {
+            element.remove();
+        }
+    });
+}
+
+function initializeScreenshots() {
+    const screenshotInput = document.getElementById('screenshotInput');
+
+    if (screenshotInput) {
+        screenshotInput.addEventListener('change', handleScreenshotSelect);
+    }
+}
+
+function generateScreenshotSlots() {
+    const slotsContainer = document.getElementById('screenshotSlots');
+    const maxScreenshots = 5;
+
+    for (let i = 0; i < maxScreenshots; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'screenshot-slot';
+        slot.innerHTML = `
+            <div class="screenshot-placeholder">
+                <i class="fas fa-plus"></i>
+                <span>Add Screenshot</span>
+            </div>
+        `;
+
+        slot.addEventListener('click', () => {
+            document.getElementById('screenshotInput').click();
+        });
+
+        slotsContainer.appendChild(slot);
+    }
+}
+
+function initializeCharCounters() {
+    document.querySelectorAll('textarea[maxlength]').forEach(textarea => {
+        const counter = textarea.parentElement.querySelector('.char-count');
+        if (counter) {
+            updateCharCounter(textarea.id);
+            textarea.addEventListener('input', () => updateCharCounter(textarea.id));
+        }
+    });
+}
+
+function updateCharCounter(textareaId) {
+    const textarea = document.getElementById(textareaId);
+    const counter = textarea.parentElement.querySelector('.char-count');
+    if (counter) {
+        counter.textContent = textarea.value.length;
+    }
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleFileDrop(e, input) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        input.files = files;
+        handleFileSelect({ target: input }, input.id === 'modFile' ? 'mod' : 'thumbnail');
+    }
+}
+
+function handleFileSelect(e, type) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (type === 'thumbnail') {
+        displayThumbnailPreview(file);
+    } else if (type === 'mod') {
+        displayModFileInfo(file);
+    }
+
+    console.log(`Selected ${type} file:`, file.name);
+}
+
+function handleScreenshotSelect(e) {
+    const files = Array.from(e.target.files);
+
+    files.forEach(file => {
+        if (selectedScreenshots.length < 5) {
+            selectedScreenshots.push(file);
+            displayScreenshotPreview(file);
+        }
+    });
+
+    // Clear the input so the same file can be selected again
+    e.target.value = '';
+}
+
+function displayThumbnailPreview(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.querySelector('.thumbnail-preview');
+        const placeholder = document.querySelector('.thumbnail-placeholder');
+
+        preview.querySelector('img').src = e.target.result;
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+function displayModFileInfo(file) {
+    const uploadArea = document.getElementById('fileUploadArea');
+    const placeholder = uploadArea.querySelector('.upload-placeholder');
+
+    // Create file info display
+    const fileInfo = document.createElement('div');
+    fileInfo.className = 'file-info';
+    fileInfo.innerHTML = `
+        <div class="file-icon">
+            <i class="fas fa-file-archive"></i>
+        </div>
+        <div class="file-details">
+            <div class="file-name">${file.name}</div>
+            <div class="file-size">${(file.size / (1024 * 1024)).toFixed(2)} MB</div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline remove-file">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    // Replace placeholder with file info
+    placeholder.style.display = 'none';
+    uploadArea.appendChild(fileInfo);
+
+    // Add remove functionality
+    fileInfo.querySelector('.remove-file').addEventListener('click', function() {
+        document.getElementById('modFile').value = '';
+        fileInfo.remove();
+        placeholder.style.display = 'block';
+    });
+}
+
+function displayScreenshotPreview(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Find the first empty slot
+        const emptySlot = document.querySelector('.screenshot-slot:not(.has-image)');
+        if (emptySlot) {
+            emptySlot.classList.add('has-image');
+            emptySlot.innerHTML = `
+                <img src="${e.target.result}" alt="Screenshot preview">
+                <div class="screenshot-overlay">
+                    <button type="button" class="btn btn-sm btn-danger remove-screenshot" data-index="${selectedScreenshots.length - 1}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            // Add remove functionality
+            emptySlot.querySelector('.remove-screenshot').addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                removeScreenshot(index, emptySlot);
+            });
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeScreenshot(index, slotElement) {
+    selectedScreenshots.splice(index, 1);
+
+    // Reset the slot
+    slotElement.classList.remove('has-image');
+    slotElement.innerHTML = `
+        <div class="screenshot-placeholder">
+            <i class="fas fa-plus"></i>
+            <span>Add Screenshot</span>
+        </div>
+    `;
+
+    // Re-add click listener
+    slotElement.addEventListener('click', () => {
+        document.getElementById('screenshotInput').click();
+    });
+}
+
+function removeThumbnail() {
+    const preview = document.querySelector('.thumbnail-preview');
+    const placeholder = document.querySelector('.thumbnail-placeholder');
+
+    preview.style.display = 'none';
+    placeholder.style.display = 'block';
+
+    // Clear the input
+    document.getElementById('thumbnail').value = '';
+}
+
+function updateSubmissionSummary() {
+    const summaryContainer = document.getElementById('submissionSummary');
+    const form = document.getElementById('uploadForm');
+
+    const title = form.elements.title.value || 'Not specified';
+    const category = form.elements.category_id.selectedOptions[0]?.text || 'Not selected';
+    const version = form.elements.version.value || 'Not specified';
+    const uploadMethod = document.querySelector('.toggle-btn.active').textContent.trim();
+    const tagsCount = selectedTags.length;
+    const screenshotsCount = selectedScreenshots.length;
+    const isNSFW = form.elements.is_nsfw.checked ? 'Yes' : 'No';
+
+    summaryContainer.innerHTML = `
+        <div class="summary-item">
+            <span class="summary-label">Title:</span>
+            <span class="summary-value">${title}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Category:</span>
+            <span class="summary-value">${category}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Version:</span>
+            <span class="summary-value">${version}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Upload Method:</span>
+            <span class="summary-value">${uploadMethod}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Tags:</span>
+            <span class="summary-value">${tagsCount} tag(s)</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Screenshots:</span>
+            <span class="summary-value">${screenshotsCount} image(s)</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">NSFW Content:</span>
+            <span class="summary-value">${isNSFW}</span>
+        </div>
+    `;
+}
+
+async function handleFormSubmit(e) {
+    e.preventDefault();
+
+    if (!validateCurrentSection()) {
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+
+    // Show loading state
+    submitBtn.classList.add('btn-loading');
+    submitBtn.innerHTML = '<span class="btn-text">Uploading...</span>';
+    submitBtn.disabled = true;
+
     try {
-        console.log('[Upload] Submitting form...');
-        
+        const formData = new FormData();
+        const form = e.target;
+
+        // Add basic form data
+        formData.append('title', form.elements.title.value);
+        formData.append('description', form.elements.description.value);
+        formData.append('short_description', form.elements.short_description.value);
+        formData.append('category_id', form.elements.category_id.value);
+        formData.append('version', form.elements.version.value);
+        formData.append('changelog', form.elements.changelog.value);
+        formData.append('is_nsfw', form.elements.is_nsfw.checked);
+
+        // Add tags
+        formData.append('tags', JSON.stringify(selectedTags));
+
+        // Add upload method and file/URL
+        const activeMethod = document.querySelector('.toggle-btn.active').dataset.method;
+        formData.append('uploadMethod', activeMethod);
+
+        if (activeMethod === 'file' && form.elements.modFile.files[0]) {
+            formData.append('modFile', form.elements.modFile.files[0]);
+        } else if (activeMethod === 'url') {
+            formData.append('externalUrl', form.elements.externalUrl.value);
+        }
+
+        // Add thumbnail if selected
+        if (form.elements.thumbnail.files[0]) {
+            formData.append('thumbnail', form.elements.thumbnail.files[0]);
+        }
+
+        // Add screenshots
+        selectedScreenshots.forEach((screenshot, index) => {
+            formData.append(`screenshot_${index}`, screenshot);
+        });
+
         const response = await fetch('/api/mods', {
             method: 'POST',
             body: formData
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
-            showSuccess('Mod uploaded successfully!');
-            window.location.href = `/mod/${result.id}`;
+            showNotification('Mod uploaded successfully! Redirecting...', 'success');
+
+            // Redirect to the mod page after a short delay
+            setTimeout(() => {
+                window.location.href = `/mod/${result.mod.slug}`;
+            }, 1500);
         } else {
-            showError(result.error || 'Upload failed');
+            throw new Error(result.error || 'Failed to upload mod');
         }
     } catch (error) {
-        console.error('[Upload] Submit error:', error);
-        showError('Upload failed. Please try again.');
+        console.error('Upload error:', error);
+        showNotification(`Failed to upload mod: ${error.message}`, 'error');
+    } finally {
+        // Reset button state
+        submitBtn.classList.remove('btn-loading');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Use existing notification system if available
+    if (window.S && window.S.notify) {
+        window.S.notify[type](message);
+    } else {
+        // Fallback to alert
+        alert(message);
     }
 }
