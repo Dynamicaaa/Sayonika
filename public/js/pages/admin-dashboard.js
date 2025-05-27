@@ -580,6 +580,7 @@ async function loadSiteSettings() {
 
 // Save site settings to server
 async function saveSiteSettings() {
+    serverLog('info', 'Starting saveSiteSettings function');
     try {
         const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
         const maxFileSizeInput = document.getElementById('maxFileSize');
@@ -588,6 +589,15 @@ async function saveSiteSettings() {
         const featuredModsCountInput = document.getElementById('featuredModsCount');
 
         const settings = {};
+
+        // Debug: Log which form elements were found
+        serverLog('debug', 'Form elements found', {
+            maintenanceMode: !!maintenanceModeCheckbox,
+            maxFileSize: !!maxFileSizeInput,
+            maxThumbnailSize: !!maxThumbnailSizeInput,
+            maxScreenshotSize: !!maxScreenshotSizeInput,
+            featuredModsCount: !!featuredModsCountInput
+        });
 
         if (maintenanceModeCheckbox) {
             settings.maintenance_mode = maintenanceModeCheckbox.checked;
@@ -626,7 +636,8 @@ async function saveSiteSettings() {
             serverLog('debug', `Featured mods count setting: ${settings.featured_mods_count}`);
         }
 
-        serverLog('info', 'Saving site settings to database:', settings);
+        serverLog('info', 'Settings object prepared', settings);
+        serverLog('info', 'Making API request to /api/admin/settings');
 
         const response = await fetch('/api/admin/settings', {
             method: 'PUT',
@@ -641,9 +652,9 @@ async function saveSiteSettings() {
             throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
+        serverLog('debug', `API response status: ${response.status}`);
         const result = await response.json();
-
-        serverLog('info', 'Site settings saved successfully to database');
+        serverLog('debug', 'Site settings saved successfully', result);
 
         if (window.S && window.S.notify) {
             window.S.notify.success('Settings saved successfully to database!');
@@ -670,6 +681,8 @@ async function saveSiteSettings() {
             const message = `Maximum file size limit updated to ${settings.max_file_size_mb}MB`;
             serverLog('info', message);
         }
+
+        serverLog('info', 'saveSiteSettings completed successfully');
 
     } catch (error) {
         serverLog('error', 'Failed to save site settings:', error.message);
