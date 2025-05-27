@@ -1,13 +1,17 @@
 // Reverse proxy detection middleware
 const Database = require('../database/database');
 
+const db = new Database();
+
+// Initialize database connection
+db.connect().catch(console.error);
+
 /**
  * Detect reverse proxy setup and adjust file size limits accordingly
  */
 const detectReverseProxy = async (req, res, next) => {
     try {
-        const db = Database.getInstance();
-        
+
         // Initialize proxy detection info
         req.proxyInfo = {
             isCloudflare: false,
@@ -26,7 +30,7 @@ const detectReverseProxy = async (req, res, next) => {
             'cf-request-id'
         ];
 
-        const foundCloudflareHeaders = cloudflareHeaders.filter(header => 
+        const foundCloudflareHeaders = cloudflareHeaders.filter(header =>
             req.headers[header] !== undefined
         );
 
@@ -34,10 +38,10 @@ const detectReverseProxy = async (req, res, next) => {
             req.proxyInfo.isCloudflare = true;
             req.proxyInfo.isReverseProxy = true;
             req.proxyInfo.detectedHeaders.push(...foundCloudflareHeaders);
-            
+
             // Cloudflare has a 100MB limit for free plans
             req.proxyInfo.maxFileSize = 100 * 1024 * 1024; // 100MB in bytes
-            
+
             console.log(`[Proxy Detection] Cloudflare detected via headers: ${foundCloudflareHeaders.join(', ')}`);
         }
 
@@ -49,7 +53,7 @@ const detectReverseProxy = async (req, res, next) => {
             'x-forwarded-host'
         ];
 
-        const foundNginxHeaders = nginxHeaders.filter(header => 
+        const foundNginxHeaders = nginxHeaders.filter(header =>
             req.headers[header] !== undefined
         );
 
@@ -57,7 +61,7 @@ const detectReverseProxy = async (req, res, next) => {
             req.proxyInfo.isNginx = true;
             req.proxyInfo.isReverseProxy = true;
             req.proxyInfo.detectedHeaders.push(...foundNginxHeaders);
-            
+
             console.log(`[Proxy Detection] Nginx reverse proxy detected via headers: ${foundNginxHeaders.join(', ')}`);
         }
 
@@ -69,14 +73,14 @@ const detectReverseProxy = async (req, res, next) => {
             'forwarded'
         ];
 
-        const foundOtherHeaders = otherProxyHeaders.filter(header => 
+        const foundOtherHeaders = otherProxyHeaders.filter(header =>
             req.headers[header] !== undefined
         );
 
         if (foundOtherHeaders.length > 0) {
             req.proxyInfo.isReverseProxy = true;
             req.proxyInfo.detectedHeaders.push(...foundOtherHeaders);
-            
+
             console.log(`[Proxy Detection] Other reverse proxy detected via headers: ${foundOtherHeaders.join(', ')}`);
         }
 
@@ -120,7 +124,7 @@ const getEffectiveFileLimit = (req) => {
     if (req.proxyInfo && req.proxyInfo.maxFileSize) {
         return req.proxyInfo.maxFileSize;
     }
-    
+
     // Default fallback (should not happen if middleware is working)
     return 500 * 1024 * 1024; // 500MB default
 };
