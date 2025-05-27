@@ -237,12 +237,12 @@ SMTP_PASS=your-app-password</code></pre>
 
                                 <div class="config-item">
                                     <h4>MAX_FILE_SIZE</h4>
-                                    <p>Maximum file size for mod uploads (in bytes).</p>
+                                    <p>Maximum file size for mod uploads (in bytes). <strong>Note:</strong> File size limits are now managed through the admin panel and can be set to any value without restrictions.</p>
                                     <div class="code-block">
-                                        <pre><code># 100MB limit
+                                        <pre><code># 100MB limit (optional - admin panel overrides this)
 MAX_FILE_SIZE=104857600</code></pre>
                                     </div>
-                                    <p><strong>Default:</strong> 104857600 (100MB)</p>
+                                    <p><strong>Default:</strong> 104857600 (100MB) - Can be changed in Admin Panel → Settings</p>
                                 </div>
 
                                 <div class="config-item">

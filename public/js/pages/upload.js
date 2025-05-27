@@ -292,13 +292,26 @@ function initializeFileUploads() {
     }
 }
 
-function handleFileSelect(file) {
+async function handleFileSelect(file) {
     const fileUploadArea = document.getElementById('fileUploadArea');
     const placeholder = fileUploadArea.querySelector('.upload-placeholder');
-    const maxSize = 100 * 1024 * 1024; // 100MB
+
+    // Get dynamic file size limit from server
+    let maxSizeMB = 100; // Default fallback
+    try {
+        const response = await fetch('/api/settings/public');
+        if (response.ok) {
+            const settings = await response.json();
+            maxSizeMB = settings.max_file_size_mb || 100;
+        }
+    } catch (error) {
+        console.warn('Could not fetch file size limit, using default 100MB');
+    }
+
+    const maxSize = maxSizeMB * 1024 * 1024;
 
     if (file.size > maxSize) {
-        showNotification('File size must be less than 100MB', 'error');
+        showNotification(`File size must be less than ${maxSizeMB}MB`, 'error');
         return;
     }
 
