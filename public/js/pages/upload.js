@@ -299,6 +299,13 @@ function initializeScreenshots() {
 
 function generateScreenshotSlots() {
     const slotsContainer = document.getElementById('screenshotSlots');
+    console.log('Screenshot slots container:', slotsContainer);
+
+    if (!slotsContainer) {
+        console.error('Screenshot slots container not found!');
+        return;
+    }
+
     const maxScreenshots = 5;
 
     for (let i = 0; i < maxScreenshots; i++) {
@@ -312,11 +319,14 @@ function generateScreenshotSlots() {
         `;
 
         slot.addEventListener('click', () => {
+            console.log('Screenshot slot clicked');
             document.getElementById('screenshotInput').click();
         });
 
         slotsContainer.appendChild(slot);
     }
+
+    console.log(`Generated ${maxScreenshots} screenshot slots`);
 }
 
 function initializeCharCounters() {
@@ -372,14 +382,22 @@ function handleFileSelect(e, type) {
 }
 
 function handleScreenshotSelect(e) {
+    console.log('Screenshot selection triggered');
     const files = Array.from(e.target.files);
+    console.log('Selected files:', files.length);
 
-    files.forEach(file => {
+    files.forEach((file, index) => {
+        console.log(`Processing file ${index}:`, file.name, file.type, file.size);
         if (selectedScreenshots.length < 5) {
             selectedScreenshots.push(file);
             displayScreenshotPreview(file);
+            console.log(`Added screenshot ${selectedScreenshots.length - 1}:`, file.name);
+        } else {
+            console.log('Maximum screenshots reached, skipping file:', file.name);
         }
     });
+
+    console.log('Total selected screenshots:', selectedScreenshots.length);
 
     // Clear the input so the same file can be selected again
     e.target.value = '';

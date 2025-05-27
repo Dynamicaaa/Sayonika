@@ -168,7 +168,8 @@ router.post('/mods', requireAuth, detectReverseProxy, upload.any(), [
 
         // Validate that either file upload or external URL is provided
         if (uploadMethod === 'file') {
-            if (!req.files || !req.files.modFile || req.files.modFile.length === 0) {
+            const modFileExists = req.files && req.files.find(f => f.fieldname === 'modFile');
+            if (!modFileExists) {
                 return res.status(400).json({ error: 'Mod file is required when using file upload method' });
             }
         } else if (uploadMethod === 'url') {
