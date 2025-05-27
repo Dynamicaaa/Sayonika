@@ -35,71 +35,34 @@ const storage = multer.diskStorage({
     }
 });
 
-// Create dynamic multer upload middleware
-const createUploadMiddleware = async () => {
-    try {
-        const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb') || 100;
-        const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
+// Create upload middleware with very high limit - we'll check file size manually
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 * 1024 // 10GB limit to allow any reasonable file size
+    },
+    fileFilter: (req, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase();
 
-        return multer({
-            storage: storage,
-            limits: {
-                fileSize: maxFileSizeBytes
-            },
-            fileFilter: (req, file, cb) => {
-                const ext = path.extname(file.originalname).toLowerCase();
-
-                if (file.fieldname === 'modFile') {
-                    const allowedModTypes = ['.zip', '.rar', '.7z'];
-                    if (allowedModTypes.includes(ext)) {
-                        cb(null, true);
-                    } else {
-                        cb(new Error('Only .zip, .rar, and .7z files are allowed for mod files'));
-                    }
-                } else if (file.fieldname === 'thumbnail') {
-                    const allowedImageTypes = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-                    if (allowedImageTypes.includes(ext)) {
-                        cb(null, true);
-                    } else {
-                        cb(new Error('Only image files (JPG, JPEG, PNG, GIF, WebP) are allowed for thumbnails'));
-                    }
-                } else {
-                    cb(new Error('Unexpected field'));
-                }
+        if (file.fieldname === 'modFile') {
+            const allowedModTypes = ['.zip', '.rar', '.7z'];
+            if (allowedModTypes.includes(ext)) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only .zip, .rar, and .7z files are allowed for mod files'));
             }
-        });
-    } catch (error) {
-        console.error('Error creating upload middleware:', error);
-        // Fallback to default 100MB limit
-        return multer({
-            storage: storage,
-            limits: {
-                fileSize: 100 * 1024 * 1024 // 100MB fallback limit
-            },
-            fileFilter: (req, file, cb) => {
-                const ext = path.extname(file.originalname).toLowerCase();
-
-                if (file.fieldname === 'modFile') {
-                    const allowedModTypes = ['.zip', '.rar', '.7z'];
-                    if (allowedModTypes.includes(ext)) {
-                        cb(null, true);
-                    } else {
-                        cb(new Error('Only .zip, .rar, and .7z files are allowed for mod files'));
-                    }
-                } else if (file.fieldname === 'thumbnail') {
-                    const allowedImageTypes = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-                    if (allowedImageTypes.includes(ext)) {
-                        cb(null, true);
-                    } else {
-                        cb(new Error('Only image files (JPG, JPEG, PNG, GIF, WebP) are allowed for thumbnails'));
-                    }
-                } else {
-                    cb(new Error('Unexpected field'));
-                }
+        } else if (file.fieldname === 'thumbnail') {
+            const allowedImageTypes = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+            if (allowedImageTypes.includes(ext)) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only image files (JPG, JPEG, PNG, GIF, WebP) are allowed for thumbnails'));
             }
-        });
+        } else {
+            cb(new Error('Unexpected field'));
+        }
     }
-};
+});
 
 // Get all mods
 router.get('/mods', [
@@ -171,23 +134,11 @@ router.get('/mods/:identifier', optionalAuth, async (req, res) => {
     }
 });
 
-// Dynamic upload middleware for mod creation
-const dynamicUploadMiddleware = async (req, res, next) => {
-    try {
-        const upload = await createUploadMiddleware();
-        const uploadFields = upload.fields([
-            { name: 'modFile', maxCount: 1 },
-            { name: 'thumbnail', maxCount: 1 }
-        ]);
-        uploadFields(req, res, next);
-    } catch (error) {
-        console.error('Dynamic upload middleware error:', error);
-        res.status(500).json({ error: 'Upload configuration error' });
-    }
-};
-
 // Create new mod
-router.post('/mods', requireAuth, dynamicUploadMiddleware, [
+router.post('/mods', requireAuth, upload.fields([
+    { name: 'modFile', maxCount: 1 },
+    { name: 'thumbnail', maxCount: 1 }
+]), [
     body('title').isLength({ min: 1, max: 255 }).withMessage('Title is required and must be less than 255 characters'),
     body('description').isLength({ min: 1 }).withMessage('Description is required'),
     body('short_description').optional().isLength({ max: 500 }).withMessage('Short description must be less than 500 characters'),
@@ -213,6 +164,27 @@ router.post('/mods', requireAuth, dynamicUploadMiddleware, [
 
         const modFile = req.files.modFile[0];
         const thumbnailFile = req.files.thumbnail ? req.files.thumbnail[0] : null;
+
+        // Check file size against database setting
+        const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb') || 100;
+        const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
+
+        console.log(`[Upload] File size check - File: ${(modFile.size / 1024 / 1024).toFixed(2)}MB, Limit: ${maxFileSizeMB}MB`);
+
+        if (modFile.size > maxFileSizeBytes) {
+            console.log(`[Upload] File size exceeded limit - rejecting upload`);
+            // Delete the uploaded file since it exceeds the limit
+            try {
+                await fs.unlink(modFile.path);
+            } catch (unlinkError) {
+                console.error('Error deleting oversized file:', unlinkError);
+            }
+            return res.status(400).json({
+                error: `File size exceeds the maximum limit of ${maxFileSizeMB}MB`
+            });
+        }
+
+        console.log(`[Upload] File size check passed - proceeding with upload`);
 
         const {
             title, description, short_description, category_id,

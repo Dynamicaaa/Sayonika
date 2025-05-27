@@ -236,9 +236,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Body parsing middleware with high limits for file uploads
+app.use(express.json({ limit: '10gb' }));
+app.use(express.urlencoded({ extended: true, limit: '10gb' }));
 
 // View engine setup
 app.set('view engine', 'ejs');
