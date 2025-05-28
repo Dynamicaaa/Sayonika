@@ -143,7 +143,15 @@ router.get('/mods/:identifier', optionalAuth, async (req, res) => {
 });
 
 // Create new mod
-router.post('/mods', requireAuth, detectReverseProxy, upload.any(), [
+router.post('/mods', requireAuth, detectReverseProxy, (req, res, next) => {
+    upload.any()(req, res, (err) => {
+        if (err) {
+            console.error('Multer upload error:', err);
+            return res.status(400).json({ error: `File upload error: ${err.message}` });
+        }
+        next();
+    });
+}, [
     body('title').isLength({ min: 1, max: 255 }).withMessage('Title is required and must be less than 255 characters'),
     body('description').isLength({ min: 1 }).withMessage('Description is required'),
     body('short_description').optional().isLength({ max: 500 }).withMessage('Short description must be less than 500 characters'),
@@ -205,6 +213,16 @@ router.post('/mods', requireAuth, detectReverseProxy, upload.any(), [
         const thumbnailFile = req.files ? req.files.find(f => f.fieldname === 'thumbnail') : null;
         const screenshotFiles = req.files ? req.files.filter(f => f.fieldname.startsWith('screenshot_')) : [];
 
+        // Debug logging for file processing
+        console.log('Processing uploaded files:');
+        console.log('- Total files received:', req.files ? req.files.length : 0);
+        console.log('- Mod file:', modFile ? `${modFile.originalname} (${modFile.size} bytes)` : 'None');
+        console.log('- Thumbnail file:', thumbnailFile ? `${thumbnailFile.originalname} (${thumbnailFile.size} bytes)` : 'None');
+        console.log('- Screenshot files:', screenshotFiles.length);
+        screenshotFiles.forEach((file, index) => {
+            console.log(`  Screenshot ${index}: ${file.fieldname} -> ${file.originalname} (${file.size} bytes)`);
+        });
+
         // Check file size against database setting (only for file uploads)
         if (uploadMethod === 'file' && modFile) {
             const maxFileSizeMB = await db.getSiteSetting('max_file_size_mb');
@@ -261,9 +279,28 @@ router.post('/mods', requireAuth, detectReverseProxy, upload.any(), [
             console.log(`Using uploaded thumbnail: ${thumbnailUrl}`);
         }
 
+        // Validate screenshot file sizes
+        const maxScreenshotSizeMB = await db.getSiteSetting('max_screenshot_size_mb') || 5;
+        const maxScreenshotSizeBytes = maxScreenshotSizeMB * 1024 * 1024;
+
+        for (const screenshotFile of screenshotFiles) {
+            if (screenshotFile.size > maxScreenshotSizeBytes) {
+                console.log(`Screenshot file ${screenshotFile.originalname} exceeds size limit: ${(screenshotFile.size / 1024 / 1024).toFixed(2)}MB > ${maxScreenshotSizeMB}MB`);
+                // Delete the uploaded file
+                try {
+                    await fs.unlink(screenshotFile.path);
+                } catch (unlinkError) {
+                    console.error('Error deleting oversized screenshot file:', unlinkError);
+                }
+                return res.status(400).json({
+                    error: `Screenshot file "${screenshotFile.originalname}" exceeds the maximum size limit of ${maxScreenshotSizeMB}MB`
+                });
+            }
+        }
+
         // Handle screenshots
         const screenshots = screenshotFiles.map(file => `/uploads/mods/${file.filename}`);
-        console.log(`Processed ${screenshots.length} screenshots`);
+        console.log(`Processed ${screenshots.length} screenshots:`, screenshots);
 
         const modData = {
             title,

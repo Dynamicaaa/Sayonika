@@ -107,6 +107,7 @@ function goToSection(sectionNumber) {
 
     // Update submission summary if on final section
     if (sectionNumber === 4) {
+        console.log('Navigated to section 4, updating submission summary...');
         updateSubmissionSummary();
     }
 
@@ -399,6 +400,11 @@ function handleScreenshotSelect(e) {
 
     console.log('Total selected screenshots:', selectedScreenshots.length);
 
+    // Update the submission summary if we're on the final section
+    if (currentSection === 4) {
+        updateSubmissionSummary();
+    }
+
     // Clear the input so the same file can be selected again
     e.target.value = '';
 }
@@ -454,11 +460,16 @@ function displayScreenshotPreview(file) {
         // Find the first empty slot
         const emptySlot = document.querySelector('.screenshot-slot:not(.has-image)');
         if (emptySlot) {
+            // Get the correct index for this screenshot
+            const screenshotIndex = selectedScreenshots.length - 1;
+            console.log(`Displaying screenshot preview for index ${screenshotIndex}:`, file.name);
+
             emptySlot.classList.add('has-image');
+            emptySlot.dataset.screenshotIndex = screenshotIndex; // Store the index on the slot
             emptySlot.innerHTML = `
                 <img src="${e.target.result}" alt="Screenshot preview">
                 <div class="screenshot-overlay">
-                    <button type="button" class="btn btn-sm btn-danger remove-screenshot" data-index="${selectedScreenshots.length - 1}">
+                    <button type="button" class="btn btn-sm btn-danger remove-screenshot" data-index="${screenshotIndex}">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -467,18 +478,26 @@ function displayScreenshotPreview(file) {
             // Add remove functionality
             emptySlot.querySelector('.remove-screenshot').addEventListener('click', function() {
                 const index = parseInt(this.dataset.index);
+                console.log(`Removing screenshot at index ${index}`);
                 removeScreenshot(index, emptySlot);
             });
+        } else {
+            console.warn('No empty screenshot slot available');
         }
     };
     reader.readAsDataURL(file);
 }
 
 function removeScreenshot(index, slotElement) {
+    console.log(`Removing screenshot at index ${index}, current array length: ${selectedScreenshots.length}`);
+
+    // Remove from the array
     selectedScreenshots.splice(index, 1);
+    console.log(`Screenshot removed, new array length: ${selectedScreenshots.length}`);
 
     // Reset the slot
     slotElement.classList.remove('has-image');
+    slotElement.removeAttribute('data-screenshot-index');
     slotElement.innerHTML = `
         <div class="screenshot-placeholder">
             <i class="fas fa-plus"></i>
@@ -488,7 +507,29 @@ function removeScreenshot(index, slotElement) {
 
     // Re-add click listener
     slotElement.addEventListener('click', () => {
+        console.log('Screenshot slot clicked after removal');
         document.getElementById('screenshotInput').click();
+    });
+
+    // Update indices for remaining screenshots
+    updateScreenshotIndices();
+
+    // Update the submission summary if we're on the final section
+    if (currentSection === 4) {
+        updateSubmissionSummary();
+    }
+}
+
+function updateScreenshotIndices() {
+    const screenshotSlots = document.querySelectorAll('.screenshot-slot.has-image');
+    console.log(`Updating indices for ${screenshotSlots.length} screenshot slots`);
+
+    screenshotSlots.forEach((slot, newIndex) => {
+        slot.dataset.screenshotIndex = newIndex;
+        const removeBtn = slot.querySelector('.remove-screenshot');
+        if (removeBtn) {
+            removeBtn.dataset.index = newIndex;
+        }
     });
 }
 
@@ -504,6 +545,10 @@ function removeThumbnail() {
 }
 
 function updateSubmissionSummary() {
+    console.log('Updating submission summary...');
+    console.log('Current selectedScreenshots array:', selectedScreenshots);
+    console.log('Screenshots count:', selectedScreenshots.length);
+
     const summaryContainer = document.getElementById('submissionSummary');
     const form = document.getElementById('uploadForm');
 
@@ -514,6 +559,10 @@ function updateSubmissionSummary() {
     const tagsCount = selectedTags.length;
     const screenshotsCount = selectedScreenshots.length;
     const isNSFW = form.elements.is_nsfw.checked ? 'Yes' : 'No';
+
+    console.log('Summary data:', {
+        title, category, version, uploadMethod, tagsCount, screenshotsCount, isNSFW
+    });
 
     summaryContainer.innerHTML = `
         <div class="summary-item">
@@ -595,10 +644,22 @@ async function handleFormSubmit(e) {
 
         // Add screenshots
         console.log(`Adding ${selectedScreenshots.length} screenshots to upload`);
+        console.log('Selected screenshots array:', selectedScreenshots);
+
         selectedScreenshots.forEach((screenshot, index) => {
-            console.log(`Adding screenshot ${index}:`, screenshot.name, screenshot.size);
+            console.log(`Adding screenshot ${index}:`, screenshot.name, screenshot.type, screenshot.size);
             formData.append(`screenshot_${index}`, screenshot);
         });
+
+        // Debug: Log all FormData entries
+        console.log('FormData entries:');
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+            } else {
+                console.log(`${key}: ${value}`);
+            }
+        }
 
         const response = await fetch('/api/mods', {
             method: 'POST',
