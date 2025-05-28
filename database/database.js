@@ -11,6 +11,8 @@ class Database {
         this.dbPath = path.join(__dirname, 'sayonika.db');
         this.db = null;
         this.migrationManager = null;
+        this.transactionQueue = [];
+        this.isTransactionActive = false;
     }
 
     async connect() {
@@ -154,6 +156,53 @@ class Database {
                 resolve();
             }
         });
+    }
+
+    /**
+     * Execute a function within a transaction with proper concurrency control
+     * @param {Function} transactionFn - Function to execute within transaction
+     * @param {number} maxRetries - Maximum number of retries on failure
+     * @returns {Promise} - Result of the transaction function
+     */
+    async executeInTransaction(transactionFn, maxRetries = 3) {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                // Wait for any existing transaction to complete
+                while (this.isTransactionActive) {
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+
+                this.isTransactionActive = true;
+                console.log(`[Database] Starting transaction (attempt ${attempt})`);
+
+                await this.run('BEGIN TRANSACTION');
+
+                try {
+                    const result = await transactionFn();
+                    await this.run('COMMIT');
+                    console.log(`[Database] Transaction committed successfully`);
+                    this.isTransactionActive = false;
+                    return result;
+                } catch (error) {
+                    console.error(`[Database] Transaction error:`, error);
+                    await this.run('ROLLBACK');
+                    console.log(`[Database] Transaction rolled back`);
+                    throw error;
+                }
+            } catch (error) {
+                this.isTransactionActive = false;
+
+                if (attempt === maxRetries) {
+                    console.error(`[Database] Transaction failed after ${maxRetries} attempts:`, error);
+                    throw error;
+                }
+
+                // Wait before retry with exponential backoff
+                const delay = Math.min(100 * Math.pow(2, attempt - 1), 1000);
+                console.log(`[Database] Transaction attempt ${attempt} failed, retrying in ${delay}ms:`, error.message);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
     }
 
     // User methods
@@ -447,10 +496,7 @@ class Database {
     async approveModReview(modId, adminId, reason = null) {
         console.log(`[Database] Starting mod approval - Mod ID: ${modId}, Admin ID: ${adminId}`);
 
-        try {
-            await this.run('BEGIN TRANSACTION');
-            console.log(`[Database] Started transaction for mod approval`);
-
+        return await this.executeInTransaction(async () => {
             // Get mod details for notification
             const mod = await this.getModById(modId);
             if (!mod) {
@@ -503,25 +549,15 @@ class Database {
                 }
             }
 
-            await this.run('COMMIT');
-            console.log(`[Database] Transaction committed successfully for mod ${modId}`);
-
+            console.log(`[Database] Mod ${modId} approved successfully`);
             return { success: true };
-        } catch (error) {
-            console.error(`[Database] Error in approveModReview for mod ${modId}:`, error);
-            await this.run('ROLLBACK');
-            console.log(`[Database] Transaction rolled back due to error`);
-            throw error;
-        }
+        });
     }
 
     async rejectModReview(modId, adminId, reason = null) {
         console.log(`[Database] Starting mod rejection and removal - Mod ID: ${modId}, Admin ID: ${adminId}`);
 
-        try {
-            await this.run('BEGIN TRANSACTION');
-            console.log(`[Database] Started transaction for mod rejection and removal`);
-
+        return await this.executeInTransaction(async () => {
             // Get mod details for notification and file cleanup
             const mod = await this.getModById(modId);
             if (!mod) {
@@ -565,16 +601,9 @@ class Database {
             const deleteResult = await this.run('DELETE FROM mods WHERE id = ?', [modId]);
             console.log(`[Database] Mod deletion result:`, deleteResult);
 
-            await this.run('COMMIT');
-            console.log(`[Database] Transaction committed successfully - mod ${modId} has been completely removed`);
-
+            console.log(`[Database] Mod ${modId} has been completely removed`);
             return { success: true, removed: true };
-        } catch (error) {
-            console.error(`[Database] Error in rejectModReview for mod ${modId}:`, error);
-            await this.run('ROLLBACK');
-            console.log(`[Database] Transaction rolled back due to error`);
-            throw error;
-        }
+        });
     }
 
     // Enhanced mod management methods
