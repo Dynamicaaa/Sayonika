@@ -393,15 +393,62 @@ class Database {
             sql += ' AND m.is_featured = 1';
         }
 
-        // Default ordering
-        sql += ' ORDER BY m.created_at DESC';
+        // Sorting
+        const sortBy = filters.sort || 'created_at';
+        const sortOrder = filters.order === 'asc' ? 'ASC' : 'DESC';
 
+        // Map sort fields to actual database columns
+        const sortFieldMap = {
+            'created_at': 'm.created_at',
+            'updated_at': 'm.updated_at',
+            'downloads': 'm.download_count',
+            'rating': 'm.rating_average',
+            'title': 'm.title'
+        };
+
+        const sortField = sortFieldMap[sortBy] || 'm.created_at';
+        sql += ` ORDER BY ${sortField} ${sortOrder}`;
+
+        // Pagination
         if (filters.limit) {
             sql += ' LIMIT ?';
-            params.push(filters.limit);
+            params.push(parseInt(filters.limit));
+
+            if (filters.offset) {
+                sql += ' OFFSET ?';
+                params.push(parseInt(filters.offset));
+            }
         }
 
         return await this.all(sql, params);
+    }
+
+    async getModCount(filters = {}) {
+        let sql = `
+            SELECT COUNT(*) as count
+            FROM mods m
+            LEFT JOIN users u ON m.author_id = u.id
+            WHERE m.is_published = 1
+        `;
+
+        const params = [];
+
+        if (filters.category_id) {
+            sql += ' AND m.category_id = ?';
+            params.push(filters.category_id);
+        }
+
+        if (filters.search) {
+            sql += ' AND (m.title LIKE ? OR m.description LIKE ?)';
+            params.push(`%${filters.search}%`, `%${filters.search}%`);
+        }
+
+        if (filters.featured) {
+            sql += ' AND m.is_featured = 1';
+        }
+
+        const result = await this.get(sql, params);
+        return result.count;
     }
 
     async getCategories() {

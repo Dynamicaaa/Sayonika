@@ -77,8 +77,10 @@ router.get('/mods', [
     query('category').optional().isInt().withMessage('Category must be a number'),
     query('search').optional().isLength({ max: 100 }).withMessage('Search term too long'),
     query('featured').optional().isBoolean().withMessage('Featured must be boolean'),
-    query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-    query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive number')
+    query('per_page').optional().isInt({ min: 1, max: 100 }).withMessage('Per page must be between 1 and 100'),
+    query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive number'),
+    query('sort').optional().isIn(['created_at', 'updated_at', 'downloads', 'rating', 'title']).withMessage('Invalid sort field'),
+    query('order').optional().isIn(['asc', 'desc']).withMessage('Invalid sort order')
 ], optionalAuth, async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -90,10 +92,22 @@ router.get('/mods', [
             category_id: req.query.category,
             search: req.query.search,
             featured: req.query.featured === 'true',
-            limit: parseInt(req.query.limit) || 20
+            sort: req.query.sort || 'created_at',
+            order: req.query.order || 'desc'
         };
 
-        const mods = await db.getMods(filters);
+        // Pagination
+        const page = parseInt(req.query.page) || 1;
+        const perPage = parseInt(req.query.per_page) || 20;
+        const offset = (page - 1) * perPage;
+
+        filters.limit = perPage;
+        filters.offset = offset;
+
+        const [mods, totalCount] = await Promise.all([
+            db.getMods(filters),
+            db.getModCount(filters)
+        ]);
 
         // Parse JSON fields
         const processedMods = mods.map(mod => ({
@@ -105,7 +119,14 @@ router.get('/mods', [
 
         res.json({
             mods: processedMods,
-            total: processedMods.length
+            pagination: {
+                page,
+                per_page: perPage,
+                total: totalCount,
+                total_pages: Math.ceil(totalCount / perPage),
+                has_next: page < Math.ceil(totalCount / perPage),
+                has_prev: page > 1
+            }
         });
     } catch (error) {
         console.error('Get mods error:', error);
