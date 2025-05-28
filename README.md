@@ -262,16 +262,36 @@ Sayonika includes a configurable maintenance mode feature:
 
 ### Features
 - **Admin Toggle**: Enable/disable maintenance mode from the admin panel
+- **Command Line Control**: Toggle maintenance mode using npm scripts
 - **Admin Bypass**: Administrators can access the site normally during maintenance
 - **Mod Browsing**: Users can still browse mods during maintenance
 - **Custom Messages**: Configure custom maintenance messages
 - **API Support**: Maintenance mode affects both web and API endpoints
 
 ### Usage
+
+#### Web Interface
 1. Access the admin panel at `/admin`
 2. Navigate to the maintenance mode section
 3. Toggle maintenance mode on/off
 4. Optionally set a custom maintenance message
+
+#### Command Line Interface
+Use npm scripts to control maintenance mode without accessing the website:
+
+```bash
+# Enable maintenance mode
+npm run maintenance:on
+
+# Disable maintenance mode
+npm run maintenance:off
+
+# Check current status
+npm run maintenance:status
+
+# Set custom maintenance message
+npm run maintenance:message "We're upgrading our servers! Back online soon."
+```
 
 During maintenance mode:
 - Most site functionality is disabled for regular users
