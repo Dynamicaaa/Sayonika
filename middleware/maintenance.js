@@ -52,6 +52,7 @@ const checkMaintenanceMode = async (req, res, next) => {
             '/api/health',
             '/api/mods',      // GET only for browsing
             '/api/categories', // GET only for browsing
+            '/api/images',    // Image serving (avatars, thumbnails) - read-only
             '/api/admin',     // Admin routes
             '/api/auth/admin-login', // Admin login endpoint
             '/api/auth/me',   // User profile endpoint (needed for admin login)
@@ -74,8 +75,8 @@ const checkMaintenanceMode = async (req, res, next) => {
             });
 
             if (isAllowedApiRoute) {
-                // For mod and category APIs, only allow GET requests
-                if ((req.path.startsWith('/api/mods') || req.path.startsWith('/api/categories')) && req.method !== 'GET') {
+                // For mod, category, and image APIs, only allow GET requests
+                if ((req.path.startsWith('/api/mods') || req.path.startsWith('/api/categories') || req.path.startsWith('/api/images')) && req.method !== 'GET') {
                     return res.status(503).json({
                         error: 'Service Unavailable',
                         message: 'Write operations are temporarily unavailable due to maintenance.',
