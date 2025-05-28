@@ -24,6 +24,11 @@ router.get('/github', optionalAuth, async (req, res, next) => {
         req.session.rememberMe = true;
     }
 
+    // Store admin login preference in session
+    if (req.query.admin === 'true') {
+        req.session.adminLogin = true;
+    }
+
     // Store linking information if this is a link request
     if (req.query.link === 'true') {
         console.log('GitHub OAuth link request detected');
@@ -182,6 +187,32 @@ router.get('/github/callback', (req, res, next) => {
                 return res.redirect('/login?error=github_login_failed');
             }
 
+            // Check if this is an admin login request
+            const isAdminLogin = req.session.adminLogin || false;
+            if (isAdminLogin && !user.is_admin) {
+                console.log('GitHub OAuth admin login failed - user is not admin:', user.username);
+
+                // Log out the user and clear session
+                req.logout((logoutErr) => {
+                    if (logoutErr) {
+                        console.error('Logout error during admin check:', logoutErr);
+                    }
+                });
+
+                // Clear session data
+                req.session.destroy((sessionErr) => {
+                    if (sessionErr) {
+                        console.error('Session destruction error:', sessionErr);
+                    }
+                });
+
+                // Clear cookies
+                res.clearCookie('token');
+                res.clearCookie('connect.sid');
+
+                return res.redirect('/admin/login?error=access_denied');
+            }
+
             try {
                 // Check if remember me was requested (from session or query param)
                 const rememberMe = req.session.rememberMe || req.query.remember === 'true';
@@ -206,14 +237,15 @@ router.get('/github/callback', (req, res, next) => {
                     sameSite: 'lax'
                 });
 
-                // Normal login, redirect to intended page or home
-                const redirectUrl = req.session.returnTo || '/';
+                // Determine redirect URL based on admin login
+                const redirectUrl = isAdminLogin ? '/admin' : (req.session.returnTo || '/');
 
                 // Clean up session data
                 delete req.session.returnTo;
                 delete req.session.rememberMe;
                 delete req.session.linkUserId;
                 delete req.session.linkProvider;
+                delete req.session.adminLogin;
 
                 // Properly construct redirect URL with auth=success parameter
                 console.log('GitHub OAuth - Original redirectUrl:', redirectUrl);
@@ -264,6 +296,11 @@ router.get('/discord', optionalAuth, async (req, res, next) => {
     // Store remember me preference in session
     if (req.query.remember === 'true') {
         req.session.rememberMe = true;
+    }
+
+    // Store admin login preference in session
+    if (req.query.admin === 'true') {
+        req.session.adminLogin = true;
     }
 
     // Store linking information if this is a link request
@@ -382,6 +419,32 @@ router.get('/discord/callback', (req, res, next) => {
                 return res.redirect('/login?error=discord_login_failed');
             }
 
+            // Check if this is an admin login request
+            const isAdminLogin = req.session.adminLogin || false;
+            if (isAdminLogin && !user.is_admin) {
+                console.log('Discord OAuth admin login failed - user is not admin:', user.username);
+
+                // Log out the user and clear session
+                req.logout((logoutErr) => {
+                    if (logoutErr) {
+                        console.error('Logout error during admin check:', logoutErr);
+                    }
+                });
+
+                // Clear session data
+                req.session.destroy((sessionErr) => {
+                    if (sessionErr) {
+                        console.error('Session destruction error:', sessionErr);
+                    }
+                });
+
+                // Clear cookies
+                res.clearCookie('token');
+                res.clearCookie('connect.sid');
+
+                return res.redirect('/admin/login?error=access_denied');
+            }
+
             try {
                 // Check if remember me was requested (from session or query param)
                 const rememberMe = req.session.rememberMe || req.query.remember === 'true';
@@ -406,14 +469,15 @@ router.get('/discord/callback', (req, res, next) => {
                     sameSite: 'lax'
                 });
 
-                // Normal login, redirect to intended page or home
-                const redirectUrl = req.session.returnTo || '/';
+                // Determine redirect URL based on admin login
+                const redirectUrl = isAdminLogin ? '/admin' : (req.session.returnTo || '/');
 
                 // Clean up session data
                 delete req.session.returnTo;
                 delete req.session.rememberMe;
                 delete req.session.linkUserId;
                 delete req.session.linkProvider;
+                delete req.session.adminLogin;
 
                 // Properly construct redirect URL with auth=success parameter
                 console.log('Discord OAuth - Original redirectUrl:', redirectUrl);

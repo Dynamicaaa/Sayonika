@@ -14,56 +14,7 @@
         <div class="container">
             <div class="docs-layout">
                 <!-- Sidebar Navigation -->
-                <aside class="docs-sidebar" id="docsSidebar">
-                    <div class="sidebar-header">
-                        <h3>Documentation</h3>
-                        <button class="sidebar-close" id="sidebarClose">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-
-                    <nav class="sidebar-nav">
-                        <div class="nav-section">
-                            <h4>Getting Started</h4>
-                            <ul>
-                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
-                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>API Reference</h4>
-                            <ul>
-                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
-                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
-                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
-                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Endpoints</h4>
-                            <ul>
-                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
-                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
-                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
-                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
-                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Troubleshooting</h4>
-                            <ul>
-                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
-                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
-                            </ul>
-                        </div>
-                    </nav>
-                </aside>
+                <%- include('../partials/docs-sidebar') %>
 
                 <!-- Content Area -->
                 <main class="docs-content" id="docsContent">
@@ -175,9 +126,17 @@ BASE_URL=https://your-domain.com</code></pre>
                                     <p>To enable GitHub login, create an OAuth app in your GitHub settings and add these variables:</p>
                                     <div class="code-block">
                                         <pre><code>GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret</code></pre>
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=https://your-domain.com/auth/github/callback</code></pre>
                                     </div>
-                                    <p><strong>Callback URL:</strong> <code>{WEBSITE_URL}/auth/github/callback</code></p>
+                                    <p><strong>Callback URL:</strong> <code>{BASE_URL}/auth/github/callback</code></p>
+                                    <div class="alert info">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div>
+                                            <strong>GitHub Setup:</strong> Go to GitHub Settings → Developer settings → OAuth Apps → New OAuth App.
+                                            Set the Authorization callback URL to your BASE_URL + /auth/github/callback.
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="config-item">
@@ -185,9 +144,17 @@ GITHUB_CLIENT_SECRET=your_github_client_secret</code></pre>
                                     <p>To enable Discord login, create an application in the Discord Developer Portal:</p>
                                     <div class="code-block">
                                         <pre><code>DISCORD_CLIENT_ID=your_discord_client_id
-DISCORD_CLIENT_SECRET=your_discord_client_secret</code></pre>
+DISCORD_CLIENT_SECRET=your_discord_client_secret
+DISCORD_CALLBACK_URL=https://your-domain.com/auth/discord/callback</code></pre>
                                     </div>
-                                    <p><strong>Callback URL:</strong> <code>{WEBSITE_URL}/auth/discord/callback</code></p>
+                                    <p><strong>Callback URL:</strong> <code>{BASE_URL}/auth/discord/callback</code></p>
+                                    <div class="alert info">
+                                        <i class="fas fa-info-circle"></i>
+                                        <div>
+                                            <strong>Discord Setup:</strong> Go to Discord Developer Portal → Applications → New Application → OAuth2.
+                                            Add your BASE_URL + /auth/discord/callback to the Redirects list. Required scopes: identify, email.
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="alert info">
@@ -288,6 +255,43 @@ RATE_LIMIT_WINDOW=900000</code></pre>
                                 </div>
                             </div>
 
+                            <!-- SSL/HTTPS Configuration -->
+                            <div class="config-section">
+                                <h3>SSL/HTTPS Configuration</h3>
+
+                                <div class="config-item">
+                                    <h4>ENABLE_HTTPS</h4>
+                                    <p>Enable HTTPS server with SSL certificates.</p>
+                                    <div class="code-block">
+                                        <pre><code>ENABLE_HTTPS=true</code></pre>
+                                    </div>
+                                    <p><strong>Default:</strong> true</p>
+                                </div>
+
+                                <div class="config-item">
+                                    <h4>SSL Certificate Paths</h4>
+                                    <p>Paths to your SSL certificate files when HTTPS is enabled.</p>
+                                    <div class="code-block">
+                                        <pre><code>SSL_KEY_PATH=./csr/cert.key
+SSL_CERT_PATH=./csr/cert.crt</code></pre>
+                                    </div>
+                                    <p><strong>Note:</strong> Self-signed certificates are included for development. Use proper certificates in production.</p>
+                                </div>
+
+                                <div class="config-item">
+                                    <h4>TRUST_PROXY_HOPS</h4>
+                                    <p>Number of proxy hops to trust (for Cloudflare and reverse proxies).</p>
+                                    <div class="code-block">
+                                        <pre><code># For Cloudflare
+TRUST_PROXY_HOPS=1
+
+# For multiple proxies
+TRUST_PROXY_HOPS=2</code></pre>
+                                    </div>
+                                    <p><strong>Default:</strong> 0 (no proxy trust)</p>
+                                </div>
+                            </div>
+
                             <!-- Development Configuration -->
                             <div class="config-section">
                                 <h3>Development Configuration</h3>
@@ -326,8 +330,13 @@ NODE_ENV=production</code></pre>
                                         <button class="copy-btn" data-copy="# Basic Configuration
 PORT=3000
 SESSION_SECRET=your-very-long-random-secret-key-here
-WEBSITE_URL=https://your-domain.com
+BASE_URL=https://your-domain.com
 NODE_ENV=production
+
+# HTTPS Configuration
+ENABLE_HTTPS=true
+SSL_KEY_PATH=./csr/cert.key
+SSL_CERT_PATH=./csr/cert.crt
 
 # Database
 DATABASE_PATH=./database/sayonika.db
@@ -336,6 +345,11 @@ SESSIONS_DATABASE_PATH=./database/sessions.db
 # OAuth
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=https://your-domain.com/auth/github/callback
+
+DISCORD_CLIENT_ID=your_discord_client_id
+DISCORD_CLIENT_SECRET=your_discord_client_secret
+DISCORD_CALLBACK_URL=https://your-domain.com/auth/discord/callback
 
 # Email
 SMTP_HOST=smtp.gmail.com
@@ -351,8 +365,18 @@ UPLOAD_PATH=./uploads
 
 # Security
 JWT_SECRET=your-jwt-secret-key
-RATE_LIMIT_WINDOW=900000
-RATE_LIMIT_MAX=100">
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=1000
+AUTH_RATE_LIMIT_MAX_REQUESTS=5
+
+# CORS Configuration
+ALLOWED_ORIGINS=https://your-domain.com
+
+# Proxy Configuration (for Cloudflare)
+TRUST_PROXY_HOPS=1
+
+# External Services (optional)
+DISCORD_WEBHOOK_URL=">
                                             <i class="fas fa-copy"></i>
                                         </button>
                                     </div>
@@ -362,6 +386,11 @@ SESSION_SECRET=your-very-long-random-secret-key-here
 BASE_URL=https://your-domain.com
 NODE_ENV=production
 
+# HTTPS Configuration
+ENABLE_HTTPS=true
+SSL_KEY_PATH=./csr/cert.key
+SSL_CERT_PATH=./csr/cert.crt
+
 # Database
 DATABASE_PATH=./database/sayonika.db
 SESSIONS_DATABASE_PATH=./database/sessions.db
@@ -369,6 +398,11 @@ SESSIONS_DATABASE_PATH=./database/sessions.db
 # OAuth
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=https://your-domain.com/auth/github/callback
+
+DISCORD_CLIENT_ID=your_discord_client_id
+DISCORD_CLIENT_SECRET=your_discord_client_secret
+DISCORD_CALLBACK_URL=https://your-domain.com/auth/discord/callback
 
 # Email
 SMTP_HOST=smtp.gmail.com
@@ -384,8 +418,18 @@ UPLOAD_PATH=./uploads
 
 # Security
 JWT_SECRET=your-jwt-secret-key
-RATE_LIMIT_WINDOW=900000
-RATE_LIMIT_MAX=100</code></pre>
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=1000
+AUTH_RATE_LIMIT_MAX_REQUESTS=5
+
+# CORS Configuration
+ALLOWED_ORIGINS=https://your-domain.com
+
+# Proxy Configuration (for Cloudflare)
+TRUST_PROXY_HOPS=1
+
+# External Services (optional)
+DISCORD_WEBHOOK_URL=</code></pre>
                                 </div>
                             </div>
 

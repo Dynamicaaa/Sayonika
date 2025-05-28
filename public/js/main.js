@@ -34,6 +34,13 @@ window.Sayonika = {
                 }
 
                 if (!response.ok) {
+                    // Handle email verification errors specifically
+                    if (response.status === 403 && data.code === 'EMAIL_NOT_VERIFIED') {
+                        // Redirect to verification pending page
+                        window.location.href = '/verification-pending';
+                        return;
+                    }
+
                     throw new Error(data.error || `Request failed with status ${response.status}`);
                 }
 

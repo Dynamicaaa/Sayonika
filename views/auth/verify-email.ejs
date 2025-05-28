@@ -13,7 +13,7 @@
                         <i class="fas fa-check-circle"></i>
                         <strong>Success!</strong> <%= message %>
                     </div>
-                    
+
                     <div class="verification-success">
                         <div class="success-icon">
                             <i class="fas fa-check-circle"></i>
@@ -26,7 +26,7 @@
                             <li><i class="fas fa-comments"></i> Comments on your mods</li>
                             <li><i class="fas fa-bell"></i> Important announcements</li>
                         </ul>
-                        
+
                         <div class="action-buttons">
                             <% if (user) { %>
                                 <a href="/settings" class="btn btn-primary">
@@ -51,14 +51,14 @@
                         <strong>Verification Failed</strong>
                         <p><%= error %></p>
                     </div>
-                    
+
                     <div class="verification-failed">
                         <div class="error-icon">
                             <i class="fas fa-times-circle"></i>
                         </div>
                         <h3>Email Verification Failed</h3>
                         <p>The verification link may have expired or is invalid. Here's what you can do:</p>
-                        
+
                         <div class="help-options">
                             <div class="help-option">
                                 <i class="fas fa-redo"></i>
@@ -76,7 +76,7 @@
                                 <p>Make sure you clicked the correct link from your email.</p>
                             </div>
                         </div>
-                        
+
                         <div class="action-buttons">
                             <% if (user) { %>
                                 <a href="/settings" class="btn btn-primary">
@@ -109,10 +109,16 @@
 }
 
 .auth-card {
-    background: white;
+    background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+body.dark-theme .auth-card {
+    background: #2d2d2d;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .auth-header {
@@ -154,8 +160,22 @@
 }
 
 .verification-success h3, .verification-failed h3 {
-    color: #333;
+    color: #333333;
     margin-bottom: 1rem;
+}
+
+body.dark-theme .verification-success h3,
+body.dark-theme .verification-failed h3 {
+    color: #ffffff;
+}
+
+.verification-success p, .verification-failed p {
+    color: #666666;
+}
+
+body.dark-theme .verification-success p,
+body.dark-theme .verification-failed p {
+    color: #cccccc;
 }
 
 .feature-list {
@@ -170,6 +190,11 @@
     padding: 0.5rem 0;
     display: flex;
     align-items: center;
+    color: #666666;
+}
+
+body.dark-theme .feature-list li {
+    color: #cccccc;
 }
 
 .feature-list i {
@@ -191,6 +216,12 @@
     border: 1px solid #e9ecef;
     border-radius: 8px;
     background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+body.dark-theme .help-option {
+    border: 1px solid #404040;
+    background: #3d3d3d;
 }
 
 .help-option i {
@@ -199,17 +230,29 @@
     margin-bottom: 0.5rem;
 }
 
+body.dark-theme .help-option i {
+    color: #4ecdc4;
+}
+
 .help-option h4 {
     margin: 0.5rem 0;
-    color: #333;
+    color: #333333;
     font-size: 1rem;
+}
+
+body.dark-theme .help-option h4 {
+    color: #ffffff;
 }
 
 .help-option p {
     margin: 0;
-    color: #666;
+    color: #666666;
     font-size: 0.9rem;
     line-height: 1.4;
+}
+
+body.dark-theme .help-option p {
+    color: #cccccc;
 }
 
 .action-buttons {
@@ -240,10 +283,22 @@
     border: 2px solid #007bff;
 }
 
+body.dark-theme .btn-primary {
+    background: #ff6b9d;
+    border-color: #ff6b9d;
+}
+
 .btn-primary:hover {
     background: #0056b3;
     border-color: #0056b3;
     transform: translateY(-1px);
+    text-decoration: none;
+    color: white;
+}
+
+body.dark-theme .btn-primary:hover {
+    background: #ff4d8a;
+    border-color: #ff4d8a;
 }
 
 .btn-outline {
@@ -252,10 +307,21 @@
     border: 2px solid #007bff;
 }
 
+body.dark-theme .btn-outline {
+    color: #4ecdc4;
+    border-color: #4ecdc4;
+}
+
 .btn-outline:hover {
     background: #007bff;
     color: white;
     transform: translateY(-1px);
+    text-decoration: none;
+}
+
+body.dark-theme .btn-outline:hover {
+    background: #4ecdc4;
+    color: #1a1a1a;
 }
 
 .alert {
@@ -277,10 +343,22 @@
     border: 1px solid #c3e6cb;
 }
 
+body.dark-theme .alert-success {
+    background: rgba(40, 167, 69, 0.2);
+    color: #90ee90;
+    border: 1px solid rgba(40, 167, 69, 0.4);
+}
+
 .alert-error {
     background: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+body.dark-theme .alert-error {
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff9999;
+    border: 1px solid rgba(220, 53, 69, 0.4);
 }
 
 .alert strong {
@@ -292,12 +370,12 @@
     .help-options {
         grid-template-columns: 1fr;
     }
-    
+
     .action-buttons {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .btn {
         width: 100%;
         max-width: 250px;

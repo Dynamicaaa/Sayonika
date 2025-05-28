@@ -1,0 +1,750 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="admin-login-page">
+    <div class="admin-background">
+        <div class="admin-grid"></div>
+        <div class="admin-particles"></div>
+    </div>
+
+    <div class="admin-container">
+        <div class="admin-card">
+            <div class="admin-header">
+                <div class="admin-logo">
+                    <div class="logo-ring">
+                        <div class="logo-inner">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                <h1 class="admin-title">
+                    <span class="title-main">♡ Admin Panel ♡</span>
+                    <span class="title-sub">~ Literature Club Management ~</span>
+                </h1>
+                <p class="admin-subtitle">Welcome back, Club President! ✨</p>
+
+                <div class="security-badge">
+                    <i class="fas fa-heart"></i>
+                    <span>PRESIDENT ONLY ♡</span>
+                </div>
+
+                <!-- Message display -->
+                <% if (message) { %>
+                    <div class="admin-message admin-<%= messageType === 'error' ? 'error' : messageType %>">
+                        <i class="fas fa-<%= messageType === 'error' ? 'exclamation-triangle' : messageType === 'warning' ? 'exclamation-triangle' : 'info-circle' %>"></i>
+                        <span><%= message %></span>
+                    </div>
+                <% } %>
+
+                <!-- Error message display for JS errors -->
+                <div id="errorMessage" class="admin-error" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="errorText"></span>
+                </div>
+            </div>
+
+            <form class="admin-form" id="adminLoginForm">
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="admin-input"
+                            required
+                            autocomplete="username"
+                            placeholder="Club President Username ♡"
+                        >
+                        <div class="input-line"></div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="admin-input"
+                            required
+                            autocomplete="current-password"
+                            placeholder="Secret Club Password ✨"
+                        >
+                        <div class="input-line"></div>
+                    </div>
+                </div>
+
+                <div class="admin-options">
+                    <label class="admin-checkbox">
+                        <input type="checkbox" id="remember" name="remember">
+                        <span class="checkmark">
+                            <i class="fas fa-check"></i>
+                        </span>
+                        <span class="checkbox-text">Remember me, please! ♡</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="admin-btn">
+                    <span class="btn-content">
+                        <i class="fas fa-sign-in-alt btn-icon"></i>
+                        <span class="btn-text">Enter Club Room ♡</span>
+                    </span>
+                    <div class="btn-glow"></div>
+                </button>
+            </form>
+
+            <div class="admin-divider">
+                <div class="divider-line"></div>
+                <span class="divider-text">~ Other Ways In ~</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="oauth-section">
+                <% if (process.env.GITHUB_CLIENT_ID) { %>
+                    <a href="/auth/github?admin=true" class="oauth-btn github" id="githubOAuth">
+                        <div class="oauth-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <span class="oauth-text">GitHub Club Member</span>
+                        <div class="oauth-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                <% } %>
+                <% if (process.env.DISCORD_CLIENT_ID) { %>
+                    <a href="/auth/discord?admin=true" class="oauth-btn discord" id="discordOAuth">
+                        <div class="oauth-icon">
+                            <i class="fab fa-discord"></i>
+                        </div>
+                        <span class="oauth-text">Discord Club Member</span>
+                        <div class="oauth-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                <% } %>
+            </div>
+
+            <div class="admin-footer">
+                <div class="footer-links">
+                    <a href="/forgot-password" class="footer-link">
+                        <i class="fas fa-heart"></i>
+                        Forgot Password? ♡
+                    </a>
+                    <a href="/" class="footer-link">
+                        <i class="fas fa-home"></i>
+                        Back to Club ✨
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Admin Login Page Styles */
+.admin-login-page {
+    min-height: 100vh;
+    position: relative;
+    background: linear-gradient(135deg, #2a1810 0%, #4a2c2a 30%, #6b4e3d 60%, #8b6f47 100%);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Animated Background */
+.admin-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.admin-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(255, 182, 193, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 182, 193, 0.15) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+}
+
+.admin-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 80%, rgba(255, 182, 193, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 192, 203, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 218, 185, 0.3) 0%, transparent 50%);
+    animation: particleFloat 15s ease-in-out infinite;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+@keyframes particleFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+/* Main Container */
+.admin-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+.admin-card {
+    background: rgba(45, 25, 20, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 182, 193, 0.3);
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 60px rgba(255, 182, 193, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 182, 193, 0.8), transparent);
+    animation: scanLine 3s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+    0%, 100% { opacity: 0; transform: translateX(-100%); }
+    50% { opacity: 1; transform: translateX(100%); }
+}
+
+/* Header Section */
+.admin-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.admin-logo {
+    margin-bottom: 20px;
+}
+
+.logo-ring {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    position: relative;
+    border: 2px solid rgba(255, 182, 193, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: logoRotate 10s linear infinite;
+}
+
+.logo-ring::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid transparent;
+    border-top-color: #ffb6c1;
+    border-radius: 50%;
+    animation: logoSpin 2s linear infinite;
+}
+
+.logo-inner {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffd1dc);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8b4513;
+    font-size: 24px;
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
+}
+
+@keyframes logoRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes logoSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.admin-title {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    letter-spacing: 3px;
+}
+
+.title-main {
+    display: block;
+    font-size: 28px;
+    color: #ffb6c1;
+    text-shadow: 0 0 20px rgba(255, 182, 193, 0.6);
+    font-weight: 600;
+}
+
+.title-sub {
+    display: block;
+    font-size: 14px;
+    color: #d4a574;
+    margin-top: 5px;
+    letter-spacing: 2px;
+    font-style: italic;
+}
+
+.admin-subtitle {
+    color: #d4a574;
+    margin: 0 0 20px 0;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.security-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 182, 193, 0.15);
+    border: 1px solid rgba(255, 182, 193, 0.4);
+    border-radius: 20px;
+    padding: 8px 16px;
+    color: #ffb6c1;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    animation: securityPulse 2s ease-in-out infinite;
+}
+
+@keyframes securityPulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 182, 193, 0.4); }
+    50% { box-shadow: 0 0 20px rgba(255, 182, 193, 0.7); }
+}
+
+.admin-message {
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    animation: messageSlide 0.5s ease-in-out;
+}
+
+.admin-message.admin-error {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff4444;
+}
+
+.admin-message.admin-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+}
+
+.admin-message.admin-info {
+    background: rgba(0, 123, 255, 0.1);
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    color: #007bff;
+}
+
+.admin-error {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ff4444;
+    font-size: 14px;
+    animation: errorShake 0.5s ease-in-out;
+}
+
+@keyframes messageSlide {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Form Styles */
+.admin-form {
+    margin-bottom: 30px;
+}
+
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffb6c1;
+    font-size: 16px;
+    z-index: 2;
+}
+
+.admin-input {
+    width: 100%;
+    background: rgba(45, 25, 20, 0.4);
+    border: 1px solid rgba(255, 182, 193, 0.3);
+    border-radius: 10px;
+    padding: 15px 15px 15px 45px;
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.admin-input::placeholder {
+    color: #666;
+}
+
+.admin-input:focus {
+    border-color: #ffb6c1;
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.4);
+    background: rgba(45, 25, 20, 0.6);
+}
+
+.admin-input:focus + .input-line {
+    transform: scaleX(1);
+}
+
+.input-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #ffb6c1, #ffc0cb);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    border-radius: 0 0 10px 10px;
+}
+
+/* Checkbox Styles */
+.admin-options {
+    margin-bottom: 30px;
+}
+
+.admin-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.admin-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 182, 193, 0.4);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.checkmark i {
+    color: #ffb6c1;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.admin-checkbox input[type="checkbox"]:checked + .checkmark {
+    background: rgba(255, 182, 193, 0.2);
+    border-color: #ffb6c1;
+    box-shadow: 0 0 10px rgba(255, 182, 193, 0.4);
+}
+
+.admin-checkbox input[type="checkbox"]:checked + .checkmark i {
+    opacity: 1;
+}
+
+.checkbox-text {
+    color: #aaa;
+    font-size: 14px;
+}
+
+/* Button Styles */
+.admin-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffd1dc);
+    border: none;
+    border-radius: 15px;
+    padding: 15px;
+    color: #8b4513;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
+}
+
+.admin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255, 182, 193, 0.5);
+    background: linear-gradient(135deg, #ffc0cb, #ffd1dc, #ffe4e1);
+}
+
+.admin-btn:active {
+    transform: translateY(0);
+}
+
+.btn-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.btn-icon {
+    font-size: 18px;
+}
+
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.admin-btn:hover .btn-glow {
+    left: 100%;
+}
+
+/* Divider Styles */
+.admin-divider {
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+    gap: 15px;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+}
+
+.divider-text {
+    color: #666;
+    font-size: 12px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+/* OAuth Buttons */
+.oauth-section {
+    margin-bottom: 30px;
+}
+
+.oauth-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.oauth-btn:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(0, 255, 255, 0.3);
+    transform: translateX(5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.oauth-btn.github:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.oauth-btn.discord:hover {
+    border-color: rgba(114, 137, 218, 0.5);
+}
+
+.oauth-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 18px;
+}
+
+.oauth-btn.github .oauth-icon {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.oauth-btn.discord .oauth-icon {
+    background: rgba(114, 137, 218, 0.2);
+    color: #7289da;
+}
+
+.oauth-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.oauth-arrow {
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.oauth-btn:hover .oauth-arrow {
+    color: #00ffff;
+    transform: translateX(5px);
+}
+
+/* Footer */
+.admin-footer {
+    text-align: center;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.footer-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.footer-link:hover {
+    color: #00ffff;
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.footer-link i {
+    font-size: 12px;
+}
+
+/* Loading State */
+.admin-btn.btn-loading {
+    pointer-events: none;
+}
+
+.admin-btn.btn-loading .btn-text {
+    opacity: 0;
+}
+
+.admin-btn.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .admin-container {
+        padding: 10px;
+    }
+
+    .admin-card {
+        padding: 30px 20px;
+    }
+
+    .title-main {
+        font-size: 24px;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+</style>
+
+<script src="/js/pages/admin-login.js"></script>
+
+<%- include('../partials/footer') %>

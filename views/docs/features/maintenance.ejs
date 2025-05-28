@@ -1,0 +1,329 @@
+<%- include('../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <%- include('../../partials/docs-sidebar') %>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Maintenance Mode Section -->
+                    <section class="docs-section" id="maintenance">
+                        <h2>Maintenance Mode</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Sayonika includes a comprehensive maintenance mode system that allows administrators
+                                to temporarily restrict access to the platform while performing updates or maintenance.
+                            </p>
+
+                            <!-- Overview -->
+                            <div class="maintenance-overview">
+                                <h3><i class="fas fa-tools"></i> System Overview</h3>
+                                <p>The maintenance mode system provides several key features:</p>
+
+                                <div class="feature-grid">
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-toggle-on"></i> Easy Toggle</h4>
+                                        <p>Enable or disable maintenance mode instantly through the admin panel or CLI commands.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-edit"></i> Custom Messages</h4>
+                                        <p>Configure custom maintenance messages to inform users about ongoing work.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-user-shield"></i> Admin Bypass</h4>
+                                        <p>Administrators can access the full site during maintenance for testing and configuration.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-eye"></i> Selective Access</h4>
+                                        <p>Mod browsing remains available during maintenance while other features are restricted.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Admin Panel Control -->
+                            <div class="admin-control">
+                                <h3><i class="fas fa-cog"></i> Admin Panel Control</h3>
+                                <p>Maintenance mode can be controlled through the admin panel settings:</p>
+
+                                <div class="control-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h4>Access Admin Panel</h4>
+                                            <p>Navigate to <code>/admin</code> and log in with administrator credentials.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h4>Go to Settings</h4>
+                                            <p>Click on "Settings" in the admin panel navigation menu.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h4>Configure Maintenance</h4>
+                                            <p>Use the maintenance mode toggle and customize the message displayed to users.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <h4>Save Changes</h4>
+                                            <p>Click "Save Settings" to apply the maintenance mode configuration.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CLI Commands -->
+                            <div class="cli-commands">
+                                <h3><i class="fas fa-terminal"></i> CLI Commands</h3>
+                                <p>Maintenance mode can also be controlled via command line for automation and emergency situations:</p>
+
+                                <div class="command-examples">
+                                    <h4>Enable Maintenance Mode</h4>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span>Enable maintenance mode</span>
+                                            <button class="copy-btn" data-copy="npm run maintenance:on">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                        <pre><code>npm run maintenance:on</code></pre>
+                                    </div>
+
+                                    <h4>Disable Maintenance Mode</h4>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span>Disable maintenance mode</span>
+                                            <button class="copy-btn" data-copy="npm run maintenance:off">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                        <pre><code>npm run maintenance:off</code></pre>
+                                    </div>
+
+                                    <h4>Check Status</h4>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span>Check maintenance status</span>
+                                            <button class="copy-btn" data-copy="npm run maintenance:status">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                        <pre><code>npm run maintenance:status</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="alert info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div>
+                                        <strong>Automation Tip:</strong> These commands can be integrated into deployment scripts
+                                        to automatically enable maintenance mode during updates.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Experience -->
+                            <div class="user-experience">
+                                <h3><i class="fas fa-users"></i> User Experience</h3>
+                                <p>When maintenance mode is active, users experience the following:</p>
+
+                                <div class="ux-features">
+                                    <div class="ux-item">
+                                        <h4>Homepage Access</h4>
+                                        <p>Users can still access the homepage, which displays a prominent maintenance banner with the custom message.</p>
+                                    </div>
+
+                                    <div class="ux-item">
+                                        <h4>Mod Browsing</h4>
+                                        <p>The mod browsing functionality remains available, allowing users to discover and view mods during maintenance.</p>
+                                    </div>
+
+                                    <div class="ux-item">
+                                        <h4>Restricted Features</h4>
+                                        <p>User registration, login, mod uploads, and other interactive features are temporarily disabled.</p>
+                                    </div>
+
+                                    <div class="ux-item">
+                                        <h4>Clear Communication</h4>
+                                        <p>The maintenance message clearly explains the situation and provides estimated completion times if configured.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API Behavior -->
+                            <div class="api-behavior">
+                                <h3><i class="fas fa-code"></i> API Behavior</h3>
+                                <p>During maintenance mode, the API responds differently to various endpoints:</p>
+
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Endpoint Category</th>
+                                            <th>Maintenance Behavior</th>
+                                            <th>Status Code</th>
+                                            <th>Admin Bypass</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Public Mod Data</td>
+                                            <td>Available</td>
+                                            <td>200 OK</td>
+                                            <td>N/A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Authentication</td>
+                                            <td>Blocked</td>
+                                            <td>503 Service Unavailable</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td>User Actions</td>
+                                            <td>Blocked</td>
+                                            <td>503 Service Unavailable</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Admin Endpoints</td>
+                                            <td>Available</td>
+                                            <td>200 OK</td>
+                                            <td>Always</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="code-example">
+                                    <h4>Example API Response</h4>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span>Maintenance mode API response</span>
+                                        </div>
+                                        <pre><code>{
+  "success": false,
+  "error": "Service temporarily unavailable for maintenance",
+  "message": "We're currently performing scheduled maintenance. Please try again later.",
+  "maintenanceMode": true,
+  "estimatedCompletion": "2025-01-15T10:00:00Z"
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Best Practices -->
+                            <div class="best-practices">
+                                <h3><i class="fas fa-lightbulb"></i> Best Practices</h3>
+                                <div class="practices-grid">
+                                    <div class="practice-item">
+                                        <h4>Advance Notice</h4>
+                                        <p>Announce maintenance windows in advance through site announcements or social media.</p>
+                                    </div>
+
+                                    <div class="practice-item">
+                                        <h4>Clear Messaging</h4>
+                                        <p>Provide clear, informative maintenance messages with expected duration and reason for maintenance.</p>
+                                    </div>
+
+                                    <div class="practice-item">
+                                        <h4>Minimal Duration</h4>
+                                        <p>Keep maintenance windows as short as possible to minimize user disruption.</p>
+                                    </div>
+
+                                    <div class="practice-item">
+                                        <h4>Testing</h4>
+                                        <p>Use admin bypass to thoroughly test changes before disabling maintenance mode.</p>
+                                    </div>
+
+                                    <div class="practice-item">
+                                        <h4>Automation</h4>
+                                        <p>Integrate maintenance mode commands into deployment scripts for consistent updates.</p>
+                                    </div>
+
+                                    <div class="practice-item">
+                                        <h4>Monitoring</h4>
+                                        <p>Monitor the site during maintenance to ensure everything works correctly when re-enabled.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Configuration -->
+                            <div class="configuration">
+                                <h3><i class="fas fa-database"></i> Database Storage</h3>
+                                <p>Maintenance mode settings are stored in the <code>site_settings</code> database table:</p>
+
+                                <div class="config-details">
+                                    <h4>Settings Keys</h4>
+                                    <ul>
+                                        <li><code>maintenance_mode</code> - Boolean flag for maintenance status</li>
+                                        <li><code>maintenance_message</code> - Custom message displayed to users</li>
+                                        <li><code>maintenance_start_time</code> - Timestamp when maintenance began</li>
+                                        <li><code>maintenance_estimated_end</code> - Estimated completion time</li>
+                                    </ul>
+                                </div>
+
+                                <div class="alert warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <div>
+                                        <strong>Database Access:</strong> If you need to disable maintenance mode and cannot access
+                                        the admin panel, you can directly modify the database or use the CLI commands.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Related Documentation</h3>
+                                <div class="next-steps-grid">
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-user-shield"></i>
+                                        </div>
+                                        <h4>Admin Panel</h4>
+                                        <p>Learn about other admin panel features and settings.</p>
+                                        <a href="/docs/api/endpoints/admin" class="btn btn-outline">Admin Docs</a>
+                                    </div>
+
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-cog"></i>
+                                        </div>
+                                        <h4>Configuration</h4>
+                                        <p>Explore other configuration options and settings.</p>
+                                        <a href="/docs/configuration" class="btn btn-outline">Configuration</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../partials/footer') %>

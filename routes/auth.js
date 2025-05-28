@@ -176,21 +176,6 @@ router.post('/register', [
             // Continue with registration even if avatar generation fails
         }
 
-        // Generate JWT token (24 hours for registration, no remember me option)
-        const token = jwt.sign(
-            { userId: result.id, username },
-            process.env.JWT_SECRET || 'your-secret-key',
-            { expiresIn: '24h' }
-        );
-
-        // Set token as httpOnly cookie for persistence across server restarts
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000, // 24 hours
-            sameSite: 'lax'
-        });
-
         // Send verification email for new users (except first user who is auto-verified)
         if (!isFirstUser) {
             try {
@@ -202,13 +187,30 @@ router.post('/register', [
             }
         }
 
+        // Only generate JWT token for first user (admin) - others must verify email first
+        let token = null;
+        if (isFirstUser) {
+            token = jwt.sign(
+                { userId: result.id, username },
+                process.env.JWT_SECRET || 'your-secret-key',
+                { expiresIn: '24h' }
+            );
+
+            // Set token as httpOnly cookie for persistence across server restarts
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                sameSite: 'lax'
+            });
+        }
+
         const message = isFirstUser
             ? 'Welcome! You are now the site administrator.'
-            : 'User registered successfully. Please check your email to verify your account.';
+            : 'Registration successful! Please check your email and click the verification link to complete your account setup.';
 
-        res.status(201).json({
+        const responseData = {
             message,
-            token,
             user: {
                 id: result.id,
                 username,
@@ -216,8 +218,16 @@ router.post('/register', [
                 display_name: display_name || username,
                 is_admin: isFirstUser,
                 email_verified: isFirstUser // First user is auto-verified
-            }
-        });
+            },
+            requiresEmailVerification: !isFirstUser
+        };
+
+        // Only include token for first user
+        if (isFirstUser) {
+            responseData.token = token;
+        }
+
+        res.status(201).json(responseData);
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -240,7 +250,9 @@ router.post('/login', [
         // Find user by username or email
         let user = await db.getUserByUsername(username);
         if (!user) {
-            user = await db.getUserByEmail(username);
+            // Normalize email for lookup if username is an email
+            const normalizedEmail = username.toLowerCase().trim();
+            user = await db.getUserByEmail(normalizedEmail);
         }
 
         if (!user) {
@@ -256,6 +268,24 @@ router.post('/login', [
         const isValidPassword = await bcrypt.compare(password, user.password_hash);
         if (!isValidPassword) {
             return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Check email verification (except for first user/admin or OAuth users without email)
+        const isFirstUser = user.is_admin && user.is_owner;
+        const hasEmail = user.email && user.email.trim();
+
+        if (hasEmail && !isFirstUser && !user.email_verified) {
+            return res.status(403).json({
+                error: 'Email verification required',
+                code: 'EMAIL_NOT_VERIFIED',
+                message: 'Please verify your email address before logging in. Check your email for the verification link.',
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    email_verified: false
+                }
+            });
         }
 
         // Update last login
@@ -288,11 +318,206 @@ router.post('/login', [
                 email: user.email,
                 display_name: user.display_name,
                 is_admin: user.is_admin,
-                is_verified: user.is_verified
+                is_verified: user.is_verified,
+                email_verified: user.email_verified,
+                avatar_url: user.avatar_url
             }
         });
     } catch (error) {
         console.error('Login error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin login endpoint - validates admin status after login
+router.post('/admin-login', [
+    body('username').notEmpty().withMessage('Username is required'),
+    body('password').notEmpty().withMessage('Password is required')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { username, password, remember } = req.body;
+
+        // Find user by username or email
+        let user = await db.getUserByUsername(username);
+        if (!user) {
+            // Normalize email for lookup if username is an email
+            const normalizedEmail = username.toLowerCase().trim();
+            user = await db.getUserByEmail(normalizedEmail);
+        }
+
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Verify password
+        const bcrypt = require('bcrypt');
+        const isValidPassword = await bcrypt.compare(password, user.password_hash);
+        if (!isValidPassword) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Check if user is admin - this is the key difference from regular login
+        if (!user.is_admin) {
+            // Log out any existing session and clear cookies
+            req.session.destroy((err) => {
+                if (err) {
+                    console.error('Session destruction error:', err);
+                }
+            });
+            res.clearCookie('token');
+            res.clearCookie('connect.sid');
+
+            return res.status(403).json({ error: 'Access denied. Administrator privileges required.' });
+        }
+
+        // Update last login
+        await db.run('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id]);
+
+        // Generate JWT token with different expiration based on remember me
+        const expiresIn = remember ? '30d' : '24h'; // 30 days if remember me, 24 hours otherwise
+        const maxAge = remember ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+
+        const token = jwt.sign(
+            { userId: user.id, username: user.username },
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn }
+        );
+
+        // Set token as httpOnly cookie for persistence across server restarts
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge,
+            sameSite: 'lax'
+        });
+
+        // Store user in session for consistency with OAuth
+        req.session.user = user;
+
+        res.json({
+            message: 'Admin login successful',
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                display_name: user.display_name,
+                avatar_url: user.avatar_url,
+                is_admin: user.is_admin,
+                is_verified: user.is_verified,
+                is_owner: user.is_owner
+            }
+        });
+    } catch (error) {
+        console.error('Admin login error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Forgot password endpoint
+router.post('/forgot-password', [
+    body('email').isEmail().withMessage('Valid email is required')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { email } = req.body;
+
+        // Normalize email to lowercase for consistent lookup
+        const normalizedEmail = email.toLowerCase().trim();
+
+        // Find user by email
+        const user = await db.getUserByEmail(normalizedEmail);
+        if (!user) {
+            // Don't reveal if email exists or not for security
+            return res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+        }
+
+        // Generate reset token
+        const crypto = require('crypto');
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+        // Store reset token in database
+        await db.run(
+            'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE id = ?',
+            [resetToken, resetTokenExpiry.toISOString(), user.id]
+        );
+
+        // Send email using EmailService
+        try {
+            const result = await emailService.sendEmail(normalizedEmail, 'password_reset', {
+                username: user.username,
+                resetToken: resetToken
+            });
+
+            if (result.success) {
+                res.json({ message: 'Password reset email sent successfully!' });
+            } else {
+                console.log('Email not configured, reset token:', resetToken);
+                res.json({
+                    message: 'Password reset requested. Check server logs for reset token (email not configured).',
+                    resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
+                });
+            }
+        } catch (emailError) {
+            console.error('Email sending error:', emailError);
+            // Still return success to not reveal if email exists
+            res.json({
+                message: 'Password reset requested. If email service is available, an email has been sent.',
+                resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
+            });
+        }
+
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Reset password endpoint
+router.post('/reset-password', [
+    body('token').notEmpty().withMessage('Reset token is required'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { token, password } = req.body;
+
+        // Find user by reset token
+        const user = await db.get(
+            'SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > ?',
+            [token, new Date().toISOString()]
+        );
+
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid or expired reset token' });
+        }
+
+        // Hash new password
+        const bcrypt = require('bcrypt');
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        // Update password and clear reset token
+        await db.run(
+            'UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?',
+            [hashedPassword, user.id]
+        );
+
+        res.json({ message: 'Password reset successfully!' });
+    } catch (error) {
+        console.error('Reset password error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

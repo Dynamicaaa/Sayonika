@@ -191,55 +191,59 @@ function initializeFileUploads() {
 }
 
 function initializeUploadMethodToggle() {
-    // Use a timeout to ensure DOM is fully loaded
-    setTimeout(() => {
-        const toggleButtons = document.querySelectorAll('.toggle-btn');
-        console.log('Found toggle buttons:', toggleButtons.length); // Debug log
+    console.log('Initializing upload method toggle...');
 
-        if (toggleButtons.length === 0) {
-            console.warn('No toggle buttons found, retrying...');
-            // Retry after a short delay
-            setTimeout(initializeUploadMethodToggle, 500);
-            return;
-        }
+    const toggleButtons = document.querySelectorAll('.toggle-btn');
+    console.log('Found toggle buttons:', toggleButtons.length);
 
-        toggleButtons.forEach((btn, index) => {
-            console.log(`Button ${index}:`, btn, 'data-method:', btn.dataset.method);
+    if (toggleButtons.length === 0) {
+        console.warn('No toggle buttons found, retrying in 100ms...');
+        setTimeout(initializeUploadMethodToggle, 100);
+        return;
+    }
 
-            // Add multiple event listeners to catch any issues
-            btn.addEventListener('click', function(e) {
-                e.preventDefault(); // Prevent form submission
-                e.stopPropagation(); // Stop event bubbling
+    toggleButtons.forEach((btn, index) => {
+        console.log(`Setting up button ${index}:`, btn.textContent.trim(), 'method:', btn.dataset.method);
 
-                const method = this.dataset.method;
-                console.log('Toggle button clicked:', method); // Debug log
+        // Remove any existing event listeners by cloning the button
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
 
-                // Update button states
-                document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+        // Add click event listener to the new button
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-                // Show/hide upload methods
-                const fileUploadMethod = document.getElementById('fileUploadMethod');
-                const urlUploadMethod = document.getElementById('urlUploadMethod');
+            const method = this.dataset.method;
+            console.log('Toggle button clicked:', method);
 
-                console.log('fileUploadMethod:', fileUploadMethod);
-                console.log('urlUploadMethod:', urlUploadMethod);
+            // Update button states
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
 
-                if (fileUploadMethod && urlUploadMethod) {
-                    fileUploadMethod.style.display = method === 'file' ? 'block' : 'none';
-                    urlUploadMethod.style.display = method === 'url' ? 'block' : 'none';
-                    console.log('Upload method toggled to:', method); // Debug log
-                } else {
-                    console.error('Upload method containers not found');
+            // Show/hide upload methods
+            const fileUploadMethod = document.getElementById('fileUploadMethod');
+            const urlUploadMethod = document.getElementById('urlUploadMethod');
+
+            console.log('fileUploadMethod element:', fileUploadMethod);
+            console.log('urlUploadMethod element:', urlUploadMethod);
+
+            if (fileUploadMethod && urlUploadMethod) {
+                if (method === 'file') {
+                    fileUploadMethod.style.display = 'block';
+                    urlUploadMethod.style.display = 'none';
+                } else if (method === 'url') {
+                    fileUploadMethod.style.display = 'none';
+                    urlUploadMethod.style.display = 'block';
                 }
-            });
-
-            // Also add mousedown as backup
-            btn.addEventListener('mousedown', function() {
-                console.log('Mousedown on toggle button:', this.dataset.method);
-            });
+                console.log('Upload method toggled to:', method);
+            } else {
+                console.error('Upload method containers not found!');
+            }
         });
-    }, 100);
+    });
+
+    console.log('Upload method toggle initialization complete');
 }
 
 function initializeTagsInput() {

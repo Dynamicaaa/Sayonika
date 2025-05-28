@@ -14,53 +14,7 @@
         <div class="container">
             <div class="docs-layout">
                 <!-- Sidebar Navigation -->
-                <aside class="docs-sidebar" id="docsSidebar">
-                    <div class="sidebar-header">
-                        <h3>Documentation</h3>
-                        <button class="sidebar-close" id="sidebarClose">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-
-                    <nav class="sidebar-nav">
-                        <div class="nav-section">
-                            <h4>Getting Started</h4>
-                            <ul>
-                                <li><a href="/docs" class="nav-link">Overview</a></li>
-                                <li><a href="/docs/installation" class="nav-link">Installation</a></li>
-                                <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>API Reference</h4>
-                            <ul>
-                                <li><a href="/docs/api" class="nav-link">Overview</a></li>
-                                <li><a href="/docs/api/authentication" class="nav-link">Authentication</a></li>
-                                <li><a href="/docs/api/rate-limiting" class="nav-link">Rate Limiting</a></li>
-                                <li><a href="/docs/api/response-format" class="nav-link">Response Format</a></li>
-                                <li><a href="/docs/api/error-handling" class="nav-link">Error Handling</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Endpoints</h4>
-                            <ul>
-                                <li><a href="/docs/api/endpoints" class="nav-link active">Overview</a></li>
-                                <li><a href="/docs/api/endpoints/auth" class="nav-link">Authentication</a></li>
-                                <li><a href="/docs/api/endpoints/mods" class="nav-link">Mods</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Troubleshooting</h4>
-                            <ul>
-                                <li><a href="/docs/customization" class="nav-link">Customization</a></li>
-                                <li><a href="/docs/troubleshooting" class="nav-link">Troubleshooting</a></li>
-                            </ul>
-                        </div>
-                    </nav>
-                </aside>
+                <%- include('../../../partials/docs-sidebar') %>
 
                 <!-- Content Area -->
                 <main class="docs-content" id="docsContent">

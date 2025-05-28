@@ -1,0 +1,350 @@
+<%- include('../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <%- include('../../partials/docs-sidebar') %>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- User Profiles Section -->
+                    <section class="docs-section" id="profiles">
+                        <h2>User Profiles</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Sayonika provides comprehensive user profile functionality with customizable avatars,
+                                achievement displays, OAuth account linking, and detailed user statistics.
+                            </p>
+
+                            <!-- Profile Features -->
+                            <div class="profile-features">
+                                <h3><i class="fas fa-user"></i> Profile Features</h3>
+                                <div class="feature-grid">
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-image"></i> Profile Pictures</h4>
+                                        <p>Upload custom avatars or use OAuth provider avatars with automatic fallbacks.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-trophy"></i> Achievements</h4>
+                                        <p>Display earned achievements, user level, and title prominently on profiles.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-link"></i> OAuth Integration</h4>
+                                        <p>Link GitHub and Discord accounts with verification badges and profile sync.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-chart-bar"></i> Statistics</h4>
+                                        <p>View detailed statistics including mod uploads, downloads, and community activity.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Profile Pictures -->
+                            <div class="profile-pictures">
+                                <h3><i class="fas fa-camera"></i> Profile Pictures</h3>
+                                <p>Users can customize their profile pictures through multiple methods:</p>
+
+                                <div class="picture-methods">
+                                    <div class="method-item">
+                                        <h4>Custom Upload</h4>
+                                        <p>Users can upload their own profile pictures through the settings page:</p>
+                                        <ul>
+                                            <li>Supported formats: JPEG, PNG, GIF</li>
+                                            <li>Maximum file size: Configurable by admin</li>
+                                            <li>Automatic resizing to 1024x1024 pixels</li>
+                                            <li>Secure file validation and storage</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="method-item">
+                                        <h4>OAuth Provider Avatars</h4>
+                                        <p>When linking OAuth accounts, users can use provider avatars:</p>
+                                        <ul>
+                                            <li><strong>GitHub:</strong> Uses GitHub profile avatar</li>
+                                            <li><strong>Discord:</strong> Uses Discord avatar with hash support</li>
+                                            <li>Automatic updates when provider avatar changes</li>
+                                            <li>Fallback to default if provider avatar unavailable</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="method-item">
+                                        <h4>Default Avatars</h4>
+                                        <p>When no custom avatar is set, users get default avatars:</p>
+                                        <ul>
+                                            <li>Generated from picsum.photos service</li>
+                                            <li>Consistent 1024x1024 resolution</li>
+                                            <li>Cached locally for performance</li>
+                                            <li>Unique per user based on user ID</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="alert info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div>
+                                        <strong>Profile Picture Priority:</strong> Custom uploads take precedence over OAuth avatars,
+                                        which take precedence over default generated avatars.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Roles and Titles -->
+                            <div class="user-roles">
+                                <h3><i class="fas fa-crown"></i> User Roles and Titles</h3>
+                                <p>Sayonika includes a hierarchical user role system:</p>
+
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Role</th>
+                                            <th>Display</th>
+                                            <th>Permissions</th>
+                                            <th>How to Obtain</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Owner</td>
+                                            <td><span class="badge owner">Owner</span></td>
+                                            <td>Full admin access, manage other admins</td>
+                                            <td>First user to register</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Admin</td>
+                                            <td><span class="badge admin">Admin</span></td>
+                                            <td>Mod review, user management, settings</td>
+                                            <td>Promoted by Owner</td>
+                                        </tr>
+                                        <tr>
+                                            <td>User</td>
+                                            <td>User Level + Title</td>
+                                            <td>Upload mods, comment, standard features</td>
+                                            <td>Default for all users</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4>User Levels and Titles</h4>
+                                <p>Regular users progress through levels based on achievement points:</p>
+                                <ul>
+                                    <li><strong>Level 1-5:</strong> Newcomer titles</li>
+                                    <li><strong>Level 6-10:</strong> Regular member titles</li>
+                                    <li><strong>Level 11-20:</strong> Experienced user titles</li>
+                                    <li><strong>Level 21+:</strong> Veteran and expert titles</li>
+                                </ul>
+                            </div>
+
+                            <!-- Profile Customization -->
+                            <div class="profile-customization">
+                                <h3><i class="fas fa-edit"></i> Profile Customization</h3>
+                                <p>Users can customize their profiles through the account settings page:</p>
+
+                                <div class="customization-options">
+                                    <div class="option-group">
+                                        <h4>Basic Information</h4>
+                                        <ul>
+                                            <li>Display name (username)</li>
+                                            <li>Email address (private)</li>
+                                            <li>Bio/description text</li>
+                                            <li>Location (optional)</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="option-group">
+                                        <h4>Profile Picture</h4>
+                                        <ul>
+                                            <li>Upload custom image</li>
+                                            <li>Remove current picture</li>
+                                            <li>Use OAuth provider avatar</li>
+                                            <li>Preview before saving</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="option-group">
+                                        <h4>Privacy Settings</h4>
+                                        <ul>
+                                            <li>Profile visibility (public/private)</li>
+                                            <li>Achievement display preferences</li>
+                                            <li>Activity visibility settings</li>
+                                            <li>Contact information display</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="option-group">
+                                        <h4>Account Linking</h4>
+                                        <ul>
+                                            <li>Link/unlink GitHub account</li>
+                                            <li>Link/unlink Discord account</li>
+                                            <li>View linked account status</li>
+                                            <li>Manage OAuth permissions</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API Integration -->
+                            <div class="api-integration">
+                                <h3><i class="fas fa-code"></i> API Integration</h3>
+                                <p>Profile data is accessible through various API endpoints:</p>
+
+                                <table class="docs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Method</th>
+                                            <th>Endpoint</th>
+                                            <th>Description</th>
+                                            <th>Auth Required</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/api/users/{id}</code></td>
+                                            <td>Get public profile information</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method get">GET</span></td>
+                                            <td><code>/api/users/{id}/stats</code></td>
+                                            <td>Get user statistics and achievements</td>
+                                            <td>❌ No</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method put">PUT</span></td>
+                                            <td><code>/api/users/profile</code></td>
+                                            <td>Update own profile information</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method post">POST</span></td>
+                                            <td><code>/api/users/avatar</code></td>
+                                            <td>Upload profile picture</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="method delete">DELETE</span></td>
+                                            <td><code>/api/users/avatar</code></td>
+                                            <td>Remove profile picture</td>
+                                            <td>✅ Yes</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="code-example">
+                                    <h4>Example API Usage</h4>
+                                    <div class="language-tabs">
+                                        <div class="tab-buttons">
+                                            <button class="tab-button active" data-tab="js-profiles">JavaScript</button>
+                                            <button class="tab-button" data-tab="curl-profiles">cURL</button>
+                                        </div>
+
+                                        <div class="tab-content active" id="js-profiles">
+                                            <div class="code-block">
+                                                <pre><code>// Get user profile
+const profile = await fetch('/api/users/123').then(r => r.json());
+
+// Update profile
+const updateResponse = await fetch('/api/users/profile', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        bio: 'Updated bio text',
+        location: 'New Location'
+    }),
+    credentials: 'include'
+}).then(r => r.json());</code></pre>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-content" id="curl-profiles">
+                                            <div class="code-block">
+                                                <pre><code># Get user profile
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/users/123"
+
+# Update profile
+curl -X PUT "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/users/profile" \
+  -H "Content-Type: application/json" \
+  -H "Cookie: token=your-jwt-token" \
+  -d '{"bio": "Updated bio", "location": "New Location"}'</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Profile Security -->
+                            <div class="profile-security">
+                                <h3><i class="fas fa-shield-alt"></i> Security Features</h3>
+                                <div class="security-grid">
+                                    <div class="security-item">
+                                        <h4><i class="fas fa-eye-slash"></i> Privacy Controls</h4>
+                                        <p>Users can control what information is publicly visible on their profiles.</p>
+                                    </div>
+
+                                    <div class="security-item">
+                                        <h4><i class="fas fa-file-image"></i> Image Validation</h4>
+                                        <p>Uploaded profile pictures are validated for file type, size, and content safety.</p>
+                                    </div>
+
+                                    <div class="security-item">
+                                        <h4><i class="fas fa-user-lock"></i> Account Protection</h4>
+                                        <p>Users cannot unlink their only authentication method to prevent account lockout.</p>
+                                    </div>
+
+                                    <div class="security-item">
+                                        <h4><i class="fas fa-history"></i> Change Tracking</h4>
+                                        <p>Profile changes are logged for security and moderation purposes.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Related Documentation</h3>
+                                <div class="next-steps-grid">
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-trophy"></i>
+                                        </div>
+                                        <h4>Achievements</h4>
+                                        <p>Learn about the achievement system and user progression.</p>
+                                        <a href="/docs/features/achievements" class="btn btn-outline">Achievements</a>
+                                    </div>
+
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-link"></i>
+                                        </div>
+                                        <h4>OAuth Linking</h4>
+                                        <p>Explore OAuth account linking and management features.</p>
+                                        <a href="/docs/features/oauth" class="btn btn-outline">OAuth Linking</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../partials/footer') %>

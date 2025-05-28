@@ -14,55 +14,7 @@
         <div class="container">
             <div class="docs-layout">
                 <!-- Sidebar Navigation -->
-                <aside class="docs-sidebar" id="docsSidebar">
-                    <div class="sidebar-header">
-                        <h3>Documentation</h3>
-                        <button class="sidebar-close" id="sidebarClose">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-
-                    <nav class="sidebar-nav">
-                        <div class="nav-section">
-                            <h4>Getting Started</h4>
-                            <ul>
-                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
-                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>API Reference</h4>
-                            <ul>
-                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
-                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
-                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
-                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Endpoints</h4>
-                            <ul>
-                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
-                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
-                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
-                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Troubleshooting</h4>
-                            <ul>
-                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
-                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
-                            </ul>
-                        </div>
-                    </nav>
-                </aside>
+                <%- include('../partials/docs-sidebar') %>
 
                 <!-- Content Area -->
                 <main class="docs-content" id="docsContent">
@@ -253,7 +205,9 @@ npm run dev</code></pre>
                                                 <ul>
                                                     <li><strong>Email Registration:</strong> Click "Register" and create an account with email and password</li>
                                                     <li><strong>GitHub OAuth:</strong> Use GitHub authentication if you've configured OAuth</li>
+                                                    <li><strong>Discord OAuth:</strong> Use Discord authentication if you've configured OAuth</li>
                                                 </ul>
+                                                <p><strong>Note:</strong> OAuth providers must be configured in your <code>.env</code> file. See the <a href="/docs/configuration">Configuration Guide</a> for setup instructions.</p>
                                             </div>
 
                                             <div class="alert info">
@@ -284,10 +238,13 @@ npm run dev</code></pre>
                                             <h4>Configure Settings</h4>
                                             <p>In the admin panel, you can:</p>
                                             <ul>
-                                                <li>Review and approve mod submissions</li>
-                                                <li>Manage users and permissions</li>
-                                                <li>Configure maintenance mode</li>
-                                                <li>View platform statistics</li>
+                                                <li>Review and approve mod submissions with detailed review reasons</li>
+                                                <li>Manage users, permissions, and OAuth account linking</li>
+                                                <li>Configure maintenance mode with custom messages</li>
+                                                <li>Adjust file upload limits and site settings</li>
+                                                <li>View platform statistics and user analytics</li>
+                                                <li>Manage support tickets and user feedback</li>
+                                                <li>Monitor achievement system and user progression</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -304,7 +261,14 @@ npm run dev</code></pre>
                                         <i class="fas fa-check-square"></i>
                                         <div>
                                             <h4>Environment Variables</h4>
-                                            <p>Set <code>NODE_ENV=production</code> and configure all required environment variables. See the <a href="/docs/configuration">Configuration</a> page for details.</p>
+                                            <p>Set <code>NODE_ENV=production</code> and configure all required environment variables including:</p>
+                                            <ul>
+                                                <li><code>BASE_URL</code> - Your production domain</li>
+                                                <li><code>ENABLE_HTTPS=true</code> - Enable HTTPS server</li>
+                                                <li><code>TRUST_PROXY_HOPS=1</code> - For Cloudflare/reverse proxy setups</li>
+                                                <li>OAuth credentials for GitHub and Discord (optional)</li>
+                                            </ul>
+                                            <p>See the <a href="/docs/configuration">Configuration</a> page for complete details.</p>
                                         </div>
                                     </div>
 
@@ -334,7 +298,12 @@ pm2 save</code></pre>
                                         <i class="fas fa-check-square"></i>
                                         <div>
                                             <h4>SSL Certificate</h4>
-                                            <p>Set up SSL/TLS certificates for HTTPS. Consider using Let's Encrypt for free certificates.</p>
+                                            <p>Sayonika includes built-in HTTPS support. Configure SSL certificates by setting:</p>
+                                            <ul>
+                                                <li><code>SSL_KEY_PATH</code> - Path to your private key file</li>
+                                                <li><code>SSL_CERT_PATH</code> - Path to your certificate file</li>
+                                            </ul>
+                                            <p>Consider using Let's Encrypt for free certificates, or use the included self-signed certificates for development.</p>
                                         </div>
                                     </div>
                                 </div>

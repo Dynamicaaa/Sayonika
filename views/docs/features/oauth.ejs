@@ -1,0 +1,306 @@
+<%- include('../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <%- include('../../partials/docs-sidebar') %>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- OAuth Section -->
+                    <section class="docs-section" id="oauth">
+                        <h2>OAuth Account Linking</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Sayonika supports OAuth authentication with GitHub and Discord, allowing users to
+                                link multiple authentication methods to a single account for convenience and security.
+                            </p>
+
+                            <!-- Supported Providers -->
+                            <div class="oauth-providers">
+                                <h3><i class="fas fa-link"></i> Supported Providers</h3>
+                                <div class="provider-grid">
+                                    <div class="provider-card">
+                                        <div class="provider-icon">
+                                            <i class="fab fa-github"></i>
+                                        </div>
+                                        <h4>GitHub</h4>
+                                        <p>Link your GitHub account for seamless authentication and profile integration.</p>
+                                        <ul>
+                                            <li>Profile information sync</li>
+                                            <li>Avatar integration</li>
+                                            <li>Username verification</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="provider-card">
+                                        <div class="provider-icon">
+                                            <i class="fab fa-discord"></i>
+                                        </div>
+                                        <h4>Discord</h4>
+                                        <p>Connect your Discord account for community integration and verification.</p>
+                                        <ul>
+                                            <li>Discord avatar support</li>
+                                            <li>Username and discriminator</li>
+                                            <li>Email verification</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Linking Process -->
+                            <div class="linking-process">
+                                <h3><i class="fas fa-user-plus"></i> Account Linking Process</h3>
+                                <p>Users can link OAuth accounts in several ways:</p>
+
+                                <div class="process-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h4>Initial Registration</h4>
+                                            <p>Users can register directly using GitHub or Discord OAuth, which automatically creates a linked account.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h4>Settings Page Linking</h4>
+                                            <p>Existing users can link additional OAuth accounts through their account settings page.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h4>Login Page Linking</h4>
+                                            <p>When logged in, attempting to use OAuth on the login page will prompt for account linking.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Features -->
+                            <div class="security-features">
+                                <h3><i class="fas fa-shield-alt"></i> Security Features</h3>
+                                <div class="security-grid">
+                                    <div class="security-item">
+                                        <h4><i class="fas fa-lock"></i> Account Protection</h4>
+                                        <p>Users cannot unlink their only authentication method, preventing account lockout.</p>
+                                    </div>
+
+                                    <div class="security-item">
+                                        <h4><i class="fas fa-user-check"></i> Duplicate Prevention</h4>
+                                        <p>OAuth accounts can only be linked to one Sayonika account, preventing conflicts.</p>
+                                    </div>
+
+                                    <div class="security-item">
+                                        <h4><i class="fas fa-key"></i> Secure Tokens</h4>
+                                        <p>Temporary linking tokens expire after 10 minutes for enhanced security.</p>
+                                    </div>
+
+                                    <div class="security-item">
+                                        <h4><i class="fas fa-sync"></i> Profile Preservation</h4>
+                                        <p>Linking preserves existing profile data while adding OAuth information.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API Integration -->
+                            <div class="api-integration">
+                                <h3><i class="fas fa-code"></i> API Integration</h3>
+                                <p>OAuth linking is managed through dedicated API endpoints:</p>
+
+                                <div class="api-endpoints">
+                                    <table class="docs-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Method</th>
+                                                <th>Endpoint</th>
+                                                <th>Description</th>
+                                                <th>Auth Required</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><span class="method post">POST</span></td>
+                                                <td><code>/auth/oauth/link/github</code></td>
+                                                <td>Initiate GitHub account linking</td>
+                                                <td>✅ Yes</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="method post">POST</span></td>
+                                                <td><code>/auth/oauth/link/discord</code></td>
+                                                <td>Initiate Discord account linking</td>
+                                                <td>✅ Yes</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="method post">POST</span></td>
+                                                <td><code>/auth/oauth/unlink/github</code></td>
+                                                <td>Unlink GitHub account</td>
+                                                <td>✅ Yes</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="method post">POST</span></td>
+                                                <td><code>/auth/oauth/unlink/discord</code></td>
+                                                <td>Unlink Discord account</td>
+                                                <td>✅ Yes</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="method get">GET</span></td>
+                                                <td><code>/auth/oauth/status</code></td>
+                                                <td>Get OAuth account status</td>
+                                                <td>✅ Yes</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="code-example">
+                                    <h4>Example API Usage</h4>
+                                    <div class="language-tabs">
+                                        <div class="tab-buttons">
+                                            <button class="tab-button active" data-tab="js-oauth">JavaScript</button>
+                                            <button class="tab-button" data-tab="curl-oauth">cURL</button>
+                                        </div>
+
+                                        <div class="tab-content active" id="js-oauth">
+                                            <div class="code-block">
+                                                <pre><code>// Check OAuth status
+const status = await fetch('/auth/oauth/status', {
+    credentials: 'include'
+}).then(r => r.json());
+
+// Link GitHub account
+const linkResponse = await fetch('/auth/oauth/link/github', {
+    method: 'POST',
+    credentials: 'include'
+}).then(r => r.json());
+
+if (linkResponse.success) {
+    window.location.href = linkResponse.redirectUrl;
+}</code></pre>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-content" id="curl-oauth">
+                                            <div class="code-block">
+                                                <pre><code># Check OAuth status
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/auth/oauth/status" \
+  -H "Cookie: token=your-jwt-token"
+
+# Link GitHub account
+curl -X POST "<%- process.env.BASE_URL || 'http://localhost:3000' %>/auth/oauth/link/github" \
+  -H "Cookie: token=your-jwt-token"</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Interface -->
+                            <div class="user-interface">
+                                <h3><i class="fas fa-desktop"></i> User Interface</h3>
+                                <p>OAuth account linking is integrated throughout the user interface:</p>
+
+                                <div class="ui-features">
+                                    <div class="ui-item">
+                                        <h4>Settings Page</h4>
+                                        <p>Users can view and manage their linked OAuth accounts in the account settings page with clear status indicators.</p>
+                                    </div>
+
+                                    <div class="ui-item">
+                                        <h4>Login Options</h4>
+                                        <p>OAuth login buttons are prominently displayed on the login page with provider branding.</p>
+                                    </div>
+
+                                    <div class="ui-item">
+                                        <h4>Profile Integration</h4>
+                                        <p>Linked OAuth accounts can provide profile pictures and additional verification badges.</p>
+                                    </div>
+
+                                    <div class="ui-item">
+                                        <h4>Error Handling</h4>
+                                        <p>Clear error messages guide users through linking conflicts and resolution steps.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Configuration -->
+                            <div class="configuration">
+                                <h3><i class="fas fa-cog"></i> Configuration</h3>
+                                <p>OAuth providers must be configured in your environment variables:</p>
+
+                                <div class="config-example">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span>OAuth Configuration</span>
+                                        </div>
+                                        <pre><code># GitHub OAuth
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=https://your-domain.com/auth/github/callback
+
+# Discord OAuth
+DISCORD_CLIENT_ID=your_discord_client_id
+DISCORD_CLIENT_SECRET=your_discord_client_secret
+DISCORD_CALLBACK_URL=https://your-domain.com/auth/discord/callback</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="alert info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div>
+                                        <strong>Setup Required:</strong> See the <a href="/docs/configuration">Configuration Guide</a>
+                                        for detailed OAuth provider setup instructions.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Related Documentation</h3>
+                                <div class="next-steps-grid">
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-cog"></i>
+                                        </div>
+                                        <h4>Configuration</h4>
+                                        <p>Learn how to set up OAuth providers for your instance.</p>
+                                        <a href="/docs/configuration" class="btn btn-outline">Configuration</a>
+                                    </div>
+
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <h4>User Profiles</h4>
+                                        <p>Explore user profile features and OAuth integration.</p>
+                                        <a href="/docs/features/profiles" class="btn btn-outline">User Profiles</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../partials/footer') %>

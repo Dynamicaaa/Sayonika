@@ -12,6 +12,13 @@ CREATE TABLE IF NOT EXISTS users (
     is_admin BOOLEAN DEFAULT FALSE,
     is_owner BOOLEAN DEFAULT FALSE,
     is_verified BOOLEAN DEFAULT FALSE,
+    -- Email verification fields
+    email_verified BOOLEAN DEFAULT FALSE,
+    email_verification_token VARCHAR(255),
+    email_verification_expires DATETIME,
+    -- Password reset fields
+    reset_token VARCHAR(255),
+    reset_token_expiry DATETIME,
     -- Gamification fields
     achievement_points INTEGER DEFAULT 0,
     user_level INTEGER DEFAULT 1,

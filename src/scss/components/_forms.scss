@@ -189,25 +189,85 @@ body.dark-theme .form-file-button {
   margin-bottom: 0.5rem;
 }
 
+// Enhanced Checkboxes with Glass/Aero Effects
 .form-check-input {
+  appearance: none;
   position: absolute;
   margin-top: 0.3rem;
   margin-left: -1.25rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  min-width: 20px;
+
+  // Custom checkmark
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover {
+    border-color: rgba($primary-pink, 0.6);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 15px rgba($primary-pink, 0.3);
+    transform: translateY(-1px);
+  }
 
   &:focus {
-    box-shadow: 0 0 0 0.2rem rgba($primary-pink, 0.25);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($primary-pink, 0.25);
+    border-color: rgba($primary-pink, 0.8);
   }
 
   &:checked {
-    background-color: $primary-pink;
+    background: linear-gradient(135deg, $primary-pink, rgba($primary-pink, 0.8));
     border-color: $primary-pink;
+    box-shadow: 0 0 20px rgba($primary-pink, 0.4);
+
+    &::before {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.95);
   }
 }
 
-// Dark theme checkbox
-body.dark-theme .form-check-input:checked {
-  background-color: $secondary-pink;
-  border-color: $secondary-pink;
+// Dark theme enhanced checkbox
+body.dark-theme .form-check-input {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    border-color: rgba($secondary-pink, 0.6);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba($secondary-pink, 0.3);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba($secondary-pink, 0.25);
+    border-color: rgba($secondary-pink, 0.8);
+  }
+
+  &:checked {
+    background: linear-gradient(135deg, $secondary-pink, rgba($secondary-pink, 0.8));
+    border-color: $secondary-pink;
+    box-shadow: 0 0 20px rgba($secondary-pink, 0.4);
+  }
 }
 
 .form-check-label {
@@ -218,6 +278,102 @@ body.dark-theme .form-check-input:checked {
 // Dark theme check label
 body.dark-theme .form-check-label {
   color: $dark-text;
+}
+
+// Enhanced Rating Option Styling
+.rating-option {
+  position: relative;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba($primary-pink, 0.3);
+    box-shadow: 0 4px 20px rgba($primary-pink, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .form-check-input {
+    position: static;
+    margin: 0;
+    margin-right: 0.75rem;
+
+    &:checked {
+      & + .form-check-label .rating-icon {
+        color: $primary-pink;
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .form-check-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .rating-info {
+    flex: 1;
+
+    .rating-title {
+      display: block;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+      color: $light-text;
+    }
+
+    .rating-desc {
+      display: block;
+      font-size: 0.875rem;
+      color: $light-text-muted;
+      line-height: 1.4;
+    }
+  }
+
+  .rating-icon {
+    font-size: 1.25rem;
+    color: $light-text-muted;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// Dark theme rating options
+body.dark-theme .rating-option {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.05);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba($secondary-pink, 0.3);
+    box-shadow: 0 4px 20px rgba($secondary-pink, 0.1);
+  }
+
+  .form-check-input:checked + .form-check-label .rating-icon {
+    color: $secondary-pink;
+  }
+
+  .rating-info {
+    .rating-title {
+      color: $dark-text;
+    }
+
+    .rating-desc {
+      color: $dark-text-muted;
+    }
+  }
+
+  .rating-icon {
+    color: $dark-text-muted;
+  }
 }
 
 .form-check-inline {

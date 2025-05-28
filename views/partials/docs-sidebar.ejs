@@ -1,0 +1,81 @@
+<!-- Documentation Sidebar Navigation -->
+<aside class="docs-sidebar" id="docsSidebar">
+    <div class="sidebar-header">
+        <h3>Documentation</h3>
+        <button class="sidebar-close" id="sidebarClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <% if (locals.docsNavigation) { %>
+            <% docsNavigation.forEach(section => { %>
+                <div class="nav-section">
+                    <h4><%= section.title %></h4>
+                    <ul>
+                        <% section.items.forEach(item => { %>
+                            <li>
+                                <a href="<%= item.path %>" 
+                                   class="nav-link <%= currentPath === item.path || (currentPath === '/docs/' && item.path === '/docs') ? 'active' : '' %>"
+                                   <% if (item.description) { %>title="<%= item.description %>"<% } %>>
+                                    <%= item.title %>
+                                </a>
+                            </li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <!-- Fallback navigation if docsNavigation is not available -->
+            <div class="nav-section">
+                <h4>Getting Started</h4>
+                <ul>
+                    <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
+                    <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
+                    <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h4>API Reference</h4>
+                <ul>
+                    <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
+                    <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
+                    <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
+                    <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
+                    <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h4>Endpoints</h4>
+                <ul>
+                    <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
+                    <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
+                    <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
+                    <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
+                    <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
+                    <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h4>Features</h4>
+                <ul>
+                    <li><a href="/docs/features/achievements" class="nav-link <%= currentPath === '/docs/features/achievements' ? 'active' : '' %>">Achievements System</a></li>
+                    <li><a href="/docs/features/oauth" class="nav-link <%= currentPath === '/docs/features/oauth' ? 'active' : '' %>">OAuth Account Linking</a></li>
+                    <li><a href="/docs/features/profiles" class="nav-link <%= currentPath === '/docs/features/profiles' ? 'active' : '' %>">User Profiles</a></li>
+                    <li><a href="/docs/features/maintenance" class="nav-link <%= currentPath === '/docs/features/maintenance' ? 'active' : '' %>">Maintenance Mode</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h4>Troubleshooting</h4>
+                <ul>
+                    <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
+                    <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
+                </ul>
+            </div>
+        <% } %>
+    </nav>
+</aside>

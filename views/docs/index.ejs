@@ -24,7 +24,7 @@
                 </p>
                 <div class="hero-meta">
                     <div class="version-info">
-                        <span class="version-badge">v2.0</span>
+                        <span class="version-badge">v2.1</span>
                         <span class="last-updated">Last updated: January 2025</span>
                     </div>
                     <div class="hero-actions">
@@ -80,56 +80,7 @@
         <div class="container">
             <div class="docs-layout">
                 <!-- Sidebar Navigation -->
-                <aside class="docs-sidebar" id="docsSidebar">
-                    <div class="sidebar-header">
-                        <h3>Documentation</h3>
-                        <button class="sidebar-close" id="sidebarClose">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-
-                    <nav class="sidebar-nav">
-                        <div class="nav-section">
-                            <h4>Getting Started</h4>
-                            <ul>
-                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
-                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>API Reference</h4>
-                            <ul>
-                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
-                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
-                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
-                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Endpoints</h4>
-                            <ul>
-                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
-                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
-                                <li><a href="/docs/api/endpoints/users" class="nav-link <%= currentPath === '/docs/api/endpoints/users' ? 'active' : '' %>">Users</a></li>
-                                <li><a href="/docs/api/endpoints/admin" class="nav-link <%= currentPath === '/docs/api/endpoints/admin' ? 'active' : '' %>">Admin</a></li>
-                                <li><a href="/docs/api/endpoints/categories" class="nav-link <%= currentPath === '/docs/api/endpoints/categories' ? 'active' : '' %>">Categories</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Troubleshooting</h4>
-                            <ul>
-                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
-                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
-                            </ul>
-                        </div>
-                    </nav>
-                </aside>
+                <%- include('../partials/docs-sidebar') %>
 
                 <!-- Content Area -->
                 <main class="docs-content" id="docsContent">
@@ -146,32 +97,32 @@
                             <div class="feature-grid">
                                 <div class="feature-item">
                                     <h4><i class="fas fa-users"></i> User Management</h4>
-                                    <p>Complete user authentication system with OAuth support for GitHub and Discord, role-based permissions, and profile management.</p>
+                                    <p>Complete user authentication system with OAuth support for GitHub and Discord, role-based permissions, profile management, and account linking.</p>
                                 </div>
 
                                 <div class="feature-item">
                                     <h4><i class="fas fa-puzzle-piece"></i> Mod Management</h4>
-                                    <p>Upload, review, and distribute DDLC mods with automatic validation, thumbnail generation, and version control.</p>
+                                    <p>Upload, review, and distribute DDLC mods with automatic validation, thumbnail generation, version control, and comment system.</p>
                                 </div>
 
                                 <div class="feature-item">
                                     <h4><i class="fas fa-shield-alt"></i> Security</h4>
-                                    <p>Built-in security features including rate limiting, CSRF protection, input validation, and secure file handling.</p>
+                                    <p>Built-in security features including rate limiting, CSRF protection, input validation, secure file handling, and maintenance mode.</p>
                                 </div>
 
                                 <div class="feature-item">
                                     <h4><i class="fas fa-code"></i> REST API</h4>
-                                    <p>Comprehensive REST API with JWT authentication, detailed documentation, and multi-language code examples.</p>
+                                    <p>Comprehensive REST API with JWT authentication, detailed documentation, multi-language code examples, and admin endpoints.</p>
                                 </div>
 
                                 <div class="feature-item">
                                     <h4><i class="fas fa-trophy"></i> Gamification</h4>
-                                    <p>Achievement system, user rankings, mod ratings, and community features to encourage engagement.</p>
+                                    <p>Achievement system, user rankings, mod ratings, user levels, titles, and community features to encourage engagement.</p>
                                 </div>
 
                                 <div class="feature-item">
                                     <h4><i class="fas fa-mobile-alt"></i> Responsive Design</h4>
-                                    <p>Modern, mobile-first design with dark/light theme support and accessibility features.</p>
+                                    <p>Modern, mobile-first design with dark/light theme support, accessibility features, and admin dashboard.</p>
                                 </div>
                             </div>
 

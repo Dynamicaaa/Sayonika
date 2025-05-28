@@ -5,19 +5,23 @@ Sayonika is a comprehensive mod store and community platform for Doki Doki Liter
 ## Features
 
 ### 🎮 Mod Management
-- **Browse & Search**: Discover mods by category, popularity, or search terms
-- **Download System**: Secure mod downloads with tracking
-- **Version Control**: Support for multiple mod versions
+- **Browse & Search**: Discover mods by category, popularity, or search terms with advanced filtering
+- **Download System**: Secure mod downloads with tracking and external URL support
+- **Version Control**: Support for multiple mod versions with changelog tracking
 - **Categories**: Organized mod categories (Full Mods, Gameplay, Visual, Audio, etc.)
-- **Mod Review System**: Admin approval workflow for quality control
+- **Mod Review System**: Admin approval workflow for quality control with review reasons
+- **Comment System**: User comments and discussions on mod pages with threaded replies
+- **Screenshot Support**: Multiple screenshots per mod with automatic thumbnail generation
+- **File Upload Options**: Support for both file uploads and external download links
 
 ### 👥 User System
-- **User Registration & Authentication**: Secure authentication with persistent sessions
-- **OAuth Integration**: GitHub authentication with account linking
-- **User Profiles**: Customizable profiles with avatars and bios
-- **Mod Uploads**: Easy mod submission system with wizard interface
-- **Admin Panel**: Comprehensive administrative tools and user management
-- **Owner System**: First user becomes "Owner" with elevated privileges
+- **User Registration & Authentication**: Secure authentication with persistent sessions and remember me functionality
+- **OAuth Integration**: GitHub and Discord authentication with account linking and unlinking
+- **User Profiles**: Customizable profiles with avatars, bios, achievements, and user levels
+- **Mod Uploads**: Easy mod submission system with wizard interface and screenshot support
+- **Admin Panel**: Comprehensive administrative tools, user management, and site settings
+- **Owner System**: First user becomes "Owner" with elevated privileges over regular admins
+- **Achievement System**: Gamification with user levels, titles, and achievement tracking
 
 ### 🎨 Modern Interface
 - **Responsive Design**: Mobile-friendly interface built with SASS
@@ -27,12 +31,14 @@ Sayonika is a comprehensive mod store and community platform for Doki Doki Liter
 - **Maintenance Mode**: Configurable maintenance mode with admin bypass
 
 ### 🔧 Technical Features
-- **REST API**: Comprehensive API for mod data and user management
-- **SQLite Database**: Lightweight, file-based database with migrations
-- **File Upload**: Secure mod file handling with validation
-- **Rate Limiting**: Protection against abuse with configurable limits
-- **Security**: Helmet.js, CORS, input validation, and secure headers
-- **Cloudflare Ready**: Configured for reverse proxy and CDN setups
+- **REST API**: Comprehensive API for mod data, user management, and admin functions
+- **SQLite Database**: Lightweight, file-based database with automatic migrations
+- **File Upload**: Secure mod file handling with validation and configurable size limits
+- **Rate Limiting**: Protection against abuse with configurable limits and authentication-specific rates
+- **Security**: Helmet.js, CORS, input validation, secure headers, and HTTPS support
+- **Cloudflare Ready**: Configured for reverse proxy and CDN setups with trust proxy settings
+- **Maintenance Mode**: Configurable maintenance mode with admin bypass and custom messages
+- **Admin Settings**: Dynamic configuration through admin panel for file limits and site settings
 
 ## Installation
 
@@ -88,8 +94,9 @@ Key environment variables (see `.env.example` for complete list):
 ### Basic Configuration
 - `PORT` - Server port (default: 3000)
 - `SESSION_SECRET` - Session encryption secret
-- `WEBSITE_URL` - Your domain URL (e.g., https://your-domain.com)
+- `BASE_URL` - Your domain URL (e.g., https://your-domain.com)
 - `NODE_ENV` - Environment (development/production)
+- `ENABLE_HTTPS` - Enable HTTPS server (default: true)
 
 ### Database
 - `DATABASE_PATH` - SQLite database file path
@@ -98,12 +105,17 @@ Key environment variables (see `.env.example` for complete list):
 ### OAuth Authentication
 - `GITHUB_CLIENT_ID` - GitHub OAuth client ID
 - `GITHUB_CLIENT_SECRET` - GitHub OAuth client secret
+- `DISCORD_CLIENT_ID` - Discord OAuth client ID
+- `DISCORD_CLIENT_SECRET` - Discord OAuth client secret
 
 ### Security & Performance
 - `JWT_SECRET` - JWT signing secret for API authentication
-- `RATE_LIMIT_WINDOW` - Rate limiting window in milliseconds
-- `RATE_LIMIT_MAX` - Maximum requests per window
+- `RATE_LIMIT_WINDOW_MS` - Rate limiting window in milliseconds
+- `RATE_LIMIT_MAX_REQUESTS` - Maximum requests per window
+- `AUTH_RATE_LIMIT_MAX_REQUESTS` - Maximum auth requests per window
 - `TRUST_PROXY_HOPS` - Number of proxy hops to trust (for Cloudflare)
+- `SSL_KEY_PATH` - Path to SSL private key file
+- `SSL_CERT_PATH` - Path to SSL certificate file
 
 ### Email (Optional)
 - `SMTP_HOST` - SMTP server hostname
@@ -167,15 +179,21 @@ For detailed endpoint documentation with examples, see the [API Reference](https
 ## Database Schema
 
 The application uses SQLite with the following main tables:
-- `users` - User accounts and profiles (includes `is_admin` field)
-- `mods` - Mod information and metadata
-- `categories` - Mod categories
-- `mod_versions` - Version history for mods
+- `users` - User accounts and profiles (includes `is_admin`, `is_owner`, `user_level`, `user_title` fields)
+- `mods` - Mod information and metadata with screenshot and external URL support
+- `categories` - Mod categories and organization
+- `mod_versions` - Version history for mods with changelog support
+- `mod_comments` - User comments on mods with threaded reply support
 - `reviews` - User reviews and ratings
-- `downloads` - Download tracking
-- `favorites` - User favorites
+- `downloads` - Download tracking and analytics
+- `favorites` - User favorites and bookmarks
 - `mod_reviews` - Admin review decisions and reasons
-- `migrations` - Database migration tracking
+- `achievements` - Achievement definitions and metadata
+- `user_achievements` - User achievement progress and completion
+- `oauth_accounts` - OAuth account linking (GitHub/Discord)
+- `oauth_link_tokens` - Temporary tokens for account linking
+- `site_settings` - Dynamic site configuration and settings
+- `migrations` - Database migration tracking and versioning
 
 ## Admin System
 
@@ -184,10 +202,14 @@ Sayonika includes a comprehensive admin system for managing mod submissions and 
 ### Admin Features
 
 - **Mod Review System**: All uploaded mods require admin approval before publication
-- **Admin Dashboard**: Comprehensive overview with statistics and pending mod reviews
-- **Bulk Actions**: Approve or reject multiple mods at once
+- **Admin Dashboard**: Comprehensive overview with statistics, pending mod reviews, and user management
+- **Bulk Actions**: Approve or reject multiple mods at once with batch operations
 - **Review History**: Track all admin decisions with reasons and timestamps
 - **Download Access**: Admins can download mods for review before approval
+- **User Management**: View, edit, and manage user accounts with role assignment
+- **Site Settings**: Configure file upload limits, maintenance mode, and site-wide settings
+- **Maintenance Mode**: Toggle maintenance mode with custom messages and admin bypass
+- **Support Tickets**: Manage user support requests and contact form submissions
 
 ### Admin Access
 
@@ -301,15 +323,18 @@ During maintenance mode:
 
 ## Security Features
 
-- **JWT Authentication**: Secure token-based authentication with configurable expiration
-- **Persistent Sessions**: Remember me functionality with secure cookie storage
-- **OAuth Integration**: Secure GitHub authentication with account linking
-- **Rate Limiting**: Configurable protection against abuse and spam
-- **Input Validation**: Comprehensive server-side validation using express-validator
-- **File Upload Security**: File type, size, and content validation
-- **CORS Protection**: Configurable cross-origin resource sharing
-- **Helmet.js**: Security headers and protections
-- **Proxy Support**: Secure configuration for Cloudflare and reverse proxies
+- **JWT Authentication**: Secure token-based authentication with configurable expiration and refresh
+- **Persistent Sessions**: Remember me functionality with secure cookie storage and session validation
+- **OAuth Integration**: Secure GitHub and Discord authentication with account linking and unlinking
+- **Rate Limiting**: Configurable protection against abuse with separate limits for auth and general requests
+- **Input Validation**: Comprehensive server-side validation using express-validator with sanitization
+- **File Upload Security**: File type, size, and content validation with configurable limits
+- **CORS Protection**: Configurable cross-origin resource sharing with environment-based origins
+- **Helmet.js**: Security headers and protections with CSP and HSTS
+- **Proxy Support**: Secure configuration for Cloudflare and reverse proxies with trust hop settings
+- **HTTPS Support**: Built-in HTTPS server with SSL certificate configuration
+- **Account Protection**: OAuth account unlinking protection to prevent users from losing access
+- **Admin Safeguards**: Protection against self-deletion and owner account modification
 
 ## Contributing
 

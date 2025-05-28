@@ -1,0 +1,252 @@
+<%- include('../../partials/header', { title: title }) %>
+<link rel="stylesheet" href="/css/docs.css">
+
+<!-- Mobile Menu Toggle -->
+<button class="docs-mobile-toggle" id="docsMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>Menu</span>
+</button>
+
+<!-- Documentation Page -->
+<div class="docs-page">
+    <!-- Main Content -->
+    <div class="docs-main">
+        <div class="container">
+            <div class="docs-layout">
+                <!-- Sidebar Navigation -->
+                <%- include('../../partials/docs-sidebar') %>
+
+                <!-- Content Area -->
+                <main class="docs-content" id="docsContent">
+                    <!-- Achievements Section -->
+                    <section class="docs-section" id="achievements">
+                        <h2>Achievements System</h2>
+                        <div class="section-content">
+                            <p class="lead">
+                                Sayonika includes a comprehensive achievements system that gamifies user engagement
+                                through challenges, rewards, and progression tracking. Users earn achievements by
+                                participating in various platform activities.
+                            </p>
+
+                            <!-- Overview -->
+                            <div class="achievement-overview">
+                                <h3><i class="fas fa-trophy"></i> System Overview</h3>
+                                <p>The achievements system consists of several key components:</p>
+
+                                <div class="feature-grid">
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-star"></i> Achievement Points</h4>
+                                        <p>Each achievement awards points that contribute to user progression and rankings.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-level-up-alt"></i> User Levels</h4>
+                                        <p>Users gain levels based on their total achievement points and activity.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-crown"></i> User Titles</h4>
+                                        <p>Special titles are awarded based on achievements and user progression.</p>
+                                    </div>
+
+                                    <div class="feature-item">
+                                        <h4><i class="fas fa-chart-line"></i> Leaderboards</h4>
+                                        <p>Global leaderboards showcase top users by points, level, and activity.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Achievement Categories -->
+                            <div class="achievement-categories">
+                                <h3><i class="fas fa-tags"></i> Achievement Categories</h3>
+                                <p>Achievements are organized into several categories:</p>
+
+                                <div class="category-list">
+                                    <div class="category-item">
+                                        <h4>Community</h4>
+                                        <p>Achievements for community participation, comments, and social interaction.</p>
+                                        <ul>
+                                            <li>First Comment - Leave your first comment on a mod</li>
+                                            <li>Social Butterfly - Comment on multiple mods</li>
+                                            <li>Helpful - Receive likes on your comments</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <h4>Creator</h4>
+                                        <p>Achievements for mod creators and content contributors.</p>
+                                        <ul>
+                                            <li>First Upload - Upload your first mod</li>
+                                            <li>Popular Creator - Receive downloads on your mods</li>
+                                            <li>Prolific - Upload multiple mods</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <h4>Explorer</h4>
+                                        <p>Achievements for discovering and exploring content.</p>
+                                        <ul>
+                                            <li>First Download - Download your first mod</li>
+                                            <li>Collector - Download mods from different categories</li>
+                                            <li>Curator - Add mods to your favorites</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <h4>Milestone</h4>
+                                        <p>Special achievements for reaching significant milestones.</p>
+                                        <ul>
+                                            <li>Welcome - Complete your profile setup</li>
+                                            <li>Veteran - Be a member for an extended period</li>
+                                            <li>Dedicated - Maintain consistent activity</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API Integration -->
+                            <div class="api-integration">
+                                <h3><i class="fas fa-code"></i> API Integration</h3>
+                                <p>The achievements system is fully integrated with the Sayonika API:</p>
+
+                                <div class="api-endpoints">
+                                    <h4>Available Endpoints</h4>
+                                    <table class="docs-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Method</th>
+                                                <th>Endpoint</th>
+                                                <th>Description</th>
+                                                <th>Auth Required</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><span class="method get">GET</span></td>
+                                                <td><code>/api/achievements</code></td>
+                                                <td>Get all available achievements</td>
+                                                <td>❌ No</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="method get">GET</span></td>
+                                                <td><code>/api/users/{id}/achievements</code></td>
+                                                <td>Get user's earned achievements</td>
+                                                <td>❌ No</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="method get">GET</span></td>
+                                                <td><code>/api/users/{id}/stats</code></td>
+                                                <td>Get user's achievement statistics</td>
+                                                <td>❌ No</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="method get">GET</span></td>
+                                                <td><code>/api/leaderboard</code></td>
+                                                <td>Get achievement leaderboard</td>
+                                                <td>❌ No</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="code-example">
+                                    <h4>Example API Usage</h4>
+                                    <div class="language-tabs">
+                                        <div class="tab-buttons">
+                                            <button class="tab-button active" data-tab="js-achievements">JavaScript</button>
+                                            <button class="tab-button" data-tab="curl-achievements">cURL</button>
+                                        </div>
+
+                                        <div class="tab-content active" id="js-achievements">
+                                            <div class="code-block">
+                                                <pre><code>// Get all achievements
+const achievements = await fetch('/api/achievements').then(r => r.json());
+
+// Get user achievements
+const userAchievements = await fetch('/api/users/123/achievements').then(r => r.json());
+
+// Get leaderboard
+const leaderboard = await fetch('/api/leaderboard?limit=10').then(r => r.json());</code></pre>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-content" id="curl-achievements">
+                                            <div class="code-block">
+                                                <pre><code># Get all achievements
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/achievements"
+
+# Get user achievements
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/users/123/achievements"
+
+# Get leaderboard
+curl -X GET "<%- process.env.BASE_URL || 'http://localhost:3000' %>/api/leaderboard?limit=10"</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Experience -->
+                            <div class="user-experience">
+                                <h3><i class="fas fa-user"></i> User Experience</h3>
+                                <p>The achievements system enhances the user experience in several ways:</p>
+
+                                <div class="ux-features">
+                                    <div class="ux-item">
+                                        <h4>Achievement Notifications</h4>
+                                        <p>Users receive real-time notifications when they earn new achievements, creating immediate positive feedback.</p>
+                                    </div>
+
+                                    <div class="ux-item">
+                                        <h4>Progress Tracking</h4>
+                                        <p>Users can view their achievement progress and see what they need to do to unlock new achievements.</p>
+                                    </div>
+
+                                    <div class="ux-item">
+                                        <h4>Profile Integration</h4>
+                                        <p>Achievements, levels, and titles are prominently displayed on user profiles, showcasing their accomplishments.</p>
+                                    </div>
+
+                                    <div class="ux-item">
+                                        <h4>Dedicated Page</h4>
+                                        <p>A dedicated achievements page at <code>/achievements</code> allows users to browse all available achievements and track their progress.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="next-steps">
+                                <h3>Related Documentation</h3>
+                                <div class="next-steps-grid">
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <h4>User Profiles</h4>
+                                        <p>Learn about user profile features and customization options.</p>
+                                        <a href="/docs/features/profiles" class="btn btn-outline">View Profiles</a>
+                                    </div>
+
+                                    <div class="next-step-card">
+                                        <div class="step-icon">
+                                            <i class="fas fa-code"></i>
+                                        </div>
+                                        <h4>API Reference</h4>
+                                        <p>Explore the complete API documentation for achievements.</p>
+                                        <a href="/docs/api/endpoints/users" class="btn btn-outline">API Docs</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="docs-sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="/js/docs.js?v=<%= Date.now() %>"></script>
+<%- include('../../partials/footer') %>

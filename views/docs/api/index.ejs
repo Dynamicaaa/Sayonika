@@ -14,53 +14,7 @@
         <div class="container">
             <div class="docs-layout">
                 <!-- Sidebar Navigation -->
-                <aside class="docs-sidebar" id="docsSidebar">
-                    <div class="sidebar-header">
-                        <h3>Documentation</h3>
-                        <button class="sidebar-close" id="sidebarClose">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-
-                    <nav class="sidebar-nav">
-                        <div class="nav-section">
-                            <h4>Getting Started</h4>
-                            <ul>
-                                <li><a href="/docs" class="nav-link <%= currentPath === '/docs' || currentPath === '/docs/' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/installation" class="nav-link <%= currentPath === '/docs/installation' ? 'active' : '' %>">Installation</a></li>
-                                <li><a href="/docs/configuration" class="nav-link <%= currentPath === '/docs/configuration' ? 'active' : '' %>">Configuration</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>API Reference</h4>
-                            <ul>
-                                <li><a href="/docs/api" class="nav-link <%= currentPath === '/docs/api' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/api/authentication" class="nav-link <%= currentPath === '/docs/api/authentication' ? 'active' : '' %>">Authentication</a></li>
-                                <li><a href="/docs/api/rate-limiting" class="nav-link <%= currentPath === '/docs/api/rate-limiting' ? 'active' : '' %>">Rate Limiting</a></li>
-                                <li><a href="/docs/api/response-format" class="nav-link <%= currentPath === '/docs/api/response-format' ? 'active' : '' %>">Response Format</a></li>
-                                <li><a href="/docs/api/error-handling" class="nav-link <%= currentPath === '/docs/api/error-handling' ? 'active' : '' %>">Error Handling</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Endpoints</h4>
-                            <ul>
-                                <li><a href="/docs/api/endpoints" class="nav-link <%= currentPath === '/docs/api/endpoints' ? 'active' : '' %>">Overview</a></li>
-                                <li><a href="/docs/api/endpoints/auth" class="nav-link <%= currentPath === '/docs/api/endpoints/auth' ? 'active' : '' %>">Authentication</a></li>
-                                <li><a href="/docs/api/endpoints/mods" class="nav-link <%= currentPath === '/docs/api/endpoints/mods' ? 'active' : '' %>">Mods</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-section">
-                            <h4>Troubleshooting</h4>
-                            <ul>
-                                <li><a href="/docs/customization" class="nav-link <%= currentPath === '/docs/customization' ? 'active' : '' %>">Customization</a></li>
-                                <li><a href="/docs/troubleshooting" class="nav-link <%= currentPath === '/docs/troubleshooting' ? 'active' : '' %>">Troubleshooting</a></li>
-                            </ul>
-                        </div>
-                    </nav>
-                </aside>
+                <%- include('../../partials/docs-sidebar') %>
 
                 <!-- Content Area -->
                 <main class="docs-content" id="docsContent">
@@ -86,22 +40,32 @@
         <div class="feature-grid">
             <div class="feature-item">
                 <h4><i class="fas fa-shield-alt"></i> Secure Authentication</h4>
-                <p>JWT-based authentication with OAuth support for GitHub integration.</p>
+                <p>JWT-based authentication with OAuth support for GitHub and Discord integration, plus account linking.</p>
             </div>
 
             <div class="feature-item">
                 <h4><i class="fas fa-tachometer-alt"></i> Rate Limiting</h4>
-                <p>Built-in rate limiting to ensure fair usage and protect against abuse.</p>
+                <p>Built-in rate limiting to ensure fair usage and protect against abuse with configurable limits.</p>
             </div>
 
             <div class="feature-item">
                 <h4><i class="fas fa-code"></i> RESTful Design</h4>
-                <p>Clean, predictable REST endpoints following industry best practices.</p>
+                <p>Clean, predictable REST endpoints following industry best practices with comprehensive documentation.</p>
             </div>
 
             <div class="feature-item">
                 <h4><i class="fas fa-file-code"></i> JSON Responses</h4>
-                <p>Consistent JSON response format with detailed error messages.</p>
+                <p>Consistent JSON response format with detailed error messages and status codes.</p>
+            </div>
+
+            <div class="feature-item">
+                <h4><i class="fas fa-users"></i> User Management</h4>
+                <p>Complete user profile management including avatars, achievements, and OAuth account linking.</p>
+            </div>
+
+            <div class="feature-item">
+                <h4><i class="fas fa-comments"></i> Community Features</h4>
+                <p>Mod comments, ratings, achievements system, and user interaction endpoints.</p>
             </div>
         </div>
 
@@ -223,25 +187,25 @@ print('Mod details:', mod)</code></pre>
             <tbody>
                 <tr>
                     <td><a href="/docs/api/endpoints/auth">Authentication</a></td>
-                    <td>User login, registration, and OAuth</td>
+                    <td>User login, registration, and OAuth (GitHub/Discord)</td>
                     <td><code>/api/auth</code></td>
                     <td><span class="badge info">Public</span></td>
                 </tr>
                 <tr>
                     <td><a href="/docs/api/endpoints/mods">Mods</a></td>
-                    <td>Mod management and browsing</td>
+                    <td>Mod management, browsing, and comments</td>
                     <td><code>/api/mods</code></td>
                     <td><span class="badge warning">Mixed</span></td>
                 </tr>
                 <tr>
                     <td><a href="/docs/api/endpoints/users">Users</a></td>
-                    <td>User profiles and management</td>
+                    <td>User profiles, avatars, and achievements</td>
                     <td><code>/api/users</code></td>
                     <td><span class="badge warning">Mixed</span></td>
                 </tr>
                 <tr>
                     <td><a href="/docs/api/endpoints/admin">Admin</a></td>
-                    <td>Administrative functions</td>
+                    <td>Administrative functions and settings</td>
                     <td><code>/api/admin</code></td>
                     <td><span class="badge danger">Admin</span></td>
                 </tr>
@@ -249,6 +213,18 @@ print('Mod details:', mod)</code></pre>
                     <td><a href="/docs/api/endpoints/categories">Categories</a></td>
                     <td>Mod categories and tags</td>
                     <td><code>/api/categories</code></td>
+                    <td><span class="badge info">Public</span></td>
+                </tr>
+                <tr>
+                    <td>OAuth</td>
+                    <td>OAuth account linking and management</td>
+                    <td><code>/auth/oauth</code></td>
+                    <td><span class="badge warning">Mixed</span></td>
+                </tr>
+                <tr>
+                    <td>Achievements</td>
+                    <td>User achievements and gamification</td>
+                    <td><code>/api/achievements</code></td>
                     <td><span class="badge info">Public</span></td>
                 </tr>
             </tbody>

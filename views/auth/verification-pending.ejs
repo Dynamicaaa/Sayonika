@@ -1,0 +1,356 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1><i class="fas fa-envelope-open-text"></i> Email Verification Required</h1>
+            </div>
+
+            <div class="auth-content">
+                <div class="verification-pending">
+                    <div class="pending-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+
+                    <h3>Almost there!</h3>
+                    <p>We've sent a verification email to <strong><%= user.email %></strong></p>
+                    <p>Please check your email and click the verification link to complete your account setup and start using Sayonika.</p>
+
+                    <div class="help-section">
+                        <h4><i class="fas fa-question-circle"></i> Didn't receive the email?</h4>
+                        <ul class="help-list">
+                            <li>Check your spam/junk folder</li>
+                            <li>Make sure the email address is correct</li>
+                            <li>Wait a few minutes for the email to arrive</li>
+                            <li>Request a new verification email below</li>
+                        </ul>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="resend-btn" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Resend Verification Email
+                        </button>
+                        <a href="/logout" class="btn btn-outline">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+
+                    <div id="resend-message" class="message" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.auth-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+body.dark-theme .auth-card {
+    background: #2d2d2d;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #ff6b9d 0%, #4ecdc4 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.auth-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.auth-header i {
+    margin-right: 0.5rem;
+}
+
+.auth-content {
+    padding: 2rem;
+}
+
+.verification-pending {
+    text-align: center;
+}
+
+.pending-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: #ffc107;
+}
+
+.verification-pending h3 {
+    color: #333333;
+    margin-bottom: 1rem;
+}
+
+body.dark-theme .verification-pending h3 {
+    color: #ffffff;
+}
+
+.verification-pending p {
+    color: #666666;
+    margin-bottom: 1rem;
+}
+
+body.dark-theme .verification-pending p {
+    color: #cccccc;
+}
+
+.help-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+body.dark-theme .help-section {
+    background: #3d3d3d;
+}
+
+.help-section h4 {
+    color: #333333;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+}
+
+body.dark-theme .help-section h4 {
+    color: #ffffff;
+}
+
+.help-section i {
+    color: #007bff;
+    margin-right: 0.5rem;
+}
+
+body.dark-theme .help-section i {
+    color: #4ecdc4;
+}
+
+.help-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #666666;
+}
+
+body.dark-theme .help-list {
+    color: #cccccc;
+}
+
+.help-list li {
+    margin-bottom: 0.5rem;
+}
+
+.action-buttons {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border: 2px solid #007bff;
+}
+
+body.dark-theme .btn-primary {
+    background: #ff6b9d;
+    border-color: #ff6b9d;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: white;
+}
+
+body.dark-theme .btn-primary:hover {
+    background: #ff4d8a;
+    border-color: #ff4d8a;
+}
+
+.btn-outline {
+    background: transparent;
+    color: #007bff;
+    border: 2px solid #007bff;
+}
+
+body.dark-theme .btn-outline {
+    color: #4ecdc4;
+    border-color: #4ecdc4;
+}
+
+.btn-outline:hover {
+    background: #007bff;
+    color: white;
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+body.dark-theme .btn-outline:hover {
+    background: #4ecdc4;
+    color: #1a1a1a;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.message {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+body.dark-theme .message.success {
+    background: rgba(40, 167, 69, 0.2);
+    color: #90ee90;
+    border: 1px solid rgba(40, 167, 69, 0.4);
+}
+
+.message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+body.dark-theme .message.error {
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff9999;
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resendBtn = document.getElementById('resend-btn');
+    const messageDiv = document.getElementById('resend-message');
+
+    // Check if we have user info from login attempt
+    const pendingUser = sessionStorage.getItem('pendingVerificationUser');
+    if (pendingUser) {
+        try {
+            const userData = JSON.parse(pendingUser);
+            // Update the email display if we have it
+            const emailDisplay = document.querySelector('strong');
+            if (emailDisplay && userData.email) {
+                emailDisplay.textContent = userData.email;
+            }
+            // Clear the session storage
+            sessionStorage.removeItem('pendingVerificationUser');
+        } catch (e) {
+            console.error('Error parsing pending user data:', e);
+        }
+    }
+
+    resendBtn.addEventListener('click', async function() {
+        resendBtn.disabled = true;
+        resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+        try {
+            const response = await fetch('/api/auth/resend-verification', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                messageDiv.className = 'message success';
+                messageDiv.textContent = data.message || 'Verification email sent successfully!';
+                messageDiv.style.display = 'block';
+
+                // Disable button for 60 seconds
+                let countdown = 60;
+                const interval = setInterval(() => {
+                    resendBtn.innerHTML = `<i class="fas fa-clock"></i> Wait ${countdown}s`;
+                    countdown--;
+
+                    if (countdown < 0) {
+                        clearInterval(interval);
+                        resendBtn.disabled = false;
+                        resendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Resend Verification Email';
+                    }
+                }, 1000);
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = data.error || 'Failed to send verification email';
+                messageDiv.style.display = 'block';
+
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Resend Verification Email';
+            }
+        } catch (error) {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = 'Network error. Please try again.';
+            messageDiv.style.display = 'block';
+
+            resendBtn.disabled = false;
+            resendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Resend Verification Email';
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

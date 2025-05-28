@@ -29,6 +29,11 @@ const checkMaintenanceMode = async (req, res, next) => {
 
             // Admin access (only for already logged in admins)
             '/admin',
+            '/admin/login', // Admin login page
+
+            // Password recovery (essential for account access)
+            '/forgot-password',
+            '/reset-password',
 
             // Mod browsing (read-only) - but NOT the home page
             '/browse',
@@ -47,7 +52,11 @@ const checkMaintenanceMode = async (req, res, next) => {
             '/api/health',
             '/api/mods',      // GET only for browsing
             '/api/categories', // GET only for browsing
-            '/api/admin'      // Admin routes
+            '/api/admin',     // Admin routes
+            '/api/auth/admin-login', // Admin login endpoint
+            '/api/auth/me',   // User profile endpoint (needed for admin login)
+            '/api/auth/forgot-password', // Password recovery
+            '/api/auth/reset-password'   // Password reset
         ];
 
         // Check if current path is allowed

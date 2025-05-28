@@ -1,23 +1,33 @@
 const express = require('express');
 const router = express.Router();
+const { docsNavigation, getActiveNavigation } = require('../config/docs-navigation');
 
 // Documentation home page
 router.get('/', (req, res) => {
+    const navData = getActiveNavigation(req.path);
     res.render('docs/index', {
         title: 'Documentation - Sayonika',
         user: req.user,
-        currentPath: req.path
+        currentPath: req.path,
+        docsNavigation: navData.navigation,
+        activeSection: navData.activeSection,
+        activeItem: navData.activeItem
     });
 });
 
 // Helper function to handle missing templates
 function renderDocPage(req, res, templatePath, title, pageTitle) {
+    const navData = getActiveNavigation(req.path);
+
     // Try to render the actual template first
     res.render(templatePath, {
         title: title,
         user: req.user,
         currentPath: req.path,
-        pageTitle: pageTitle
+        pageTitle: pageTitle,
+        docsNavigation: navData.navigation,
+        activeSection: navData.activeSection,
+        activeItem: navData.activeItem
     }, (err, html) => {
         if (err) {
             // If template doesn't exist, render coming soon page
@@ -25,7 +35,10 @@ function renderDocPage(req, res, templatePath, title, pageTitle) {
                 title: title,
                 user: req.user,
                 currentPath: req.path,
-                pageTitle: pageTitle || title.replace(' - Sayonika Documentation', '').replace(' - API Reference', '')
+                pageTitle: pageTitle || title.replace(' - Sayonika Documentation', '').replace(' - API Reference', ''),
+                docsNavigation: navData.navigation,
+                activeSection: navData.activeSection,
+                activeItem: navData.activeItem
             });
         } else {
             // Template exists, send the rendered HTML
@@ -54,10 +67,14 @@ router.get('/first-run', (req, res) => {
 
 // API Reference section
 router.get('/api', (req, res) => {
+    const navData = getActiveNavigation(req.path);
     res.render('docs/api/index', {
         title: 'API Reference - Sayonika Documentation',
         user: req.user,
-        currentPath: req.path
+        currentPath: req.path,
+        docsNavigation: navData.navigation,
+        activeSection: navData.activeSection,
+        activeItem: navData.activeItem
     });
 });
 
@@ -100,6 +117,23 @@ router.get('/api/endpoints/admin', (req, res) => {
 
 router.get('/api/endpoints/categories', (req, res) => {
     renderDocPage(req, res, 'docs/api/endpoints/categories', 'Category Endpoints - API Reference', 'Category Endpoints');
+});
+
+// User Features section
+router.get('/features/achievements', (req, res) => {
+    renderDocPage(req, res, 'docs/features/achievements', 'Achievements System - Sayonika Documentation', 'Achievements System');
+});
+
+router.get('/features/oauth', (req, res) => {
+    renderDocPage(req, res, 'docs/features/oauth', 'OAuth Account Linking - Sayonika Documentation', 'OAuth Account Linking');
+});
+
+router.get('/features/profiles', (req, res) => {
+    renderDocPage(req, res, 'docs/features/profiles', 'User Profiles - Sayonika Documentation', 'User Profiles');
+});
+
+router.get('/features/maintenance', (req, res) => {
+    renderDocPage(req, res, 'docs/features/maintenance', 'Maintenance Mode - Sayonika Documentation', 'Maintenance Mode');
 });
 
 // Troubleshooting section

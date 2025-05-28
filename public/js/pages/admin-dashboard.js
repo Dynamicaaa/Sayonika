@@ -537,6 +537,7 @@ async function loadSiteSettings() {
 
         // Update form fields with current settings
         const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
+        const maintenanceMessageTextarea = document.getElementById('maintenanceMessage');
         const maxFileSizeInput = document.getElementById('maxFileSize');
         const maxThumbnailSizeInput = document.getElementById('maxThumbnailSize');
         const maxScreenshotSizeInput = document.getElementById('maxScreenshotSize');
@@ -549,6 +550,10 @@ async function loadSiteSettings() {
 
             // Update maintenance indicator
             updateMaintenanceIndicator(settings.maintenance_mode);
+        }
+
+        if (maintenanceMessageTextarea && 'maintenance_message' in settings) {
+            maintenanceMessageTextarea.value = settings.maintenance_message || 'Sayonika is currently undergoing maintenance. Please check back later!';
         }
 
         if (maxFileSizeInput && 'max_file_size_mb' in settings) {
@@ -583,6 +588,7 @@ async function saveSiteSettings() {
     serverLog('info', 'Starting saveSiteSettings function');
     try {
         const maintenanceModeCheckbox = document.getElementById('maintenanceMode');
+        const maintenanceMessageTextarea = document.getElementById('maintenanceMessage');
         const maxFileSizeInput = document.getElementById('maxFileSize');
         const maxThumbnailSizeInput = document.getElementById('maxThumbnailSize');
         const maxScreenshotSizeInput = document.getElementById('maxScreenshotSize');
@@ -593,6 +599,7 @@ async function saveSiteSettings() {
         // Debug: Log which form elements were found
         serverLog('debug', 'Form elements found', {
             maintenanceMode: !!maintenanceModeCheckbox,
+            maintenanceMessage: !!maintenanceMessageTextarea,
             maxFileSize: !!maxFileSizeInput,
             maxThumbnailSize: !!maxThumbnailSizeInput,
             maxScreenshotSize: !!maxScreenshotSizeInput,
@@ -602,6 +609,11 @@ async function saveSiteSettings() {
         if (maintenanceModeCheckbox) {
             settings.maintenance_mode = maintenanceModeCheckbox.checked;
             serverLog('debug', `Maintenance mode setting: ${settings.maintenance_mode}`);
+        }
+
+        if (maintenanceMessageTextarea) {
+            settings.maintenance_message = maintenanceMessageTextarea.value.trim() || 'Sayonika is currently undergoing maintenance. Please check back later!';
+            serverLog('debug', `Maintenance message setting: ${settings.maintenance_message}`);
         }
 
         if (maxFileSizeInput) {

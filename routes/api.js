@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs').promises;
 const { body, validationResult, query } = require('express-validator');
 const Database = require('../database/database');
-const { authenticateToken, requireAuth, requireAdmin, requireOwner, optionalAuth } = require('../middleware/auth');
+const { authenticateToken, requireAuth, requireAdmin, requireOwner, requireEmailVerified, optionalAuth } = require('../middleware/auth');
 const { detectReverseProxy, getEffectiveFileLimit, getFileLimitMB } = require('../middleware/proxy-detection');
 const { deleteAvatarFile, generateDefaultThumbnail } = require('../utils/helpers');
 const emailService = require('../utils/emailService');
@@ -143,7 +143,7 @@ router.get('/mods/:identifier', optionalAuth, async (req, res) => {
 });
 
 // Create new mod
-router.post('/mods', requireAuth, detectReverseProxy, (req, res, next) => {
+router.post('/mods', requireAuth, requireEmailVerified, detectReverseProxy, (req, res, next) => {
     upload.any()(req, res, (err) => {
         if (err) {
             console.error('Multer upload error:', err);
@@ -376,14 +376,7 @@ router.get('/mods/:identifier/download', optionalAuth, async (req, res) => {
             return res.status(403).json({ error: 'Mod is not published' });
         }
 
-        // Check if file exists
-        try {
-            await fs.access(mod.file_path);
-        } catch (error) {
-            return res.status(404).json({ error: 'Mod file not found' });
-        }
-
-        // Record download
+        // Record download before redirecting or serving file
         await db.incrementDownloadCount(mod.id);
         await db.recordDownload(
             mod.id,
@@ -391,6 +384,24 @@ router.get('/mods/:identifier/download', optionalAuth, async (req, res) => {
             req.ip,
             req.get('User-Agent')
         );
+
+        // Check if mod has external URL
+        if (mod.external_url) {
+            // Redirect to external URL
+            return res.redirect(mod.external_url);
+        }
+
+        // Handle local file download
+        if (!mod.file_path) {
+            return res.status(404).json({ error: 'No download available for this mod' });
+        }
+
+        // Check if file exists
+        try {
+            await fs.access(mod.file_path);
+        } catch (error) {
+            return res.status(404).json({ error: 'Mod file not found' });
+        }
 
         // Send file
         res.download(mod.file_path, `${mod.slug}-${mod.version}.zip`);
@@ -485,7 +496,7 @@ router.get('/user/mods', requireAuth, async (req, res) => {
 });
 
 // User: Update own mod
-router.patch('/user/mods/:id', detectReverseProxy, upload.any(), [
+router.patch('/user/mods/:id', requireAuth, requireEmailVerified, detectReverseProxy, upload.any(), [
     body('title').optional().isLength({ min: 1, max: 255 }).withMessage('Title must be 1-255 characters'),
     body('description').optional().isLength({ min: 1 }).withMessage('Description is required'),
     body('short_description').optional().isLength({ max: 500 }).withMessage('Short description must be less than 500 characters'),
@@ -496,7 +507,7 @@ router.patch('/user/mods/:id', detectReverseProxy, upload.any(), [
     body('changelog').optional().isLength({ max: 2000 }).withMessage('Changelog must be less than 2000 characters'),
     body('externalUrl').optional().isURL().withMessage('External URL must be valid'),
     body('removedScreenshots').optional().isJSON().withMessage('Removed screenshots must be valid JSON array')
-], requireAuth, async (req, res) => {
+], async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -1097,6 +1108,13 @@ router.put('/admin/settings', requireAuth, requireAdmin, async (req, res) => {
             settings.max_screenshot_size_mb = maxScreenshotSize;
         }
 
+        if ('maintenance_message' in settings) {
+            if (!settings.maintenance_message || settings.maintenance_message.trim() === '') {
+                return res.status(400).json({ error: 'Maintenance message cannot be empty' });
+            }
+            settings.maintenance_message = settings.maintenance_message.trim();
+        }
+
         // Update each setting
         for (const [key, value] of Object.entries(settings)) {
             let type = 'string';
@@ -1117,6 +1135,10 @@ router.put('/admin/settings', requireAuth, requireAdmin, async (req, res) => {
         // Log specific setting changes
         if ('maintenance_mode' in settings) {
             console.log(`[Admin] Maintenance mode ${settings.maintenance_mode ? 'enabled' : 'disabled'} by admin ${req.user.username}`);
+        }
+
+        if ('maintenance_message' in settings) {
+            console.log(`[Admin] Maintenance message updated by admin ${req.user.username}: "${settings.maintenance_message}"`);
         }
 
         if ('max_file_size_mb' in settings) {
@@ -1362,7 +1384,7 @@ router.get('/mods/:identifier/comments', async (req, res) => {
 router.post('/mods/:identifier/comments', [
     body('content').isLength({ min: 1, max: 2000 }).withMessage('Comment content is required and must be less than 2000 characters'),
     body('parent_id').optional().isInt().withMessage('Parent ID must be a number')
-], requireAuth, async (req, res) => {
+], requireAuth, requireEmailVerified, async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -1411,7 +1433,7 @@ router.post('/mods/:identifier/comments', [
 
 router.put('/comments/:commentId', [
     body('content').isLength({ min: 1, max: 2000 }).withMessage('Comment content is required and must be less than 2000 characters')
-], requireAuth, async (req, res) => {
+], requireAuth, requireEmailVerified, async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -1434,7 +1456,7 @@ router.put('/comments/:commentId', [
     }
 });
 
-router.delete('/comments/:commentId', requireAuth, async (req, res) => {
+router.delete('/comments/:commentId', requireAuth, requireEmailVerified, async (req, res) => {
     try {
         const { commentId } = req.params;
 

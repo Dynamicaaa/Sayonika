@@ -313,27 +313,40 @@ async function handleRegisterSubmit(e) {
             }
         }
 
-        // Token is now stored as httpOnly cookie, no need to store in localStorage
+        // Handle different registration outcomes
+        if (response.requiresEmailVerification) {
+            // User needs to verify email before they can log in
+            const message = 'Registration successful! Please check your email and click the verification link to complete your account setup.';
 
-        // Show appropriate welcome message
-        const welcomeMessage = response.user?.is_admin
-            ? 'Welcome! You are now the site administrator. You have access to the admin panel to manage mods and users.'
-            : 'Account created successfully! Welcome to Sayonika!';
+            if (window.S && window.S.notify) {
+                window.S.notify.success(message);
+            } else {
+                alert(message);
+            }
 
-        if (window.S && window.S.notify) {
-            window.S.notify.success(welcomeMessage);
+            // Redirect to a verification pending page or login page
+            setTimeout(() => {
+                window.location.href = '/login?message=' + encodeURIComponent('Please verify your email before logging in.');
+            }, 2000);
         } else {
-            alert(welcomeMessage);
-        }
+            // First user (admin) - automatically logged in
+            const welcomeMessage = 'Welcome! You are now the site administrator. You have access to the admin panel to manage mods and users.';
 
-        // Update authentication state
-        if (window.S && window.S.auth) {
-            await window.S.auth.checkAuthStatus();
-        }
+            if (window.S && window.S.notify) {
+                window.S.notify.success(welcomeMessage);
+            } else {
+                alert(welcomeMessage);
+            }
 
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 1500);
+            // Update authentication state
+            if (window.S && window.S.auth) {
+                await window.S.auth.checkAuthStatus();
+            }
+
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1500);
+        }
 
     } catch (error) {
         if (window.S && window.S.notify) {

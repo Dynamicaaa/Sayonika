@@ -64,6 +64,33 @@ const requireVerified = (req, res, next) => {
     next();
 };
 
+// Middleware to check if user has verified their email
+const requireEmailVerified = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // First user (admin) is auto-verified, skip check
+    if (req.user.is_admin && req.user.is_owner) {
+        return next();
+    }
+
+    // OAuth users without email addresses are allowed (they don't need email verification)
+    if (!req.user.email) {
+        return next();
+    }
+
+    if (!req.user.email_verified) {
+        return res.status(403).json({
+            error: 'Email verification required',
+            code: 'EMAIL_NOT_VERIFIED',
+            message: 'Please verify your email address to access this feature.'
+        });
+    }
+
+    next();
+};
+
 // Required authentication - fails if no valid token or session
 const requireAuth = async (req, res, next) => {
     try {
@@ -158,5 +185,6 @@ module.exports = {
     requireAdmin,
     requireOwner,
     requireVerified,
+    requireEmailVerified,
     optionalAuth
 };

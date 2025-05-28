@@ -169,7 +169,9 @@ router.get('/login', (req, res) => {
 
     res.render('auth/login', {
         title: 'Login - Sayonika',
-        user: null
+        user: null,
+        message: req.query.message ? decodeURIComponent(req.query.message) : null,
+        messageType: req.query.type || 'info'
     });
 });
 
@@ -328,7 +330,12 @@ router.get('/mod/:identifier/edit', async (req, res) => {
 
 // Admin dashboard
 router.get('/admin', async (req, res) => {
-    if (!req.user || !req.user.is_admin) {
+    if (!req.user) {
+        // Redirect to admin login page if not logged in
+        return res.redirect('/admin/login');
+    }
+
+    if (!req.user.is_admin) {
         return res.status(403).render('error', {
             title: 'Access Denied',
             message: 'Admin access required.',
@@ -369,9 +376,41 @@ router.get('/admin', async (req, res) => {
     }
 });
 
+// Admin login page
+router.get('/admin/login', (req, res) => {
+    // If already logged in and is admin, redirect to admin dashboard
+    if (req.user && req.user.is_admin) {
+        return res.redirect('/admin');
+    }
+
+    // If logged in but not admin, show access denied
+    if (req.user && !req.user.is_admin) {
+        return res.status(403).render('error', {
+            title: 'Access Denied',
+            message: 'Admin access required.',
+            user: req.user,
+            currentPath: req.path
+        });
+    }
+
+    // Show admin login page
+    res.render('auth/admin-login', {
+        title: 'Admin Login - Sayonika',
+        user: req.user,
+        currentPath: req.path,
+        message: req.query.message ? decodeURIComponent(req.query.message) : null,
+        messageType: req.query.type || 'info'
+    });
+});
+
 // Admin ticket detail page
 router.get('/admin/tickets/:id', async (req, res) => {
-    if (!req.user || !req.user.is_admin) {
+    if (!req.user) {
+        // Redirect to admin login page if not logged in
+        return res.redirect('/admin/login');
+    }
+
+    if (!req.user.is_admin) {
         return res.status(403).render('error', {
             title: 'Access Denied',
             message: 'Admin access required.',
@@ -431,6 +470,31 @@ router.get('/maintenance', async (req, res) => {
             currentPath: req.path
         });
     }
+});
+
+// Forgot password page
+router.get('/forgot-password', (req, res) => {
+    res.render('auth/forgot-password', {
+        title: 'Forgot Password - Sayonika',
+        user: req.user,
+        currentPath: req.path
+    });
+});
+
+// Reset password page
+router.get('/reset-password', (req, res) => {
+    const token = req.query.token;
+
+    if (!token) {
+        return res.redirect('/forgot-password?error=invalid_token');
+    }
+
+    res.render('auth/reset-password', {
+        title: 'Reset Password - Sayonika',
+        user: req.user,
+        token: token,
+        currentPath: req.path
+    });
 });
 
 // Settings page
@@ -516,6 +580,24 @@ router.get('/contact', (req, res) => {
     });
 });
 
+// Email verification pending page
+router.get('/verification-pending', (req, res) => {
+    if (!req.user) {
+        return res.redirect('/login');
+    }
+
+    // If user is already verified, redirect to home
+    if (req.user.email_verified) {
+        return res.redirect('/');
+    }
+
+    res.render('auth/verification-pending', {
+        title: 'Email Verification Pending - Sayonika',
+        user: req.user,
+        currentPath: req.path
+    });
+});
+
 // Email verification page
 router.get('/verify-email', async (req, res) => {
     const { token } = req.query;
@@ -533,11 +615,27 @@ router.get('/verify-email', async (req, res) => {
         const user = await db.verifyEmailToken(token);
 
         if (user) {
+            // Generate JWT token for the newly verified user
+            const jwt = require('jsonwebtoken');
+            const authToken = jwt.sign(
+                { userId: user.id, username: user.username },
+                process.env.JWT_SECRET || 'your-secret-key',
+                { expiresIn: '24h' }
+            );
+
+            // Set token as httpOnly cookie for automatic login
+            res.cookie('token', authToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                sameSite: 'lax'
+            });
+
             res.render('auth/verify-email', {
                 title: 'Email Verification - Sayonika',
-                user: req.user,
+                user: user, // Pass the verified user
                 success: true,
-                message: 'Email verified successfully! You can now receive email notifications.'
+                message: 'Email verified successfully! You are now logged in and can access all features.'
             });
         } else {
             res.render('auth/verify-email', {

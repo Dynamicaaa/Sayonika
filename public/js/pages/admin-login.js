@@ -1,6 +1,9 @@
-// Login page functionality
+// Admin login page functionality
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for error messages in URL parameters
+    checkForErrors();
+
     // Auto-focus first input
     const usernameInput = document.getElementById('username');
     if (usernameInput) {
@@ -8,19 +11,69 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Form submission
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLoginSubmit);
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    if (adminLoginForm) {
+        adminLoginForm.addEventListener('submit', handleAdminLoginSubmit);
     }
 
     // Show/hide password toggle
     setupPasswordToggle();
 
-    // Setup OAuth buttons to include remember me parameter
-    setupOAuthButtons();
+    // Setup OAuth buttons to include admin parameter
+    setupAdminOAuthButtons();
 });
 
-async function handleLoginSubmit(e) {
+function checkForErrors() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+
+    if (error) {
+        let errorMessage = '';
+        switch (error) {
+            case 'access_denied':
+                errorMessage = 'Access denied. Administrator privileges required.';
+                break;
+            case 'github_auth_failed':
+                errorMessage = 'GitHub authentication failed. Please try again.';
+                break;
+            case 'discord_auth_failed':
+                errorMessage = 'Discord authentication failed. Please try again.';
+                break;
+            case 'github_login_failed':
+                errorMessage = 'GitHub login failed. Please try again.';
+                break;
+            case 'discord_login_failed':
+                errorMessage = 'Discord login failed. Please try again.';
+                break;
+            default:
+                errorMessage = 'An error occurred during login. Please try again.';
+        }
+
+        showError(errorMessage);
+
+        // Clean up URL by removing error parameter
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('error');
+        window.history.replaceState({}, '', newUrl);
+    }
+}
+
+function showError(message) {
+    const errorDiv = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+
+    if (errorDiv && errorText) {
+        errorText.textContent = message;
+        errorDiv.style.display = 'flex';
+
+        // Auto-hide after 10 seconds
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 10000);
+    }
+}
+
+async function handleAdminLoginSubmit(e) {
     e.preventDefault();
 
     const formData = window.S ? window.S.form.serialize(this) : new FormData(this);
@@ -32,14 +85,15 @@ async function handleLoginSubmit(e) {
 
         let response;
         if (window.S && window.S.api) {
-            response = await window.S.api.post('/auth/login', formData);
+            response = await window.S.api.post('/auth/admin-login', formData);
         } else {
-            // Fallback API call - include remember me checkbox
+            // Fallback API call - include remember me checkbox and admin flag
             const formDataObj = Object.fromEntries(formData);
             const rememberMe = document.getElementById('remember')?.checked || false;
             formDataObj.remember = rememberMe;
+            formDataObj.admin = true; // Flag to indicate this is an admin login
 
-            const fetchResponse = await fetch('/api/auth/login', {
+            const fetchResponse = await fetch('/api/auth/admin-login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -62,9 +116,9 @@ async function handleLoginSubmit(e) {
                 if (fetchResponse.status === 403 && response.code === 'EMAIL_NOT_VERIFIED') {
                     // Show verification pending message and redirect
                     if (window.S && window.S.notify) {
-                        window.S.notify.error('Please verify your email address before logging in.');
+                        window.S.notify.error('Please verify your email address before accessing the admin panel.');
                     } else {
-                        alert('Please verify your email address before logging in.');
+                        alert('Please verify your email address before accessing the admin panel.');
                     }
 
                     // Store user info for verification pending page
@@ -76,16 +130,16 @@ async function handleLoginSubmit(e) {
                     return;
                 }
 
-                throw new Error(response.error || 'Login failed');
+                throw new Error(response.error || 'Admin login failed');
             }
         }
 
         // Token is now stored as httpOnly cookie, no need to store in localStorage
 
         if (window.S && window.S.notify) {
-            window.S.notify.success('Login successful! Redirecting...');
+            window.S.notify.success('Admin login successful! Redirecting...');
         } else {
-            alert('Login successful! Redirecting...');
+            alert('Admin login successful! Redirecting...');
         }
 
         // Update authentication state
@@ -93,19 +147,16 @@ async function handleLoginSubmit(e) {
             await window.S.auth.checkAuthStatus();
         }
 
-        // Redirect to intended page or home
-        const urlParams = new URLSearchParams(window.location.search);
-        const redirect = urlParams.get('redirect') || '/';
-
+        // Redirect to admin dashboard
         setTimeout(() => {
-            window.location.href = redirect;
+            window.location.href = '/admin';
         }, 1000);
 
     } catch (error) {
         if (window.S && window.S.notify) {
-            window.S.notify.error(error.message || 'Login failed. Please try again.');
+            window.S.notify.error(error.message || 'Admin login failed. Please try again.');
         } else {
-            alert(error.message || 'Login failed. Please try again.');
+            alert(error.message || 'Admin login failed. Please try again.');
         }
 
         // Clear form errors
@@ -172,7 +223,7 @@ function setupPasswordToggle() {
     });
 }
 
-function setupOAuthButtons() {
+function setupAdminOAuthButtons() {
     const githubBtn = document.getElementById('githubOAuth');
     const discordBtn = document.getElementById('discordOAuth');
     const rememberCheckbox = document.getElementById('remember');
@@ -185,6 +236,7 @@ function setupOAuthButtons() {
             if (rememberMe) {
                 url.searchParams.set('remember', 'true');
             }
+            url.searchParams.set('admin', 'true'); // Add admin flag
             window.location.href = url.toString();
         });
     }
@@ -197,6 +249,7 @@ function setupOAuthButtons() {
             if (rememberMe) {
                 url.searchParams.set('remember', 'true');
             }
+            url.searchParams.set('admin', 'true'); // Add admin flag
             window.location.href = url.toString();
         });
     }
