@@ -124,9 +124,4 @@ coverage/
 # PM2
 ecosystem.config.js
 
-# Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
-
 package-lock.json

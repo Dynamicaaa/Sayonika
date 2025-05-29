@@ -62,9 +62,15 @@
                     </div>
 
                     <div class="mod-actions">
-                        <a href="/api/mods/<%= mod.slug %>/download" class="btn btn-success btn-lg">
-                            <i class="fas fa-download"></i> Download Mod
-                        </a>
+                        <% if (mod.is_nsfw) { %>
+                            <button class="btn btn-success btn-lg" onclick="showNSFWWarning('<%= mod.slug %>', '<%= mod.title %>')">
+                                <i class="fas fa-exclamation-triangle"></i> Download Mod (Mature)
+                            </button>
+                        <% } else { %>
+                            <a href="/api/mods/<%= mod.slug %>/download" class="btn btn-success btn-lg">
+                                <i class="fas fa-download"></i> Download Mod
+                            </a>
+                        <% } %>
                         <% if (user) { %>
                             <button class="btn btn-outline" onclick="toggleFavorite()">
                                 <i class="fas fa-heart"></i> Add to Favorites
@@ -257,11 +263,95 @@
     </div>
 </div>
 
+<!-- NSFW Warning Modal -->
+<div id="nsfwWarningModal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: #ff6b6b;"></i>
+                    Mature Content Warning
+                </h3>
+                <button class="modal-close nsfw-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="nsfw-warning-content">
+                    <p><strong>This mod contains mature/NSFW content.</strong></p>
+                    <p>The mod "<span id="nsfwModTitle"></span>" has been marked as containing adult themes, explicit content, or mature subject matter.</p>
+                    <p>By proceeding with the download, you confirm that:</p>
+                    <ul>
+                        <li>You are of legal age to view such content in your jurisdiction</li>
+                        <li>You understand the nature of the content you are downloading</li>
+                        <li>You accept responsibility for your decision to download this content</li>
+                    </ul>
+                    <p><strong>Do you wish to continue with the download?</strong></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline nsfw-modal-close">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button id="nsfwConfirmDownload" class="btn btn-danger">
+                    <i class="fas fa-download"></i> Continue Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <link rel="stylesheet" href="/css/comments.css">
 
 <script>
 // Set current user for JavaScript
 window.currentUser = <%-JSON.stringify(user)%>;
+
+// NSFW Warning functionality
+let currentNSFWSlug = null;
+
+function showNSFWWarning(modSlug, modTitle) {
+    currentNSFWSlug = modSlug;
+    document.getElementById('nsfwModTitle').textContent = modTitle;
+    document.getElementById('nsfwWarningModal').style.display = 'flex';
+}
+
+function hideNSFWWarning() {
+    document.getElementById('nsfwWarningModal').style.display = 'none';
+    currentNSFWSlug = null;
+}
+
+function confirmNSFWDownload() {
+    if (currentNSFWSlug) {
+        window.location.href = `/api/mods/${currentNSFWSlug}/download`;
+    }
+    hideNSFWWarning();
+}
+
+// Event listeners for NSFW modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Close buttons
+    document.querySelectorAll('.nsfw-modal-close').forEach(button => {
+        button.addEventListener('click', hideNSFWWarning);
+    });
+
+    // Confirm download button
+    document.getElementById('nsfwConfirmDownload').addEventListener('click', confirmNSFWDownload);
+
+    // Close modal when clicking outside
+    document.getElementById('nsfwWarningModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideNSFWWarning();
+        }
+    });
+
+    // ESC key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('nsfwWarningModal').style.display === 'flex') {
+            hideNSFWWarning();
+        }
+    });
+});
 </script>
 
 <%- include('partials/footer', { scripts: ['/js/pages/mod-detail.js'] }) %>
