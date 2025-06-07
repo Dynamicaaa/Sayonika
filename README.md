@@ -1,364 +1,476 @@
-# Sayonika - DDLC Mod Store
-
-Sayonika is a comprehensive mod store and community platform for Doki Doki Literature Club (DDLC) mods. Built with Node.js, Express, and SQLite, it provides a modern web interface for discovering, downloading, and sharing DDLC modifications.
-
-## Features
-
-### 🎮 Mod Management
-- **Browse & Search**: Discover mods by category, popularity, or search terms with advanced filtering
-- **Download System**: Secure mod downloads with tracking and external URL support
-- **Version Control**: Support for multiple mod versions with changelog tracking
-- **Categories**: Organized mod categories (Full Mods, Gameplay, Visual, Audio, etc.)
-- **Mod Review System**: Admin approval workflow for quality control with review reasons
-- **Comment System**: User comments and discussions on mod pages with threaded replies
-- **Screenshot Support**: Multiple screenshots per mod with automatic thumbnail generation
-- **File Upload Options**: Support for both file uploads and external download links
-
-### 👥 User System
-- **User Registration & Authentication**: Secure authentication with persistent sessions and remember me functionality
-- **OAuth Integration**: GitHub and Discord authentication with account linking and unlinking
-- **User Profiles**: Customizable profiles with avatars, bios, achievements, and user levels
-- **Mod Uploads**: Easy mod submission system with wizard interface and screenshot support
-- **Admin Panel**: Comprehensive administrative tools, user management, and site settings
-- **Owner System**: First user becomes "Owner" with elevated privileges over regular admins
-- **Achievement System**: Gamification with user levels, titles, and achievement tracking
-
-### 🎨 Modern Interface
-- **Responsive Design**: Mobile-friendly interface built with SASS
-- **Dark/Light Theme**: Toggle between themes with persistent preference
-- **DDLC-Inspired Design**: Color scheme and styling inspired by the game
-- **Accessibility**: Built with accessibility best practices
-- **Maintenance Mode**: Configurable maintenance mode with admin bypass
-
-### 🔧 Technical Features
-- **REST API**: Comprehensive API for mod data, user management, and admin functions
-- **SQLite Database**: Lightweight, file-based database with automatic migrations
-- **File Upload**: Secure mod file handling with validation and configurable size limits
-- **Rate Limiting**: Protection against abuse with configurable limits and authentication-specific rates
-- **Security**: Helmet.js, CORS, input validation, secure headers, and HTTPS support
-- **Cloudflare Ready**: Configured for reverse proxy and CDN setups with trust proxy settings
-- **Maintenance Mode**: Configurable maintenance mode with admin bypass and custom messages
-- **Admin Settings**: Dynamic configuration through admin panel for file limits and site settings
-
-## Installation
-
-### Prerequisites
-- Node.js 16.0.0 or higher
-- npm package manager
-- Git (for cloning the repository)
-
-### Quick Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Dynamicaaa/Sayonika.git
-   cd Sayonika
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration (see Configuration section below)
-   ```
-
-4. **Initialize Database**
-   ```bash
-   npm run init-db
-   ```
-
-5. **Build CSS**
-   ```bash
-   npm run build-css-prod
-   ```
-
-6. **Start the server**
-   ```bash
-   # Development
-   npm run dev
-
-   # Production
-   npm start
-   ```
-
-The server will start on the configured port (default: `http://localhost:3000`). The first user to register will automatically become the Owner with full administrative privileges.
-
-## Configuration
-
-Key environment variables (see `.env.example` for complete list):
-
-### Basic Configuration
-- `PORT` - Server port (default: 3000)
-- `SESSION_SECRET` - Session encryption secret
-- `BASE_URL` - Your domain URL (e.g., https://your-domain.com)
-- `NODE_ENV` - Environment (development/production)
-- `ENABLE_HTTPS` - Enable HTTPS server (default: true)
-
-### Database
-- `DATABASE_PATH` - SQLite database file path
-- `SESSIONS_DATABASE_PATH` - Sessions database file path
-
-### OAuth Authentication
-- `GITHUB_CLIENT_ID` - GitHub OAuth client ID
-- `GITHUB_CLIENT_SECRET` - GitHub OAuth client secret
-- `DISCORD_CLIENT_ID` - Discord OAuth client ID
-- `DISCORD_CLIENT_SECRET` - Discord OAuth client secret
-
-### Security & Performance
-- `JWT_SECRET` - JWT signing secret for API authentication
-- `RATE_LIMIT_WINDOW_MS` - Rate limiting window in milliseconds
-- `RATE_LIMIT_MAX_REQUESTS` - Maximum requests per window
-- `AUTH_RATE_LIMIT_MAX_REQUESTS` - Maximum auth requests per window
-- `TRUST_PROXY_HOPS` - Number of proxy hops to trust (for Cloudflare)
-- `SSL_KEY_PATH` - Path to SSL private key file
-- `SSL_CERT_PATH` - Path to SSL certificate file
-
-### Email (Optional)
-- `SMTP_HOST` - SMTP server hostname
-- `SMTP_PORT` - SMTP server port
-- `SMTP_USER` - SMTP username
-- `SMTP_PASS` - SMTP password
-
-## Development
-
-### Scripts
-- `npm start` - Start production server
-- `npm run dev` - Start development server with nodemon
-- `npm run build-css` - Watch and compile SASS files
-- `npm run build-css-prod` - Build CSS for production
-- `npm run init-db` - Initialize database with schema
-- `npm run migrate` - Run database migrations
-- `npm test` - Run tests
-
-### Project Structure
-```
-sayonika/
-├── database/           # Database files and utilities
-│   ├── database.js    # Database connection and methods
-│   ├── schema.sql     # Database schema
-│   └── init.js        # Database initialization
-├── middleware/         # Express middleware
-│   └── auth.js        # Authentication middleware
-├── routes/            # Express routes
-│   ├── api.js         # API endpoints
-│   ├── auth.js        # Authentication routes
-│   └── web.js         # Web page routes
-├── src/scss/          # SASS source files
-│   ├── components/    # Component styles
-│   ├── pages/         # Page-specific styles
-│   └── main.scss      # Main stylesheet
-├── views/             # EJS templates
-│   ├── partials/      # Reusable template parts
-│   └── *.ejs          # Page templates
-├── public/            # Static assets
-│   ├── css/           # Compiled CSS
-│   ├── js/            # Client-side JavaScript
-│   └── images/        # Images and icons
-├── uploads/           # User-uploaded files
-└── server.js          # Main server file
-```
-
-## Documentation
-
-For comprehensive documentation including API reference, installation guides, and examples, visit:
-
-**📚 [Complete Documentation](https://sayonika.reconvial.dev/docs)**
-
-### Quick API Reference
-- **Authentication**: `/api/auth/*` - User registration, login, and profile management
-- **Mods**: `/api/mods/*` - Mod browsing, upload, and download
-- **Admin**: `/api/admin/*` - Administrative functions and mod review
-- **Categories**: `/api/categories` - Mod categories and tags
-
-For detailed endpoint documentation with examples, see the [API Reference](https://sayonika.reconvial.dev/docs/api) section.
-
-## Database Schema
-
-The application uses SQLite with the following main tables:
-- `users` - User accounts and profiles (includes `is_admin`, `is_owner`, `user_level`, `user_title` fields)
-- `mods` - Mod information and metadata with screenshot and external URL support
-- `categories` - Mod categories and organization
-- `mod_versions` - Version history for mods with changelog support
-- `mod_comments` - User comments on mods with threaded reply support
-- `reviews` - User reviews and ratings
-- `downloads` - Download tracking and analytics
-- `favorites` - User favorites and bookmarks
-- `mod_reviews` - Admin review decisions and reasons
-- `achievements` - Achievement definitions and metadata
-- `user_achievements` - User achievement progress and completion
-- `oauth_accounts` - OAuth account linking (GitHub/Discord)
-- `oauth_link_tokens` - Temporary tokens for account linking
-- `site_settings` - Dynamic site configuration and settings
-- `migrations` - Database migration tracking and versioning
-
-## Admin System
-
-Sayonika includes a comprehensive admin system for managing mod submissions and users.
-
-### Admin Features
-
-- **Mod Review System**: All uploaded mods require admin approval before publication
-- **Admin Dashboard**: Comprehensive overview with statistics, pending mod reviews, and user management
-- **Bulk Actions**: Approve or reject multiple mods at once with batch operations
-- **Review History**: Track all admin decisions with reasons and timestamps
-- **Download Access**: Admins can download mods for review before approval
-- **User Management**: View, edit, and manage user accounts with role assignment
-- **Site Settings**: Configure file upload limits, maintenance mode, and site-wide settings
-- **Maintenance Mode**: Toggle maintenance mode with custom messages and admin bypass
-- **Support Tickets**: Manage user support requests and contact form submissions
-
-### Admin Access
-
-1. **First User Owner**: The first user to register automatically becomes the "Owner" with full privileges
-   - This applies to both regular registration and OAuth registration (GitHub)
-   - The first user receives a special welcome message and displays as "Owner" in their profile
-   - All subsequent users are regular users by default
-
-2. **Making Additional Admins**: Update the database directly for additional admin users
-   ```sql
-   UPDATE users SET is_admin = 1 WHERE username = 'your_username';
-   ```
-
-3. **Admin Panel Access**: Available at `/admin` for admin users and owners
-   - Admin panel button appears in navigation dropdown
-   - Admin panel button appears on user profile page
-   - Owners have additional privileges over regular admins
-
-### Mod Review Workflow
-
-1. User uploads a mod → Mod is created with `is_published = FALSE`
-2. Admin reviews mod in admin panel
-3. Admin can:
-   - **Approve**: Mod becomes published and visible to users
-   - **Reject**: Mod remains unpublished, author is notified with reason
-   - **Download**: Review the mod files before making a decision
-
-## Database Migrations
-
-Sayonika includes a robust migration system for managing database schema changes.
-
-### Migration Commands
-
-```bash
-# Run pending migrations
-npm run migrate
-
-# Check migration status
-npm run migrate:status
-
-# Create new migration
-npm run migrate:create migration_name
-
-# Show current schema version
-npm run migrate:version
-
-# Rollback specific migration
-npm run migrate:rollback filename.sql
-```
-
-### Creating Migrations
-
-```bash
-# Create a new migration
-npm run migrate:create add_user_preferences
-
-# The system creates: database/migrations/YYYY-MM-DDTHH-MM-SS_add_user_preferences.sql
-```
-
-### Migration Best Practices
-
-- Always use `IF NOT EXISTS` for CREATE statements
-- Make migrations idempotent (safe to run multiple times)
-- Test on a database copy before production
-- Include descriptive comments in migration files
-
-For detailed migration documentation, see `database/README.md`.
-
-## Maintenance Mode
-
-Sayonika includes a configurable maintenance mode feature:
-
-### Features
-- **Admin Toggle**: Enable/disable maintenance mode from the admin panel
-- **Command Line Control**: Toggle maintenance mode using npm scripts
-- **Admin Bypass**: Administrators can access the site normally during maintenance
-- **Mod Browsing**: Users can still browse mods during maintenance
-- **Custom Messages**: Configure custom maintenance messages
-- **API Support**: Maintenance mode affects both web and API endpoints
-
-### Usage
-
-#### Web Interface
-1. Access the admin panel at `/admin`
-2. Navigate to the maintenance mode section
-3. Toggle maintenance mode on/off
-4. Optionally set a custom maintenance message
-
-#### Command Line Interface
-Use npm scripts to control maintenance mode without accessing the website:
-
-```bash
-# Enable maintenance mode
-npm run maintenance:on
-
-# Disable maintenance mode
-npm run maintenance:off
-
-# Check current status
-npm run maintenance:status
-
-# Set custom maintenance message
-npm run maintenance:message "We're upgrading our servers! Back online soon."
-```
-
-During maintenance mode:
-- Most site functionality is disabled for regular users
-- Mod browsing remains available at `/browse`
-- Admins can access all features normally
-- API endpoints return appropriate maintenance status codes
-
-## Security Features
-
-- **JWT Authentication**: Secure token-based authentication with configurable expiration and refresh
-- **Persistent Sessions**: Remember me functionality with secure cookie storage and session validation
-- **OAuth Integration**: Secure GitHub and Discord authentication with account linking and unlinking
-- **Rate Limiting**: Configurable protection against abuse with separate limits for auth and general requests
-- **Input Validation**: Comprehensive server-side validation using express-validator with sanitization
-- **File Upload Security**: File type, size, and content validation with configurable limits
-- **CORS Protection**: Configurable cross-origin resource sharing with environment-based origins
-- **Helmet.js**: Security headers and protections with CSP and HSTS
-- **Proxy Support**: Secure configuration for Cloudflare and reverse proxies with trust hop settings
-- **HTTPS Support**: Built-in HTTPS server with SSL certificate configuration
-- **Account Protection**: OAuth account unlinking protection to prevent users from losing access
-- **Admin Safeguards**: Protection against self-deletion and owner account modification
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Disclaimer
-
-This project is not affiliated with Team Salvato or the official Doki Doki Literature Club game. Doki Doki Literature Club is a trademark of Team Salvato.
-
-## Support
-
-For support and issue reporting, please create a new issue at:
-**[GitHub Issues](https://github.com/Dynamicaaa/Sayonika/issues/new)**
-
-You can also use the contact form on your Sayonika instance at `/contact` which will send consolidated emails to all administrators.
+<div align="center">
+  
+  <img src="public/images/logo.png" alt="Sayonika" width="400" height="200">
+  
+  # 🌸 Sayonika 🌸
+  
+  <h3>✨ The ultimate mod store for Doki Doki Literature Club! ✨</h3>
+  
+  <p>
+    <a href="https://github.com/Dynamicaaa/Sayonika/releases">
+      <img src="https://img.shields.io/github/v/release/Dynamicaaa/Sayonika?style=for-the-badge&logo=github&logoColor=white&color=ff69b4&labelColor=8b008b" alt="Latest Release">
+    </a>
+    <a href="LICENSE">
+      <img src="https://img.shields.io/github/license/Dynamicaaa/Sayonika?style=for-the-badge&logo=opensourceinitiative&logoColor=white&color=4169e1&labelColor=191970" alt="License">
+    </a>
+  </p>
+  
+  <p>
+    <a href="https://sayonika.dynamicaaa.me">
+      <img src="https://img.shields.io/badge/🌐_Live_Demo-Available-32cd32?style=for-the-badge&labelColor=228b22" alt="Live Demo">
+    </a>
+  </p>
+  
+  <p>
+    <a href="https://github.com/Dynamicaaa/Sayonika/stargazers">
+      <img src="https://img.shields.io/github/stars/Dynamicaaa/Sayonika?style=for-the-badge&logo=github&logoColor=white&color=ffd700&labelColor=ff8c00" alt="GitHub Stars">
+    </a>
+    <a href="https://github.com/Dynamicaaa/Sayonika/forks">
+      <img src="https://img.shields.io/github/forks/Dynamicaaa/Sayonika?style=for-the-badge&logo=github&logoColor=white&color=9370db&labelColor=663399" alt="GitHub Forks">
+    </a>
+  </p>
+  
+  <br>
+  
+  <h4>🌟 Modern, feature-rich mod store and community platform 🌟</h4>
+  
+  <br>
+  
+  <p><strong>👨‍💻 Maintainer:</strong> <a href="https://github.com/Dynamicaaa">Dynamicaaa</a></p>
+  
+  <br>
+  
+</div>
+
+<div align="center">
+
+## ✨ Features
+
+<br>
+
+</div>
+
+<center>
+<div align="center">
+<table style="margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 800px; margin-left: auto; margin-right: auto; display: table;">
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8f9fa; font-weight: bold;">🌟 <strong>Core Features</strong></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8f9fa; font-weight: bold;">🚀 <strong>Advanced Features</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🎯 <strong>Comprehensive Mod Store</strong> - Browse, search, and download DDLC mods</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🔍 <strong>Powerful Search</strong> - Advanced filtering by category and tags</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">📦 <strong>Smart Mod Management</strong> - Upload, organize, and version control</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">⭐ <strong>Ratings & Reviews</strong> - Community-driven mod discovery</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🔐 <strong>Multiple Authentication</strong> - GitHub, Discord, or email/password login</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🏷️ <strong>Category System</strong> - Organized mod browsing experience</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🌐 <strong>Web-Based Platform</strong> - Accessible from any modern browser</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">👤 <strong>User Profiles</strong> - Achievement system and personalized collections</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🎨 <strong>DDLC-Themed Design</strong> - Beautiful, responsive interface</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🛡️ <strong>Admin Panel</strong> - Comprehensive moderation and management tools</td>
+</tr>
+</table>
+</div>
+</center>
+
+<div align="center">
 
 ---
 
+</div>
+
+<div align="center">
+
+## 🤔 Why Sayonika?
+
+</div>
+
+<div align="center">
+
+### 📈 **The Evolution of DDLC Mod Distribution**
+
+</div>
+
+While there have been various attempts at DDLC mod management tools, **Sayonika** represents the next generation of mod distribution platforms. Built from the ground up with modern web technologies, it addresses the limitations of previous solutions:
+
+<center>
+<div align="center">
+<table style="margin: 0 auto; border-collapse: collapse; width: 70%; max-width: 600px; margin-left: auto; margin-right: auto; display: table;">
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8f9fa; font-weight: bold;">✅ <strong>Sayonika Advantages</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><strong>Web-based accessibility</strong> - No downloads or installations required</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><strong>Active development</strong> with regular updates and new features</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><strong>Community-driven</strong> with user profiles, achievements, and social features</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><strong>Modern security</strong> with OAuth integration and secure file handling</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><strong>Comprehensive API</strong> for integration with external tools and mod managers</td>
+</tr>
+</table>
+</div>
+</center>
+
+<div align="center">
+
+### 🆚 **Why Choose Sayonika Over Alternatives?**
+
+</div>
+
+Sayonika offers significant advantages over other mod distribution methods:
+
+<center>
+<div align="center">
+<table style="margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 800px; margin-left: auto; margin-right: auto; display: table;">
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #e8f5e8; font-weight: bold;">🏆 <strong>Sayonika</strong></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff2e8; font-weight: bold;">📁 <strong>Traditional Methods</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8fff8;">✅ <strong>Centralized Discovery</strong><br/><em>All mods in one place</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f8;">❌ <strong>Scattered Sources</strong><br/><em>Mods spread across forums</em></td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8fff8;">✅ <strong>Quality Control</strong><br/><em>Admin review system</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f8;">❌ <strong>No Verification</strong><br/><em>Potential security risks</em></td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8fff8;">✅ <strong>Version Management</strong><br/><em>Track updates and changes</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f8;">❌ <strong>Manual Tracking</strong><br/><em>Hard to find updates</em></td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8fff8;">✅ <strong>Community Features</strong><br/><em>Reviews, comments, ratings</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f8;">❌ <strong>Limited Feedback</strong><br/><em>Basic forum discussions</em></td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8fff8;">✅ <strong>API Integration</strong><br/><em>Works with mod managers</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f8;">❌ <strong>Manual Downloads</strong><br/><em>No automation support</em></td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8fff8;">✅ <strong>User Profiles</strong><br/><em>Track favorites and achievements</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f8;">❌ <strong>Anonymous Usage</strong><br/><em>No personalization</em></td>
+</tr>
+</table>
+</div>
+</center>
+
+<div align="center">
+
+<br>
+
+> 💡 **Sayonika combines the accessibility of a web platform with the comprehensive features needed for a thriving mod community.**
+
+</div>
+
+<div align="center">
+
+---
+
+## 🚀 Quick Start
+
+<br>
+
+### 🌐 **Use Sayonika Online**
+
+<br>
+
+<p>
+<a href="https://sayonika.dynamicaaa.me">
+<img src="https://img.shields.io/badge/🌸_Visit_Sayonika-Live_Demo-ff69b4?style=for-the-badge&logo=web&logoColor=white&labelColor=8b008b&color=ff1493" alt="Visit Sayonika">
+</a>
+</p>
+
+<br>
+
+---
+
+<h3>📦 <a href="https://github.com/Dynamicaaa/Sayonika/releases">Self-Host Your Own Instance</a></h3>
+
+<br>
+
+</div>
+
+<div align="center">
+
+---
+
+## 🌐 Live Platform
+
+<br>
+
+Experience Sayonika in action at [**sayonika.dynamicaaa.me**](https://sayonika.dynamicaaa.me)
+
+<br>
+
+</div>
+
+<center>
+<div align="center">
+<table style="margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 800px; margin-left: auto; margin-right: auto; display: table;">
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f0f8ff; font-weight: bold;">🎯 <strong>Discover Features</strong></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f0; font-weight: bold;">⚡ <strong>User Features</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🔍 <strong>Browse & Search</strong> - Thousands of DDLC mods at your fingertips</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">⚡ <strong>Instant Downloads</strong> - Direct mod downloads with tracking</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">📊 <strong>Trending Mods</strong> - Discover what's popular in the community</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">👤 <strong>User Authentication</strong> - Personalized profiles and collections</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🏷️ <strong>Smart Filtering</strong> - Find mods by category, tags, and popularity</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">⭐ <strong>Community Reviews</strong> - Ratings and feedback from players</td>
+</tr>
+</table>
+</div>
+</center>
+
+<div align="center">
+
+---
+
+## 🛠️ Development
+
+<br>
+
+### **Run from Source**
+
+</div>
+
+We strongly recommend using [**Bun**](https://bun.sh) as your JavaScript runtime for development.
+
+<div align="center">
+
+#### 🚀 **Why Bun?**
+
+</div>
+
+<center>
+<div align="center">
+<table style="margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 800px; margin-left: auto; margin-right: auto; display: table;">
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff0f5; font-weight: bold;"><strong>⚡ Superior Performance</strong></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f0fff0; font-weight: bold;"><strong>📦 Built-in Package Manager</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><em>Up to 3x faster than Node.js</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><em>No need for separate npm</em></td>
+</tr>
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f0f8ff; font-weight: bold;"><strong>🔷 TypeScript Support</strong></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f0; font-weight: bold;"><strong>🔥 Enhanced Development</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><em>First-class support out of the box</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><em>Hot reloading & better performance</em></td>
+</tr>
+</table>
+</div>
+</center>
+
+<div align="center">
+
+*While Node.js is still supported, Bun provides the best development experience.*
+
+<br>
+
+</div>
+
+```bash
+# Clone the repository
+git clone https://github.com/Dynamicaaa/Sayonika
+cd Sayonika
+
+# Install dependencies
+bun install
+
+# Environment setup
+cp .env.example .env
+# Edit .env with your configuration
+
+# Initialize database
+bun run init-db
+
+# Build CSS
+bun run build-css-prod
+
+# Start development server
+bun run dev
+```
+
+<div align="center">
+
+### **CSS Development**
+
+</div>
+
+Sayonika uses SCSS for modern styling with automatic compilation:
+
+```bash
+# 🔨 Build Commands
+bun run build-css        # Build once (development)
+bun run build-css-prod   # Build for production (compressed)
+bun run build-css-watch  # Watch for changes and auto-rebuild
+
+# 🎛️ Alternative Usage
+bun dev-start.js                # Development server with watching
+bun server.js                   # Production server
+```
+
+<div align="center">
+
+**📁 CSS File Structure:**
+
+</div>
+
+<center>
+<div align="center">
+<table style="margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 800px; margin-left: auto; margin-right: auto; display: table;">
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8f9fa; font-weight: bold;"><a href="src/scss/main.scss" style="text-decoration: none;"><code>main.scss</code></a></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8f9fa; font-weight: bold;"><a href="src/scss/components/" style="text-decoration: none;"><code>components/</code></a></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8f9fa; font-weight: bold;"><a href="src/scss/pages/" style="text-decoration: none;"><code>pages/</code></a></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><em>Main application styles</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><em>Reusable component styles</em></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;"><em>Page-specific styling</em></td>
+</tr>
+</table>
+</div>
+</center>
+
+<div align="center">
+
+---
+
+## 🐛 Debug Tools
+
+<br>
+
+Set these environment variables to enable debugging features:
+
+<br>
+
+</div>
+
+<center>
+<div align="center">
+<table style="margin: 0 auto; border-collapse: collapse; width: 80%; max-width: 700px; margin-left: auto; margin-right: auto; display: table;">
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8f9fa; font-weight: bold;">🔧 <strong>Variable</strong></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f8f9fa; font-weight: bold;">📋 <strong>Purpose</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; font-family: monospace; background-color: #f0f0f0;"><code>NODE_ENV</code></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🔧 Set to 'development' for debug mode</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; font-family: monospace; background-color: #f0f0f0;"><code>DEBUG</code></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🔍 Enable detailed logging output</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; font-family: monospace; background-color: #f0f0f0;"><code>PORT</code></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🌐 Set custom server port (default: 3000)</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd; font-family: monospace; background-color: #f0f0f0;"><code>DATABASE_PATH</code></td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">💾 Custom database file location</td>
+</tr>
+</table>
+</div>
+</center>
+
+<div align="center">
+
+---
+
+## 🤝 Contributing
+
+<br>
+
+We welcome contributions! Here's how you can help:
+
+<br>
+
+</div>
+
+<center>
+<div align="center">
+<table style="margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 800px; margin-left: auto; margin-right: auto; display: table;">
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff0f0; font-weight: bold;">🐛 <strong>Bug Reports</strong></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f0f0ff; font-weight: bold;">💡 <strong>Feature Requests</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🔍 <strong>Find Issues</strong> - Help us identify problems</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🚀 <strong>Suggest Features</strong> - Share your creative ideas</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">📝 <strong><a href="https://github.com/Dynamicaaa/Sayonika/issues/new" style="text-decoration: none;">Create Reports</a></strong> - Detailed bug descriptions</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🎯 <strong>Improve UX</strong> - Help make the platform better</td>
+</tr>
+<tr>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #f0fff0; font-weight: bold;">🔧 <strong>Code Contributions</strong></th>
+<th style="text-align: center; padding: 12px; border: 1px solid #ddd; background-color: #fff8f0; font-weight: bold;">📖 <strong>Documentation</strong></th>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">📄 <strong>Submit Pull Requests</strong> - Help improve the codebase</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">✍️ <strong>Improve Docs</strong> - Make things clearer for everyone</td>
+</tr>
+<tr>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🧪 <strong>Write Tests</strong> - Ensure code quality</td>
+<td style="text-align: center; padding: 12px; border: 1px solid #ddd;">🌍 <strong>Translations</strong> - Help localize the platform</td>
+</tr>
+</table>
+</div>
+</center>
+
+<div align="center">
+
+---
+
+## ⚖️ IP Guidelines
+
+<br>
+
+Sayonika is a fan work of Doki Doki Literature Club, created in accordance with Team Salvato's [**IP Guidelines**](http://teamsalvato.com/ip-guidelines/).
+
+<br>
+
+---
+
+## 📄 Licenses and Acknowledgements
+
+<br>
+
+**📜 Sayonika** is licensed under the [**MIT License**](LICENSE)
+
+<br>
+
+---
+
+</div>
+
+<div align="center">
+
 Built with ❤️ for the DDLC modding community
+
+</div>
