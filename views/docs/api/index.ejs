@@ -175,6 +175,11 @@ print('Mod details:', mod)</code></pre>
 
         <!-- Endpoints Overview -->
         <h3>Available Endpoints</h3>
+        <div class="docs-notice">
+            <i class="fas fa-info-circle"></i>
+            <strong>Documentation Endpoints:</strong> Most POST endpoints have corresponding GET endpoints that provide detailed usage documentation and examples.
+        </div>
+        
         <table class="docs-table">
             <thead>
                 <tr>
@@ -182,50 +187,149 @@ print('Mod details:', mod)</code></pre>
                     <th>Description</th>
                     <th>Base Path</th>
                     <th>Authentication</th>
+                    <th>Key Features</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><a href="/docs/api/endpoints/auth">Authentication</a></td>
-                    <td>User login, registration, and OAuth (GitHub/Discord)</td>
+                    <td>Complete user authentication, profile management, and OAuth integration</td>
                     <td><code>/api/auth</code></td>
                     <td><span class="badge info">Public</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>Registration & Login (with docs)</li>
+                            <li>Password Management</li>
+                            <li>Profile & Avatar Management</li>
+                            <li>Email Preferences</li>
+                            <li>Admin Authentication</li>
+                        </ul>
+                    </td>
                 </tr>
                 <tr>
                     <td><a href="/docs/api/endpoints/mods">Mods</a></td>
-                    <td>Mod management, browsing, and comments</td>
+                    <td>Mod management, browsing, comments, and file operations</td>
                     <td><code>/api/mods</code></td>
                     <td><span class="badge warning">Mixed</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>Browse & Search Mods</li>
+                            <li>Upload & Manage Mods</li>
+                            <li>Comments System (with docs)</li>
+                            <li>File Downloads</li>
+                            <li>Admin Approval/Rejection</li>
+                        </ul>
+                    </td>
                 </tr>
                 <tr>
                     <td><a href="/docs/api/endpoints/users">Users</a></td>
-                    <td>User profiles, avatars, and achievements</td>
+                    <td>User profiles, achievements, and social features</td>
                     <td><code>/api/users</code></td>
                     <td><span class="badge warning">Mixed</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>User Profiles</li>
+                            <li>Achievement System</li>
+                            <li>Leaderboards</li>
+                            <li>User Statistics</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Support System</td>
+                    <td>Support ticket creation and management system</td>
+                    <td><code>/api/support</code></td>
+                    <td><span class="badge warning">Mixed</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>Create Support Tickets (with docs)</li>
+                            <li>Admin Ticket Management</li>
+                            <li>Status & Priority Updates</li>
+                            <li>Email Notifications</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Notifications</td>
+                    <td>User notification system and interaction management</td>
+                    <td><code>/api/notifications</code></td>
+                    <td><span class="badge success">Auth Required</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>Mark Notifications Read (with docs)</li>
+                            <li>Bulk Mark All Read</li>
+                            <li>Notification Preferences</li>
+                        </ul>
+                    </td>
                 </tr>
                 <tr>
                     <td><a href="/docs/api/endpoints/admin">Admin</a></td>
-                    <td>Administrative functions and settings</td>
+                    <td>Administrative functions, moderation, and system management</td>
                     <td><code>/api/admin</code></td>
                     <td><span class="badge danger">Admin</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>User Management</li>
+                            <li>Mod Approval/Rejection</li>
+                            <li>Support Ticket Management</li>
+                            <li>System Logs & Monitoring</li>
+                            <li>Settings Management</li>
+                        </ul>
+                    </td>
                 </tr>
                 <tr>
                     <td><a href="/docs/api/endpoints/categories">Categories</a></td>
-                    <td>Mod categories and tags</td>
+                    <td>Mod categories, tags, and classification system</td>
                     <td><code>/api/categories</code></td>
                     <td><span class="badge info">Public</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>Browse Categories</li>
+                            <li>Category Statistics</li>
+                            <li>Tag Management</li>
+                        </ul>
+                    </td>
                 </tr>
                 <tr>
-                    <td>OAuth</td>
-                    <td>OAuth account linking and management</td>
-                    <td><code>/auth/oauth</code></td>
-                    <td><span class="badge warning">Mixed</span></td>
-                </tr>
-                <tr>
-                    <td>Achievements</td>
-                    <td>User achievements and gamification</td>
-                    <td><code>/api/achievements</code></td>
+                    <td>Settings</td>
+                    <td>Public site settings and configuration</td>
+                    <td><code>/api/settings</code></td>
                     <td><span class="badge info">Public</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>File Upload Limits</li>
+                            <li>Site Configuration</li>
+                            <li>Feature Flags</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Images</td>
+                    <td>Image serving, processing, and manipulation</td>
+                    <td><code>/api/images</code></td>
+                    <td><span class="badge info">Public</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>Image Serving</li>
+                            <li>Dynamic Resizing</li>
+                            <li>Format Conversion</li>
+                            <li>Optimization</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="/docs/features/oauth">OAuth</a></td>
+                    <td>OAuth authentication and account linking (GitHub/Discord)</td>
+                    <td><code>/auth</code></td>
+                    <td><span class="badge warning">Mixed</span></td>
+                    <td>
+                        <ul class="feature-list">
+                            <li>GitHub OAuth Login</li>
+                            <li>Discord OAuth Login</li>
+                            <li>Account Linking</li>
+                            <li>Admin OAuth Support</li>
+                        </ul>
+                    </td>
                 </tr>
             </tbody>
         </table>

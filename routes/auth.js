@@ -16,6 +16,29 @@ const db = new Database();
 // Initialize database connection
 db.connect().catch(console.error);
 
+// Root auth endpoint - list available endpoints
+router.get('/', (req, res) => {
+    res.json({
+        message: 'Authentication API',
+        version: '1.0.0',
+        endpoints: {
+            'GET /check-username': 'Check if username is available',
+            'GET /check-email': 'Check if email is available',
+            'POST /register': 'Register a new user account',
+            'POST /login': 'Login with username/email and password',
+            'POST /admin-login': 'Admin login with enhanced validation',
+            'POST /forgot-password': 'Request password reset email',
+            'POST /reset-password': 'Reset password with token',
+            'PUT /profile': 'Update user profile (requires auth)',
+            'POST /logout': 'Logout current user',
+            'GET /me': 'Get current user information (requires auth)',
+            'POST /change-password': 'Change password (requires auth)',
+            'POST /upload-avatar': 'Upload user avatar (requires auth)',
+            'PUT /email-preferences': 'Update email preferences (requires auth)'
+        }
+    });
+});
+
 // Check username availability endpoint
 router.get('/check-username', [
     query('username')
@@ -105,7 +128,25 @@ const avatarUpload = multer({
     }
 });
 
-// Register endpoint
+// Register endpoint info (GET)
+router.get('/register', (req, res) => {
+    res.json({
+        message: 'Register endpoint',
+        method: 'POST',
+        url: '/api/auth/register',
+        required_fields: ['username', 'email', 'password'],
+        optional_fields: ['display_name'],
+        description: 'Register a new user account',
+        example: {
+            username: 'your_username',
+            email: 'your@email.com',
+            password: 'your_password',
+            display_name: 'Your Display Name'
+        }
+    });
+});
+
+// Register endpoint (POST)
 router.post('/register', [
     body('username')
         .isLength({ min: 3, max: 50 })
@@ -234,7 +275,24 @@ router.post('/register', [
     }
 });
 
-// Login endpoint
+// Login endpoint info (GET)
+router.get('/login', (req, res) => {
+    res.json({
+        message: 'Login endpoint',
+        method: 'POST',
+        url: '/api/auth/login',
+        required_fields: ['username', 'password'],
+        optional_fields: ['remember'],
+        description: 'Login with username/email and password',
+        example: {
+            username: 'your_username_or_email',
+            password: 'your_password',
+            remember: true
+        }
+    });
+});
+
+// Login endpoint (POST)
 router.post('/login', [
     body('username').notEmpty().withMessage('Username is required'),
     body('password').notEmpty().withMessage('Password is required')
@@ -329,7 +387,24 @@ router.post('/login', [
     }
 });
 
-// Admin login endpoint - validates admin status after login
+// Admin login endpoint info (GET)
+router.get('/admin-login', (req, res) => {
+    res.json({
+        message: 'Admin login endpoint',
+        method: 'POST',
+        url: '/api/auth/admin-login',
+        required_fields: ['username', 'password'],
+        optional_fields: ['remember'],
+        description: 'Admin login with enhanced validation - requires admin privileges',
+        example: {
+            username: 'admin_username',
+            password: 'admin_password',
+            remember: true
+        }
+    });
+});
+
+// Admin login endpoint - validates admin status after login (POST)
 router.post('/admin-login', [
     body('username').notEmpty().withMessage('Username is required'),
     body('password').notEmpty().withMessage('Password is required')
@@ -418,7 +493,21 @@ router.post('/admin-login', [
     }
 });
 
-// Forgot password endpoint
+// Forgot password endpoint info (GET)
+router.get('/forgot-password', (req, res) => {
+    res.json({
+        message: 'Forgot password endpoint',
+        method: 'POST',
+        url: '/api/auth/forgot-password',
+        required_fields: ['email'],
+        description: 'Request password reset email',
+        example: {
+            email: 'your@email.com'
+        }
+    });
+});
+
+// Forgot password endpoint (POST)
 router.post('/forgot-password', [
     body('email').isEmail().withMessage('Valid email is required')
 ], async (req, res) => {
@@ -482,7 +571,22 @@ router.post('/forgot-password', [
     }
 });
 
-// Reset password endpoint
+// Reset password endpoint info (GET)
+router.get('/reset-password', (req, res) => {
+    res.json({
+        message: 'Reset password endpoint',
+        method: 'POST',
+        url: '/api/auth/reset-password',
+        required_fields: ['token', 'password'],
+        description: 'Reset password using token from forgot-password email',
+        example: {
+            token: 'reset_token_from_email',
+            password: 'new_password'
+        }
+    });
+});
+
+// Reset password endpoint (POST)
 router.post('/reset-password', [
     body('token').notEmpty().withMessage('Reset token is required'),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
@@ -591,7 +695,52 @@ router.put('/profile', authenticateToken, [
     }
 });
 
-// Upload profile picture
+// Upload avatar endpoint info (GET)
+router.get('/upload-avatar', (req, res) => {
+    res.json({
+        message: 'Upload avatar endpoint',
+        correct_url: '/api/auth/profile/avatar',
+        method: 'POST',
+        authentication: 'Required - must be logged in',
+        content_type: 'multipart/form-data',
+        field_name: 'avatar',
+        description: 'Upload user avatar image',
+        supported_formats: ['JPG', 'JPEG', 'PNG', 'GIF', 'WebP'],
+        max_size: '5MB',
+        note: 'This endpoint redirects to /api/auth/profile/avatar'
+    });
+});
+
+// Profile avatar endpoint info (GET)
+router.get('/profile/avatar', (req, res) => {
+    res.json({
+        message: 'Profile avatar endpoint',
+        methods: {
+            'POST': 'Upload new avatar',
+            'DELETE': 'Remove current avatar'
+        },
+        url: '/api/auth/profile/avatar',
+        authentication: 'Required - must be logged in',
+        upload_info: {
+            content_type: 'multipart/form-data',
+            field_name: 'avatar',
+            supported_formats: ['JPG', 'JPEG', 'PNG', 'GIF', 'WebP'],
+            max_size: '5MB'
+        }
+    });
+});
+
+// Upload avatar alias route (POST) - simplified redirect
+router.post('/upload-avatar', (req, res) => {
+    res.status(301).json({
+        message: 'Endpoint moved',
+        correct_url: '/api/auth/profile/avatar',
+        method: 'POST',
+        note: 'Please use /api/auth/profile/avatar instead of /api/auth/upload-avatar'
+    });
+});
+
+// Upload profile picture (POST)
 router.post('/profile/avatar', authenticateToken, avatarUpload.single('avatar'), async (req, res) => {
     try {
         if (!req.file) {
@@ -665,7 +814,19 @@ router.get('/verify', authenticateToken, (req, res) => {
     res.json({ valid: true, user: req.user });
 });
 
-// Logout endpoint
+// Logout endpoint info (GET)
+router.get('/logout', (req, res) => {
+    res.json({
+        message: 'Logout endpoint',
+        method: 'POST',
+        url: '/api/auth/logout',
+        required_fields: [],
+        description: 'Logout current user and clear authentication tokens',
+        note: 'No body required - just send POST request'
+    });
+});
+
+// Logout endpoint (POST)
 router.post('/logout', (req, res) => {
     try {
         // Clear JWT token cookie
@@ -733,7 +894,23 @@ router.get('/status', (req, res) => {
 });
 
 
-// Change password
+// Change password endpoint info (GET)
+router.get('/change-password', (req, res) => {
+    res.json({
+        message: 'Change password endpoint',
+        method: 'POST',
+        url: '/api/auth/change-password',
+        required_fields: ['currentPassword', 'newPassword'],
+        authentication: 'Required - must be logged in',
+        description: 'Change current user password',
+        example: {
+            currentPassword: 'current_password',
+            newPassword: 'new_password'
+        }
+    });
+});
+
+// Change password (POST)
 router.post('/change-password', requireAuth, [
     body('currentPassword').notEmpty().withMessage('Current password is required'),
     body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),

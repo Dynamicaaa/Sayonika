@@ -12,12 +12,129 @@ const emailService = require('../utils/emailService');
 const router = express.Router();
 const db = new Database();
 
-// Import image routes
+// Import image routes and auth routes
 const imageRoutes = require('./api/images');
+const authRoutes = require('./auth');
 router.use('/images', imageRoutes);
+router.use('/auth', authRoutes);
 
 // Initialize database connection
 db.connect().catch(console.error);
+
+// Root API endpoint - list available endpoints
+router.get('/', (req, res) => {
+    res.json({
+        message: 'Sayonika API',
+        version: '1.0.0',
+        description: 'Complete API for the Sayonika mod platform with comprehensive documentation',
+        base_url: '/api',
+        documentation: {
+            note: 'All GET endpoints provide usage documentation for their corresponding POST endpoints',
+            authentication: 'Many endpoints require authentication - see auth_endpoints section',
+            pagination: 'List endpoints support pagination with page and per_page parameters'
+        },
+        endpoints: {
+            // Mod Management
+            'GET /mods': 'Get all mods with pagination and filtering',
+            'GET /mods/:id': 'Get specific mod by ID or slug',
+            'POST /mods': 'Create new mod (requires auth)',
+            'GET /mods/:id/download': 'Download mod file',
+            'PATCH /user/mods/:id': 'Update user\'s mod (requires auth)',
+            
+            // Categories and Settings
+            'GET /categories': 'Get all mod categories',
+            'GET /settings/public': 'Get public site settings (file limits, etc.)',
+            
+            // User Management
+            'GET /user/mods': 'Get current user\'s mods (requires auth)',
+            'GET /leaderboard': 'Get user leaderboard',
+            
+            // Comments and Interactions
+            'GET /mods/:id/comments': 'Get mod comments with documentation',
+            'POST /mods/:id/comments': 'Add comment to mod (requires auth)',
+            
+            // Notifications
+            'GET /notifications/:id/read': 'Mark notification read endpoint documentation',
+            'POST /notifications/:id/read': 'Mark specific notification as read (requires auth)',
+            'POST /notifications/mark-all-read': 'Mark all notifications as read (requires auth)',
+            
+            // Support System
+            'GET /support/ticket': 'Support ticket creation documentation',
+            'POST /support/ticket': 'Create support ticket',
+            
+            // Image Handling
+            'GET /images/*': 'Image serving and manipulation endpoints',
+            
+            // Admin Endpoints
+            'GET /admin/mods': 'Get all mods for admin (requires admin)',
+            'PATCH /admin/mods/:id': 'Update mod as admin (requires admin)',
+            'DELETE /admin/mods/:id': 'Delete mod as admin (requires admin)',
+            'POST /admin/mods/:id/approve': 'Approve mod (requires admin)',
+            'POST /admin/mods/:id/reject': 'Reject mod (requires admin)',
+            'GET /admin/users': 'Get all users (requires admin)',
+            'PATCH /admin/users/:id/role': 'Update user role (requires admin)',
+            'GET /admin/support/tickets': 'Get support tickets (requires admin)',
+            'GET /admin/support/tickets/:id': 'Get specific support ticket (requires admin)',
+            'PATCH /admin/support/tickets/:id/status': 'Update ticket status (requires admin)',
+            'PATCH /admin/support/tickets/:id/priority': 'Update ticket priority (requires admin)',
+            'DELETE /admin/support/tickets/:id': 'Delete support ticket (requires admin)',
+            'POST /admin/logs': 'Receive frontend logs (requires admin)'
+        },
+        auth_endpoints: {
+            'GET /auth': 'Authentication API documentation',
+            
+            // Account Management
+            'GET /auth/check-username': 'Check username availability',
+            'GET /auth/check-email': 'Check email availability',
+            'GET /auth/register': 'Registration endpoint documentation',
+            'POST /auth/register': 'Register new user account',
+            
+            // Authentication
+            'GET /auth/login': 'Login endpoint documentation',
+            'POST /auth/login': 'Login with username/email and password',
+            'GET /auth/admin-login': 'Admin login documentation',
+            'POST /auth/admin-login': 'Admin login with enhanced validation',
+            'GET /auth/logout': 'Logout endpoint documentation',
+            'POST /auth/logout': 'Logout current user',
+            
+            // Password Management
+            'GET /auth/forgot-password': 'Forgot password documentation',
+            'POST /auth/forgot-password': 'Request password reset email',
+            'GET /auth/reset-password': 'Reset password documentation',
+            'POST /auth/reset-password': 'Reset password with token',
+            'GET /auth/change-password': 'Change password documentation',
+            'POST /auth/change-password': 'Change password (requires auth)',
+            
+            // Profile Management
+            'GET /auth/me': 'Get current user information (requires auth)',
+            'PUT /auth/profile': 'Update user profile (requires auth)',
+            'GET /auth/upload-avatar': 'Avatar upload documentation (redirects to profile/avatar)',
+            'GET /auth/profile/avatar': 'Profile avatar endpoint documentation',
+            'POST /auth/profile/avatar': 'Upload user avatar (requires auth)',
+            'DELETE /auth/profile/avatar': 'Remove user avatar (requires auth)',
+            
+            // Preferences
+            'GET /auth/email-preferences': 'Get email preferences (requires auth)',
+            'PUT /auth/email-preferences': 'Update email preferences (requires auth)',
+            'POST /auth/resend-verification': 'Resend email verification (requires auth)'
+        },
+        oauth_endpoints: {
+            note: 'OAuth endpoints are available at /auth (not /api/auth)',
+            'GET /auth': 'OAuth providers documentation',
+            'GET /auth/github': 'GitHub OAuth login',
+            'GET /auth/github/callback': 'GitHub OAuth callback',
+            'GET /auth/discord': 'Discord OAuth login',
+            'GET /auth/discord/callback': 'Discord OAuth callback',
+            'POST /auth/link/github': 'Generate GitHub account linking token',
+            'POST /auth/link/discord': 'Generate Discord account linking token'
+        },
+        response_format: {
+            success: 'All successful responses return JSON with appropriate data',
+            error: 'Error responses include error message and status code',
+            pagination: 'Paginated responses include pagination metadata'
+        }
+    });
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -803,6 +920,19 @@ router.get('/notifications/unread-count', requireAuth, async (req, res) => {
     }
 });
 
+// Mark notification as read endpoint info (GET)
+router.get('/notifications/:id/read', (req, res) => {
+    res.json({
+        message: 'Mark notification as read endpoint',
+        method: 'POST',
+        url: '/api/notifications/:id/read',
+        authentication: 'Required - must be logged in',
+        description: 'Mark a specific notification as read',
+        note: 'Replace :id with notification ID'
+    });
+});
+
+// Mark notification as read (POST)
 router.post('/notifications/:id/read', requireAuth, async (req, res) => {
     try {
         const { id } = req.params;
@@ -1402,6 +1532,29 @@ router.get('/mods/:identifier/comments', async (req, res) => {
     }
 });
 
+// Mod comments endpoint info (GET)
+router.get('/mods/:identifier/comments', (req, res) => {
+    res.json({
+        message: 'Mod comments endpoint',
+        methods: {
+            'GET': 'Get comments for this mod (this endpoint)',
+            'POST': 'Add a comment to this mod'
+        },
+        post_info: {
+            url: '/api/mods/:identifier/comments',
+            method: 'POST',
+            authentication: 'Required - must be logged in',
+            required_fields: ['content'],
+            max_length: 2000,
+            example: {
+                content: 'Great mod! Thanks for sharing.'
+            }
+        },
+        note: 'Replace :identifier with mod ID or slug'
+    });
+});
+
+// Add mod comment (POST)
 router.post('/mods/:identifier/comments', [
     body('content').isLength({ min: 1, max: 2000 }).withMessage('Comment content is required and must be less than 2000 characters'),
     body('parent_id').optional().isInt().withMessage('Parent ID must be a number')
@@ -1495,6 +1648,27 @@ router.delete('/comments/:commentId', requireAuth, requireEmailVerified, async (
 });
 
 // Support ticket routes
+// Support ticket endpoint info (GET)
+router.get('/support/ticket', (req, res) => {
+    res.json({
+        message: 'Support ticket endpoint',
+        method: 'POST',
+        url: '/api/support/ticket',
+        required_fields: ['name', 'email', 'subject', 'message'],
+        optional_fields: ['priority'],
+        description: 'Create a new support ticket',
+        priority_options: ['low', 'medium', 'high', 'urgent'],
+        example: {
+            name: 'Your Name',
+            email: 'your@email.com',
+            subject: 'Support Request Subject',
+            message: 'Detailed description of your issue or request',
+            priority: 'medium'
+        }
+    });
+});
+
+// Create support ticket (POST)
 router.post('/support/ticket', [
     body('name').isLength({ min: 1, max: 255 }).withMessage('Name is required and must be less than 255 characters'),
     body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),

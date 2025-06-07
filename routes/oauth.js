@@ -4,6 +4,34 @@ const jwt = require('jsonwebtoken');
 const { requireAuth, optionalAuth } = require('../middleware/auth');
 const router = express.Router();
 
+// Root OAuth endpoint - list available OAuth providers
+router.get('/', (req, res) => {
+    res.json({
+        message: 'OAuth Authentication',
+        version: '1.0.0',
+        providers: {
+            github: {
+                enabled: !!(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
+                login_url: '/auth/github',
+                description: 'Login with GitHub account'
+            },
+            discord: {
+                enabled: !!(process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET),
+                login_url: '/auth/discord',
+                description: 'Login with Discord account'
+            }
+        },
+        endpoints: {
+            'GET /github': 'Initiate GitHub OAuth login',
+            'GET /github/callback': 'GitHub OAuth callback',
+            'GET /discord': 'Initiate Discord OAuth login',
+            'GET /discord/callback': 'Discord OAuth callback',
+            'POST /link/github': 'Generate GitHub account linking token',
+            'POST /link/discord': 'Generate Discord account linking token'
+        }
+    });
+});
+
 // GitHub OAuth routes
 router.get('/github', optionalAuth, async (req, res, next) => {
     if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {

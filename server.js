@@ -271,7 +271,6 @@ app.get('/favicon.ico', (req, res) => {
 
 // Routes
 app.use('/api', apiRoutes);
-app.use('/api/auth', authRoutes);
 app.use('/auth', oauthRoutes);
 app.use('/docs', docsRoutes);
 app.use('/', webRoutes);
