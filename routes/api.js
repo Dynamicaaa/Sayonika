@@ -213,6 +213,13 @@ router.get('/mods', [
             order: req.query.order || 'desc'
         };
 
+        // Exclude tools/utilities by default for API
+        if (req.query.include_tools === 'true') {
+            filters.exclude_tools = false;
+        } else {
+            filters.exclude_tools = true;
+        }
+
         // Pagination
         const page = parseInt(req.query.page) || 1;
         const perPage = parseInt(req.query.per_page) || 20;

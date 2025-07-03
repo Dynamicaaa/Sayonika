@@ -379,6 +379,16 @@ class Database {
 
         const params = [];
 
+        // Only exclude 'Tools & Utilities' if exclude_tools is true
+        if (filters.exclude_tools) {
+            const categories = await this.getCategories();
+            const toolsCategory = categories.find(cat => cat.name && cat.name.toLowerCase() === 'tools & utilities');
+            if (toolsCategory) {
+                sql += ' AND m.category_id != ?';
+                params.push(toolsCategory.id);
+            }
+        }
+
         if (filters.category_id) {
             sql += ' AND m.category_id = ?';
             params.push(filters.category_id);
