@@ -1,4 +1,47 @@
+// Escape HTML special characters to prevent XSS and rendering issues
+function escapeHtml(str) {
+    if (typeof str !== 'string') return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // Mod detail page functionality
+
+// Format a date as time-ago (e.g., "5 minutes ago")
+function formatTimeAgo(date) {
+    if (!(date instanceof Date)) date = new Date(date);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    if (isNaN(seconds)) return '';
+    if (seconds < 60) return 'just now';
+    const intervals = [
+        { label: 'year', seconds: 31536000 },
+        { label: 'month', seconds: 2592000 },
+        { label: 'week', seconds: 604800 },
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 }
+    ];
+    for (const interval of intervals) {
+        const count = Math.floor(seconds / interval.seconds);
+        if (count >= 1) {
+            return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
+        }
+    }
+    return 'just now';
+}
+
+// Remove spinner CSS from the document head if present (cleanup)
+(function removeSpinnerCSS() {
+    const style = document.getElementById('mod-detail-spinner-style');
+    if (style) {
+        style.remove();
+    }
+})();
 
 // Initialize mod detail event listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -187,28 +230,184 @@ function displayComments(comments) {
 
     const commentsHtml = comments.map(comment => renderComment(comment)).join('');
     commentsList.innerHTML = commentsHtml;
+    attachCommentEventListeners();
+}
 
-    // Add event listeners to reply buttons
-    document.querySelectorAll('.reply-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const commentId = this.dataset.commentId;
-            showReplyForm(commentId);
-        });
-    });
-
-    // Add event listeners to edit buttons
+// Attach comment action event listeners (edit, reply, delete)
+function attachCommentEventListeners() {
+    // Edit functionality for comments
     document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const commentId = this.dataset.commentId;
-            showEditForm(commentId);
+        btn.addEventListener('click', function () {
+            const commentDiv = btn.closest('.comment');
+            const commentId = btn.getAttribute('data-comment-id');
+            const contentP = commentDiv.querySelector('.comment-content p');
+            const originalContent = contentP.textContent;
+
+            // Replace content with textarea and buttons using DOM methods
+            const commentContentDiv = commentDiv.querySelector('.comment-content');
+            commentContentDiv.innerHTML = '';
+            
+            const form = document.createElement('form');
+            form.className = 'edit-form';
+            form.style.margin = '0';
+            
+            const textarea = document.createElement('textarea');
+            textarea.className = 'edit-textarea';
+            textarea.required = true;
+            textarea.style.marginBottom = '0.5rem';
+            textarea.value = originalContent;
+            
+            const actions = document.createElement('div');
+            actions.className = 'edit-actions';
+            actions.style.marginBottom = '0';
+            
+            const saveBtn = document.createElement('button');
+            saveBtn.type = 'submit';
+            saveBtn.className = 'save-edit-btn';
+            saveBtn.tabIndex = 0;
+            saveBtn.textContent = 'Save';
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'cancel-edit-btn';
+            cancelBtn.tabIndex = 0;
+            cancelBtn.textContent = 'Cancel';
+            
+            actions.appendChild(saveBtn);
+            actions.appendChild(cancelBtn);
+            form.appendChild(textarea);
+            form.appendChild(actions);
+            commentContentDiv.appendChild(form);
+
+            // Disable edit button while editing
+            btn.disabled = true;
+
+            // Cancel handler
+            cancelBtn.addEventListener('click', () => {
+                commentContentDiv.innerHTML = `<p>${escapeHtml(originalContent)}</p>`;
+                btn.disabled = false;
+            });
+
+            // Save handler (form submit)
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newContent = textarea.value.trim();
+                if (!newContent) {
+                    if (window.S && window.S.notify) {
+                        window.S.notify.error('Comment cannot be empty');
+                    }
+                    return;
+                }
+                try {
+                    const response = await fetch('/api/comments/' + commentId, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: newContent })
+                    });
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || 'Failed to edit comment');
+                    }
+                    if (window.S && window.S.notify) {
+                        window.S.notify.success('Comment edited successfully!');
+                    }
+                    loadComments();
+                } catch (error) {
+                    if (window.S && window.S.notify) {
+                        window.S.notify.error('Failed to edit comment');
+                    }
+                }
+            });
         });
     });
 
-    // Add event listeners to delete buttons
+    // Reply functionality for comments
+    document.querySelectorAll('.reply-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const commentDiv = btn.closest('.comment');
+            // Prevent multiple reply boxes
+            if (commentDiv.querySelector('.comment-content.replying')) return;
+
+            const replyContentDiv = document.createElement('div');
+            replyContentDiv.className = 'comment-content replying';
+
+            // Unified reply form (same as edit form)
+            const form = document.createElement('form');
+            form.className = 'edit-form'; // Use same class as edit form
+            form.style.margin = '0';
+
+            const textarea = document.createElement('textarea');
+            textarea.className = 'edit-textarea';
+            textarea.required = true;
+            textarea.style.marginBottom = '0.5rem';
+            textarea.placeholder = 'Write your reply...';
+
+            const actions = document.createElement('div');
+            actions.className = 'edit-actions';
+            actions.style.marginBottom = '0';
+
+            const saveBtn = document.createElement('button');
+            saveBtn.type = 'submit';
+            saveBtn.className = 'save-edit-btn'; // Use save-edit-btn for reply as well
+            saveBtn.tabIndex = 0;
+            saveBtn.textContent = 'Post';
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'cancel-edit-btn'; // Use cancel-edit-btn for reply as well
+            cancelBtn.tabIndex = 0;
+            cancelBtn.textContent = 'Cancel';
+
+            actions.appendChild(saveBtn);
+            actions.appendChild(cancelBtn);
+            form.appendChild(textarea);
+            form.appendChild(actions);
+            replyContentDiv.appendChild(form);
+            commentDiv.appendChild(replyContentDiv);
+
+            // Cancel handler
+            cancelBtn.addEventListener('click', () => {
+                replyContentDiv.remove();
+            });
+
+            // Post handler (form submit)
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const replyContent = textarea.value.trim();
+                if (!replyContent) {
+                    if (window.S && window.S.notify) {
+                        window.S.notify.error('Reply cannot be empty');
+                    }
+                    return;
+                }
+                await submitComment(btn.getAttribute('data-comment-id'), replyContent, form.querySelector('button[type="submit"]'));
+            });
+        });
+    });
+
+    // Delete functionality for comments and replies
     document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const commentId = this.dataset.commentId;
-            deleteComment(commentId);
+        btn.addEventListener('click', function () {
+            const commentId = btn.getAttribute('data-comment-id');
+            if (!commentId) return;
+            if (!confirm('Are you sure you want to delete this comment?')) return;
+            fetch(`/api/comments/${commentId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete comment');
+                if (window.S && window.S.notify) {
+                    window.S.notify.success('Comment deleted successfully!');
+                }
+                loadComments();
+            })
+            .catch(error => {
+                if (window.S && window.S.notify) {
+                    window.S.notify.error('Failed to delete comment');
+                } else {
+                    alert('Failed to delete comment');
+                }
+            });
         });
     });
 }
@@ -250,9 +449,21 @@ function renderComment(comment, isReply = false) {
     `;
 }
 
-async function submitComment(parentId = null) {
-    const commentContent = document.getElementById('commentContent');
-    const content = commentContent.value.trim();
+async function submitComment(parentId = null, overrideContent = null, submitBtn = null) {
+    let content;
+    let originalBtnText;
+    if (overrideContent !== null) {
+        content = overrideContent.trim();
+    } else {
+        const commentContent = document.getElementById('commentContent');
+        content = commentContent.value.trim();
+        if (!submitBtn) {
+            const commentForm = document.getElementById('commentForm');
+            if (commentForm) {
+                submitBtn = commentForm.querySelector('button[type="submit"]');
+            }
+        }
+    }
 
     if (!content) {
         if (window.S && window.S.notify) {
@@ -263,17 +474,23 @@ async function submitComment(parentId = null) {
         return;
     }
 
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        originalBtnText = submitBtn.textContent;
+        submitBtn.textContent = 'Posting...';
+    }
+
     try {
         const modSlug = window.location.pathname.split('/').pop();
+        const bodyObj = parentId !== null && !isNaN(Number(parentId))
+            ? { content: content, parent_id: Number(parentId) }
+            : { content: content };
         const response = await fetch(`/api/mods/${modSlug}/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                content: content,
-                parent_id: parentId
-            })
+            body: JSON.stringify(bodyObj)
         });
 
         if (!response.ok) {
@@ -281,83 +498,38 @@ async function submitComment(parentId = null) {
             throw new Error(error.error || 'Failed to post comment');
         }
 
-        // Clear form and reload comments
-        commentContent.value = '';
-        document.querySelector('.char-count').textContent = '0/2000';
-
-        if (window.S && window.S.notify) {
-            window.S.notify.success('Comment posted successfully!');
+        // Clear form and reload comments if not a reply
+        if (parentId === null) {
+            const commentContent = document.getElementById('commentContent');
+            if (commentContent) {
+                commentContent.value = '';
+            }
+            const charCount = document.querySelector('.char-count');
+            if (charCount) {
+                charCount.textContent = '0/2000';
+            }
+            if (window.S && window.S.notify) {
+                window.S.notify.success('Comment posted successfully!');
+            }
+        } else {
+            if (window.S && window.S.notify) {
+                window.S.notify.success('Reply posted successfully!');
+            }
         }
-
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+        }
         loadComments();
     } catch (error) {
-        console.error('Error posting comment:', error);
         if (window.S && window.S.notify) {
             window.S.notify.error(error.message);
         } else {
-            alert('Error posting comment: ' + error.message);
+            alert(error.message);
+        }
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
         }
     }
-}
-
-function showReplyForm(parentId) {
-    // Implementation for reply form
-    if (window.S && window.S.notify) {
-        window.S.notify.info('Reply functionality coming soon!');
-    }
-}
-
-function showEditForm(commentId) {
-    // Implementation for edit form
-    if (window.S && window.S.notify) {
-        window.S.notify.info('Edit functionality coming soon!');
-    }
-}
-
-async function deleteComment(commentId) {
-    if (!confirm('Are you sure you want to delete this comment?')) {
-        return;
-    }
-
-    try {
-        const response = await fetch(`/api/comments/${commentId}`, {
-            method: 'DELETE'
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to delete comment');
-        }
-
-        if (window.S && window.S.notify) {
-            window.S.notify.success('Comment deleted successfully!');
-        }
-
-        loadComments();
-    } catch (error) {
-        console.error('Error deleting comment:', error);
-        if (window.S && window.S.notify) {
-            window.S.notify.error('Failed to delete comment');
-        } else {
-            alert('Failed to delete comment');
-        }
-    }
-}
-
-// Utility functions
-function formatTimeAgo(date) {
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
-
-    if (diffInSeconds < 60) return 'just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-
-    return date.toLocaleDateString();
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
