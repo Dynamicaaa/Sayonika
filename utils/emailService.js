@@ -258,6 +258,32 @@ class EmailService {
                     `
                 };
 
+            case 'mod_report':
+                return {
+                    subject: `🚨 Mod Report: "${data.modTitle}" (ID: ${data.modId})`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                            <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+                                <h1 style="margin: 0; font-size: 28px;">🚨 Mod Report</h1>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
+                                <h2 style="color: #333; margin-top: 0;">A mod has been reported!</h2>
+                                <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ff6b6b;">
+                                    <p style="margin: 0 0 10px 0;"><strong>Mod:</strong> ${data.modTitle} (ID: ${data.modId})</p>
+                                    <p style="margin: 0 0 10px 0;"><strong>Reported by:</strong> ${data.reporterName} (${data.reporterEmail})</p>
+                                    <p style="margin: 0 0 10px 0;"><strong>Reason:</strong> ${data.reason}</p>
+                                </div>
+                                <div style="text-align: center; margin: 30px 0;">
+                                    <a href="${baseUrl}/mod/${data.modId}" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">View Mod</a>
+                                </div>
+                                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 14px;">
+                                    <p>This email was sent to all administrators and the owner of Sayonika.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                };
+
             default:
                 return {
                     subject: 'Notification from Sayonika',
@@ -365,6 +391,39 @@ class EmailService {
             return { success: true, messageId: result.messageId };
         } catch (error) {
             console.error(`[Email] Failed to send support ticket email:`, error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async sendModReportEmail(adminEmails, reportData) {
+        this.ensureInitialized();
+
+        if (!this.isConfigured) {
+            console.log('[Email] Email service not configured, skipping mod report email');
+            return { success: false, error: 'Email service not configured' };
+        }
+
+        if (!adminEmails || adminEmails.length === 0) {
+            console.log('[Email] No admin emails found, skipping mod report email');
+            return { success: false, error: 'No admin emails found' };
+        }
+
+        try {
+            const template = this.generateEmailTemplate('mod_report', reportData);
+
+            const mailOptions = {
+                from: `"Sayonika Reports" <${process.env.SMTP_USER}>`,
+                to: adminEmails[0],
+                bcc: adminEmails.slice(1),
+                subject: template.subject,
+                html: template.html
+            };
+
+            const result = await this.transporter.sendMail(mailOptions);
+            console.log(`[Email] Mod report email sent to ${adminEmails.length} admins: ${template.subject}`);
+            return { success: true, messageId: result.messageId };
+        } catch (error) {
+            console.error(`[Email] Failed to send mod report email:`, error);
             return { success: false, error: error.message };
         }
     }

@@ -1,6 +1,6 @@
 <%- include('partials/header', { title: title }) %>
 
-<div class="mod-detail-page">
+<div class="mod-detail-page" data-mod-id="<%= mod.id %>">
     <div class="container">
         <!-- Preview Mode Indicator -->
         <% if (typeof isPreview !== 'undefined' && isPreview) { %>
@@ -38,13 +38,13 @@
                         <div class="meta-item">
                             <i class="fas fa-download"></i>
                             <span class="meta-label">Downloads:</span>
-                            <span class="meta-value"><%= mod.download_count.toLocaleString() %></span>
+                            <span class="meta-value"><%= mod.download_count %></span>
                         </div>
                         <% if (mod.rating_average > 0) { %>
                             <div class="meta-item">
                                 <i class="fas fa-star"></i>
                                 <span class="meta-label">Rating:</span>
-                                <span class="meta-value"><%= mod.rating_average.toFixed(1) %>/5 (<%= mod.rating_count %> reviews)</span>
+                                <span class="meta-value"><%= mod.rating_average %>/5 (<%= mod.rating_count %> reviews)</span>
                             </div>
                         <% } %>
                         <div class="meta-item">
@@ -56,7 +56,7 @@
                             <div class="meta-item">
                                 <i class="fas fa-hdd"></i>
                                 <span class="meta-label">Size:</span>
-                                <span class="meta-value"><%= (mod.file_size / (1024 * 1024)).toFixed(1) %> MB</span>
+                                <span class="meta-value"><%= mod.file_size ? (mod.file_size / (1024 * 1024)) + ' MB' : '' %></span>
                             </div>
                         <% } %>
                     </div>
@@ -216,7 +216,7 @@
                     <div class="mod-stats">
                         <div class="stat-item">
                             <span class="stat-label">Downloads</span>
-                            <span class="stat-value"><%= mod.download_count.toLocaleString() %></span>
+                            <span class="stat-value"><%= mod.download_count %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Views</span>

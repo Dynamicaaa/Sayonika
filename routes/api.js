@@ -1064,6 +1064,248 @@ router.post('/admin/mods/:id/reject', requireAuth, requireAdmin, [
     }
 });
 
+// Admin: Get pending mods for review
+router.get('/admin/mods/pending', requireAuth, requireAdmin, async (req, res) => {
+    console.log(`[API] Fetching pending mods for admin ${req.user.id}`);
+
+    try {
+        const pendingMods = await db.getPendingMods();
+        console.log(`[API] Retrieved ${pendingMods.length} pending mods`);
+
+        // Process mods data
+        const processedMods = pendingMods.map(mod => ({
+            ...mod,
+            screenshots: mod.screenshots ? JSON.parse(mod.screenshots) : [],
+            tags: mod.tags ? JSON.parse(mod.tags) : [],
+            requirements: mod.requirements ? JSON.parse(mod.requirements) : {}
+        }));
+
+        console.log(`[API] Returning processed pending mods data`);
+        res.json(processedMods);
+    } catch (error) {
+        console.error('[API] Get pending mods error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Debug endpoint: Get pending mods count
+router.get('/admin/mods/pending/count', requireAuth, requireAdmin, async (req, res) => {
+    console.log(`[API] Fetching pending mods count for admin ${req.user.id}`);
+
+    try {
+        const pendingMods = await db.getPendingMods();
+        const count = pendingMods.length;
+
+        console.log(`[API] Pending mods count: ${count}`);
+        res.json({ count, mods: pendingMods.map(m => ({ id: m.id, title: m.title, created_at: m.created_at })) });
+    } catch (error) {
+        console.error('[API] Get pending mods count error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin: Receive frontend logs
+router.post('/admin/logs', requireAuth, requireAdmin, [
+    body('level').isIn(['info', 'warn', 'error', 'debug']).withMessage('Invalid log level'),
+    body('message').isLength({ min: 1, max: 1000 }).withMessage('Message must be 1-1000 characters'),
+    body('source').optional().isLength({ max: 100 }).withMessage('Source must be less than 100 characters')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { level, message, data, timestamp, source } = req.body;
+        const adminId = req.user.id;
+        const adminUsername = req.user.username;
+
+        // Format log message for server console
+        const logPrefix = `[${source || 'Frontend'}] [${adminUsername}]`;
+        const logMessage = `${logPrefix} ${message}`;
+
+        // Log to server console based on level
+        switch (level) {
+            case 'error':
+                console.error(logMessage, data || '');
+                break;
+            case 'warn':
+                console.warn(logMessage, data || '');
+                break;
+            case 'debug':
+                console.debug(logMessage, data || '');
+                break;
+            case 'info':
+            default:
+                console.log(logMessage, data || '');
+                break;
+        }
+
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error('[API] Frontend logging error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Notifications API
+router.get('/notifications', requireAuth, async (req, res) => {
+    try {
+        const notifications = await db.getUserNotifications(req.user.id);
+        res.json(notifications);
+    } catch (error) {
+        console.error('Get notifications error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/notifications/unread-count', requireAuth, async (req, res) => {
+    try {
+        const count = await db.getUnreadNotificationCount(req.user.id);
+        res.json({ count });
+    } catch (error) {
+        console.error('Get unread count error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Mark notification as read endpoint info (GET)
+router.get('/notifications/:id/read', (req, res) => {
+    res.json({
+        message: 'Mark notification as read endpoint',
+        method: 'POST',
+        url: '/api/notifications/:id/read',
+        authentication: 'Required - must be logged in',
+        description: 'Mark a specific notification as read',
+        note: 'Replace :id with notification ID'
+    });
+});
+
+// Mark notification as read (POST)
+router.post('/notifications/:id/read', requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Verify notification belongs to user
+        const notification = await db.get('SELECT * FROM notifications WHERE id = ? AND user_id = ?', [id, req.user.id]);
+        if (!notification) {
+            return res.status(404).json({ error: 'Notification not found' });
+        }
+
+        await db.markNotificationAsRead(id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Mark notification read error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.post('/notifications/mark-all-read', requireAuth, async (req, res) => {
+    try {
+        await db.markAllNotificationsAsRead(req.user.id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Mark all notifications read error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.delete('/notifications/:id', requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Verify notification belongs to user
+        const notification = await db.get('SELECT * FROM notifications WHERE id = ? AND user_id = ?', [id, req.user.id]);
+        if (!notification) {
+            return res.status(404).json({ error: 'Notification not found' });
+        }
+
+        await db.deleteNotification(id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Delete notification error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin: Approve mod
+router.post('/admin/mods/:id/approve', requireAuth, requireAdmin, [
+    body('reason').optional().isLength({ max: 1000 }).withMessage('Reason must be less than 1000 characters')
+], async (req, res) => {
+    const modId = req.params.id;
+    const adminId = req.user.id;
+
+    console.log(`[API] Mod approval request - Mod ID: ${modId}, Admin ID: ${adminId}`);
+
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log(`[API] Validation errors for mod approval:`, errors.array());
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { reason } = req.body;
+        console.log(`[API] Approval reason provided: ${reason ? 'Yes' : 'No'}`);
+
+        // Check if mod exists
+        const mod = await db.getModById(parseInt(modId));
+        if (!mod) {
+            console.log(`[API] Mod not found for approval - ID: ${modId}`);
+            return res.status(404).json({ error: 'Mod not found' });
+        }
+
+        console.log(`[API] Found mod for approval: ${mod.title} (ID: ${modId})`);
+        console.log(`[API] Current mod status - Published: ${mod.is_published}`);
+
+        await db.approveModReview(parseInt(modId), adminId, reason);
+
+        console.log(`[API] Mod ${modId} approved successfully by admin ${adminId}`);
+        res.json({ message: 'Mod approved successfully' });
+    } catch (error) {
+        console.error(`[API] Approve mod error for mod ${modId}:`, error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin: Reject mod
+router.post('/admin/mods/:id/reject', requireAuth, requireAdmin, [
+    body('reason').optional().isLength({ max: 1000 }).withMessage('Reason must be less than 1000 characters')
+], async (req, res) => {
+    const modId = req.params.id;
+    const adminId = req.user.id;
+
+    console.log(`[API] Mod rejection request - Mod ID: ${modId}, Admin ID: ${adminId}`);
+
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log(`[API] Validation errors for mod rejection:`, errors.array());
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { reason } = req.body;
+        console.log(`[API] Rejection reason provided: ${reason ? 'Yes' : 'No'}`);
+
+        // Check if mod exists
+        const mod = await db.getModById(parseInt(modId));
+        if (!mod) {
+            console.log(`[API] Mod not found for rejection - ID: ${modId}`);
+            return res.status(404).json({ error: 'Mod not found' });
+        }
+
+        console.log(`[API] Found mod for rejection: ${mod.title} (ID: ${modId})`);
+        console.log(`[API] Current mod status - Published: ${mod.is_published}`);
+
+        const result = await db.rejectModReview(parseInt(modId), adminId, reason);
+
+        console.log(`[API] Mod ${modId} rejected and removed successfully by admin ${adminId}`);
+        res.json({ message: 'Mod rejected and removed successfully' });
+    } catch (error) {
+        console.error(`[API] Reject mod error for mod ${modId}:`, error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Admin: Get mod reviews
 router.get('/admin/mods/:id/reviews', requireAuth, requireAdmin, async (req, res) => {
     try {
@@ -1858,6 +2100,50 @@ router.delete('/admin/support/tickets/:id', requireAuth, requireAdmin, async (re
         res.json({ message: 'Support ticket deleted successfully' });
     } catch (error) {
         console.error('Delete support ticket error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Mod reporting endpoint
+router.post('/report/mod', [
+    body('modId').isInt().withMessage('Mod ID is required and must be an integer'),
+    body('reason').isLength({ min: 5, max: 500 }).withMessage('Reason is required (5-500 chars)'),
+    body('details').optional().isLength({ max: 2000 }).withMessage('Details must be less than 2000 chars')
+], requireAuth, requireEmailVerified, async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const { modId, reason, details } = req.body;
+        // Get mod info
+        const mod = await db.getModById(modId);
+        if (!mod) {
+            return res.status(404).json({ error: 'Mod not found' });
+        }
+        // Get admin/owner emails
+        const adminEmails = await db.getAdminEmails();
+        if (!adminEmails.length) {
+            return res.status(500).json({ error: 'No admin emails configured' });
+        }
+        // Prepare report data for email
+        const reportData = {
+            modId: mod.id,
+            modTitle: mod.title,
+            reporterName: req.user.display_name || req.user.username,
+            reporterEmail: req.user.email,
+            reason,
+            details
+        };
+        // Send email
+        const emailResult = await emailService.sendModReportEmail(adminEmails, reportData);
+        if (!emailResult.success) {
+            return res.status(500).json({ error: 'Failed to send report email', details: emailResult.error });
+        }
+        // Optionally: store report in DB here
+        res.status(201).json({ success: true, message: 'Report submitted and admins notified.' });
+    } catch (error) {
+        console.error('Mod report error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

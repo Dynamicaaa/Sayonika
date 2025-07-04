@@ -140,7 +140,11 @@ function reportMod() {
             }
 
             if (submitBtn) {
-                submitBtn.addEventListener('click', submitReport);
+                submitBtn.addEventListener('click', function() {
+                    const textarea = document.querySelector('.modal-overlay textarea');
+                    const reason = textarea ? textarea.value : '';
+                    submitReport(reason);
+                });
             }
         }, 100);
     } else {
@@ -153,16 +157,70 @@ function reportMod() {
 }
 
 function submitReport(reason) {
-    if (window.S && window.S.notify) {
-        window.S.notify.success('Report submitted successfully!');
-    } else {
-        alert('Report submitted successfully!');
+    // Get modId from a global variable or data attribute
+    let modId = window.modId;
+    if (!modId) {
+        // Try to get from DOM (e.g., data-mod-id on body or main container)
+        const modContainer = document.querySelector('.mod-detail_page, [data-mod-id]');
+        if (modContainer && modContainer.dataset.modId) {
+            modId = modContainer.dataset.modId;
+        }
     }
-
-    const modalOverlay = document.querySelector('.modal-overlay');
-    if (modalOverlay) {
-        modalOverlay.remove();
+    if (!modId) {
+        alert('Could not determine mod ID for report.');
+        return;
     }
+    // Validate reason
+    if (!reason || reason.length < 5) {
+        if (window.S && window.S.notify) {
+            window.S.notify.error('Please provide a reason (at least 5 characters).');
+        } else {
+            alert('Please provide a reason (at least 5 characters).');
+        }
+        return;
+    }
+    fetch('/api/report/mod', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            modId: parseInt(modId),
+            reason: reason,
+            details: '' // Optionally add more details
+        })
+    })
+    .then(async res => {
+        // Always close the modal on submit (success or error)
+        setTimeout(() => {
+            document.querySelectorAll('.modal-overlay').forEach(el => el.remove());
+        }, 10);
+        if (res.ok) {
+            if (window.S && window.S.notify) {
+                window.S.notify.success('Report submitted successfully!');
+            } else {
+                alert('Report submitted successfully!');
+            }
+        } else {
+            const data = await res.json().catch(() => ({}));
+            const msg = data && data.error ? data.error : 'Failed to submit report.';
+            if (window.S && window.S.notify) {
+                window.S.notify.error(msg);
+            } else {
+                alert(msg);
+            }
+        }
+    })
+    .catch(() => {
+        setTimeout(() => {
+            document.querySelectorAll('.modal-overlay').forEach(el => el.remove());
+        }, 10);
+        if (window.S && window.S.notify) {
+            window.S.notify.error('Failed to submit report.');
+        } else {
+            alert('Failed to submit report.');
+        }
+    });
 }
 
 // Comments functionality
