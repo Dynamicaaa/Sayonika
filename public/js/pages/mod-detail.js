@@ -85,6 +85,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Comments functionality
     initializeComments();
+
+    // Insert favorite button
+    insertFavoriteButton();
 });
 
 // Screenshot modal
@@ -106,13 +109,119 @@ function closeScreenshot() {
 }
 
 // Favorite toggle
-function toggleFavorite() {
-    // Implementation for favorite toggle
-    if (window.S && window.S.notify) {
-        window.S.notify.info('Favorite functionality coming soon!');
-    } else {
-        alert('Favorite functionality coming soon!');
+function toggleFavorite(btn) {
+    if (!btn || typeof btn.classList === 'undefined') {
+        // Defensive: fallback to querySelector if btn is missing
+        btn = document.querySelector('.favorite-btn');
+        if (!btn || typeof btn.classList === 'undefined') {
+            if (window.S && window.S.notify) {
+                window.S.notify.error('Favorite button not found.');
+            } else {
+                alert('Favorite button not found.');
+            }
+            return;
+        }
     }
+    if (!window.currentUser) {
+        if (window.S && window.S.notify) {
+            window.S.notify.info('You must be logged in to favorite mods.');
+        } else {
+            alert('You must be logged in to favorite mods.');
+        }
+        return;
+    }
+    const modSlug = window.location.pathname.split('/').pop();
+    const isFavorited = btn.classList.contains('favorited');
+    btn.disabled = true;
+    btn.textContent = isFavorited ? 'Removing...' : 'Adding...';
+    const method = isFavorited ? 'DELETE' : 'POST';
+    const url = isFavorited ? `/api/user/favorites/${modSlug}` : '/api/user/favorites';
+    // Always use numeric modId for POST
+    let modId = window.modId || btn.getAttribute('data-mod-id');
+    if (!modId) {
+        const modContainer = document.querySelector('.mod-detail_page, [data-mod-id]');
+        if (modContainer && modContainer.dataset.modId) {
+            modId = modContainer.dataset.modId;
+        }
+    }
+    if (!modId && !isFavorited) {
+        btn.disabled = false;
+        if (window.S && window.S.notify) {
+            window.S.notify.error('Could not determine mod ID for favorite.');
+        } else {
+            alert('Could not determine mod ID for favorite.');
+        }
+        return;
+    }
+    const body = isFavorited ? undefined : JSON.stringify({ modId: Number(modId) });
+    fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: body
+    })
+    .then(async res => {
+        btn.disabled = false;
+        if (res.ok) {
+            btn.classList.toggle('favorited', !isFavorited);
+            btn.innerHTML = !isFavorited
+                ? '<i class="fas fa-star"></i> Remove From Favorites'
+                : '<i class="fas fa-star"></i> Add to Favorites';
+            if (window.S && window.S.notify) {
+                window.S.notify.success(!isFavorited ? 'Added to favorites!' : 'Removed from favorites.');
+            }
+        } else {
+            const data = await res.json().catch(() => ({}));
+            const msg = data && data.error ? data.error : 'Failed to update favorite.';
+            if (window.S && window.S.notify) {
+                window.S.notify.error(msg);
+            } else {
+                alert(msg);
+            }
+            btn.innerHTML = isFavorited
+                ? '<i class="fas fa-star"></i> Remove From Favorites'
+                : '<i class="fas fa-star"></i> Add to Favorites';
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = isFavorited
+            ? '<i class="fas fa-star"></i> Remove From Favorites'
+            : '<i class="fas fa-star"></i> Add to Favorites';
+        if (window.S && window.S.notify) {
+            window.S.notify.error('Failed to update favorite.');
+        } else {
+            alert('Failed to update favorite.');
+        }
+    });
+}
+
+// Insert favorite button on DOMContentLoaded
+function insertFavoriteButton() {
+    const modHeader = document.querySelector('.mod-header, .mod-detail-header, h1');
+    if (!modHeader) return;
+    let btn = document.createElement('button');
+    btn.className = 'favorite-btn btn btn-outline';
+    btn.style.marginLeft = '1rem';
+    btn.innerHTML = '<i class="fas fa-star"></i> Add to Favorites';
+    // Try to get modId from DOM if not set globally
+    let modId = window.modId;
+    if (!modId) {
+        const modContainer = document.querySelector('.mod-detail_page, [data-mod-id]');
+        if (modContainer && modContainer.dataset.modId) {
+            modId = modContainer.dataset.modId;
+        }
+    }
+    btn.setAttribute('data-mod-id', modId || '');
+    btn.addEventListener('click', function() { toggleFavorite(btn); });
+    modHeader.appendChild(btn);
+    // Check if already favorited
+    const modSlug = window.location.pathname.split('/').pop();
+    fetch(`/api/mods/${modSlug}/is-favorite`).then(res => res.json()).then(data => {
+        if (data && data.isFavorite) {
+            btn.classList.add('favorited');
+            btn.innerHTML = '<i class="fas fa-star"></i> Remove From Favorites';
+        }
+    });
 }
 
 // Report mod

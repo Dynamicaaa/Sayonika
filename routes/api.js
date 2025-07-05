@@ -189,6 +189,69 @@ const upload = multer({
     }
 });
 
+// --- FAVORITES ENDPOINTS ---
+
+// Get all favorite mods for the current user
+router.get('/user/favorites', requireAuth, async (req, res) => {
+    try {
+        const favorites = await db.all(`
+            SELECT mods.* FROM favorites
+            JOIN mods ON favorites.mod_id = mods.id
+            WHERE favorites.user_id = ?
+        `, [req.user.id]);
+        res.json(favorites);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch favorites' });
+    }
+});
+
+// Add a mod to favorites
+router.post('/user/favorites', requireAuth, async (req, res) => {
+    const { modId } = req.body;
+    if (!modId) return res.status(400).json({ error: 'modId required' });
+    try {
+        await db.run(
+            'INSERT OR IGNORE INTO favorites (user_id, mod_id) VALUES (?, ?)',
+            [req.user.id, modId]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to add favorite' });
+    }
+});
+
+// Remove a mod from favorites
+router.delete('/user/favorites/:modSlug', requireAuth, async (req, res) => {
+    const { modSlug } = req.params;
+    try {
+        const mod = await db.get('SELECT id FROM mods WHERE slug = ?', [modSlug]);
+        if (!mod) return res.status(404).json({ error: 'Mod not found' });
+        await db.run(
+            'DELETE FROM favorites WHERE user_id = ? AND mod_id = ?',
+            [req.user.id, mod.id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to remove favorite' });
+    }
+});
+
+// Check if a mod is favorited by the current user
+router.get('/mods/:modSlug/is-favorite', requireAuth, async (req, res) => {
+    const { modSlug } = req.params;
+    try {
+        const mod = await db.get('SELECT id FROM mods WHERE slug = ?', [modSlug]);
+        if (!mod) return res.json({ isFavorite: false });
+        const fav = await db.get(
+            'SELECT 1 FROM favorites WHERE user_id = ? AND mod_id = ?',
+            [req.user.id, mod.id]
+        );
+        res.json({ isFavorite: !!fav });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to check favorite' });
+    }
+});
+
 // Get all mods
 router.get('/mods', [
     query('category').optional().isInt().withMessage('Category must be a number'),
@@ -818,248 +881,6 @@ router.patch('/mods/:id/feature', requireAuth, requireAdmin, async (req, res) =>
         res.json({ message: `Mod ${is_featured ? 'featured' : 'unfeatured'} successfully` });
     } catch (error) {
         console.error('Feature mod error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Admin: Get pending mods for review
-router.get('/admin/mods/pending', requireAuth, requireAdmin, async (req, res) => {
-    console.log(`[API] Fetching pending mods for admin ${req.user.id}`);
-
-    try {
-        const pendingMods = await db.getPendingMods();
-        console.log(`[API] Retrieved ${pendingMods.length} pending mods`);
-
-        // Process mods data
-        const processedMods = pendingMods.map(mod => ({
-            ...mod,
-            screenshots: mod.screenshots ? JSON.parse(mod.screenshots) : [],
-            tags: mod.tags ? JSON.parse(mod.tags) : [],
-            requirements: mod.requirements ? JSON.parse(mod.requirements) : {}
-        }));
-
-        console.log(`[API] Returning processed pending mods data`);
-        res.json(processedMods);
-    } catch (error) {
-        console.error('[API] Get pending mods error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Debug endpoint: Get pending mods count
-router.get('/admin/mods/pending/count', requireAuth, requireAdmin, async (req, res) => {
-    console.log(`[API] Fetching pending mods count for admin ${req.user.id}`);
-
-    try {
-        const pendingMods = await db.getPendingMods();
-        const count = pendingMods.length;
-
-        console.log(`[API] Pending mods count: ${count}`);
-        res.json({ count, mods: pendingMods.map(m => ({ id: m.id, title: m.title, created_at: m.created_at })) });
-    } catch (error) {
-        console.error('[API] Get pending mods count error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Admin: Receive frontend logs
-router.post('/admin/logs', requireAuth, requireAdmin, [
-    body('level').isIn(['info', 'warn', 'error', 'debug']).withMessage('Invalid log level'),
-    body('message').isLength({ min: 1, max: 1000 }).withMessage('Message must be 1-1000 characters'),
-    body('source').optional().isLength({ max: 100 }).withMessage('Source must be less than 100 characters')
-], async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        const { level, message, data, timestamp, source } = req.body;
-        const adminId = req.user.id;
-        const adminUsername = req.user.username;
-
-        // Format log message for server console
-        const logPrefix = `[${source || 'Frontend'}] [${adminUsername}]`;
-        const logMessage = `${logPrefix} ${message}`;
-
-        // Log to server console based on level
-        switch (level) {
-            case 'error':
-                console.error(logMessage, data || '');
-                break;
-            case 'warn':
-                console.warn(logMessage, data || '');
-                break;
-            case 'debug':
-                console.debug(logMessage, data || '');
-                break;
-            case 'info':
-            default:
-                console.log(logMessage, data || '');
-                break;
-        }
-
-        res.status(200).json({ success: true });
-    } catch (error) {
-        console.error('[API] Frontend logging error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Notifications API
-router.get('/notifications', requireAuth, async (req, res) => {
-    try {
-        const notifications = await db.getUserNotifications(req.user.id);
-        res.json(notifications);
-    } catch (error) {
-        console.error('Get notifications error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-router.get('/notifications/unread-count', requireAuth, async (req, res) => {
-    try {
-        const count = await db.getUnreadNotificationCount(req.user.id);
-        res.json({ count });
-    } catch (error) {
-        console.error('Get unread count error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Mark notification as read endpoint info (GET)
-router.get('/notifications/:id/read', (req, res) => {
-    res.json({
-        message: 'Mark notification as read endpoint',
-        method: 'POST',
-        url: '/api/notifications/:id/read',
-        authentication: 'Required - must be logged in',
-        description: 'Mark a specific notification as read',
-        note: 'Replace :id with notification ID'
-    });
-});
-
-// Mark notification as read (POST)
-router.post('/notifications/:id/read', requireAuth, async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // Verify notification belongs to user
-        const notification = await db.get('SELECT * FROM notifications WHERE id = ? AND user_id = ?', [id, req.user.id]);
-        if (!notification) {
-            return res.status(404).json({ error: 'Notification not found' });
-        }
-
-        await db.markNotificationAsRead(id);
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Mark notification read error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-router.post('/notifications/mark-all-read', requireAuth, async (req, res) => {
-    try {
-        await db.markAllNotificationsAsRead(req.user.id);
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Mark all notifications read error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-router.delete('/notifications/:id', requireAuth, async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // Verify notification belongs to user
-        const notification = await db.get('SELECT * FROM notifications WHERE id = ? AND user_id = ?', [id, req.user.id]);
-        if (!notification) {
-            return res.status(404).json({ error: 'Notification not found' });
-        }
-
-        await db.deleteNotification(id);
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Delete notification error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Admin: Approve mod
-router.post('/admin/mods/:id/approve', requireAuth, requireAdmin, [
-    body('reason').optional().isLength({ max: 1000 }).withMessage('Reason must be less than 1000 characters')
-], async (req, res) => {
-    const modId = req.params.id;
-    const adminId = req.user.id;
-
-    console.log(`[API] Mod approval request - Mod ID: ${modId}, Admin ID: ${adminId}`);
-
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            console.log(`[API] Validation errors for mod approval:`, errors.array());
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        const { reason } = req.body;
-        console.log(`[API] Approval reason provided: ${reason ? 'Yes' : 'No'}`);
-
-        // Check if mod exists
-        const mod = await db.getModById(parseInt(modId));
-        if (!mod) {
-            console.log(`[API] Mod not found for approval - ID: ${modId}`);
-            return res.status(404).json({ error: 'Mod not found' });
-        }
-
-        console.log(`[API] Found mod for approval: ${mod.title} (ID: ${modId})`);
-        console.log(`[API] Current mod status - Published: ${mod.is_published}`);
-
-        await db.approveModReview(parseInt(modId), adminId, reason);
-
-        console.log(`[API] Mod ${modId} approved successfully by admin ${adminId}`);
-        res.json({ message: 'Mod approved successfully' });
-    } catch (error) {
-        console.error(`[API] Approve mod error for mod ${modId}:`, error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Admin: Reject mod
-router.post('/admin/mods/:id/reject', requireAuth, requireAdmin, [
-    body('reason').optional().isLength({ max: 1000 }).withMessage('Reason must be less than 1000 characters')
-], async (req, res) => {
-    const modId = req.params.id;
-    const adminId = req.user.id;
-
-    console.log(`[API] Mod rejection request - Mod ID: ${modId}, Admin ID: ${adminId}`);
-
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            console.log(`[API] Validation errors for mod rejection:`, errors.array());
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        const { reason } = req.body;
-        console.log(`[API] Rejection reason provided: ${reason ? 'Yes' : 'No'}`);
-
-        // Check if mod exists
-        const mod = await db.getModById(parseInt(modId));
-        if (!mod) {
-            console.log(`[API] Mod not found for rejection - ID: ${modId}`);
-            return res.status(404).json({ error: 'Mod not found' });
-        }
-
-        console.log(`[API] Found mod for rejection: ${mod.title} (ID: ${modId})`);
-        console.log(`[API] Current mod status - Published: ${mod.is_published}`);
-
-        const result = await db.rejectModReview(parseInt(modId), adminId, reason);
-
-        console.log(`[API] Mod ${modId} rejected and removed successfully by admin ${adminId}`);
-        res.json({ message: 'Mod rejected and removed successfully' });
-    } catch (error) {
-        console.error(`[API] Reject mod error for mod ${modId}:`, error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

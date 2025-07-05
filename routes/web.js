@@ -216,6 +216,15 @@ router.get('/profile', async (req, res) => {
         // Check if user has a default avatar
         const hasDefaultAvatar = isDefaultAvatar(req.user.avatar_url);
 
+        // Get user's favorite mods
+        const userFavorites = await db.all(
+            `SELECT m.* FROM favorites f
+             JOIN mods m ON f.mod_id = m.id
+             WHERE f.user_id = ?
+             ORDER BY f.created_at DESC`,
+            [req.user.id]
+        );
+
         res.render('profile', {
             title: 'Profile - Sayonika',
             user: req.user,
@@ -223,6 +232,7 @@ router.get('/profile', async (req, res) => {
             userAchievements,
             userStats,
             recentAchievements,
+            userFavorites, // <-- pass to EJS
             currentPath: req.path,
             error: req.query.error,
             errorMessage: req.query.message ? decodeURIComponent(req.query.message) : null,
@@ -738,6 +748,73 @@ router.get('/leaderboard', async (req, res) => {
         });
     } catch (error) {
         console.error('Leaderboard page error:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Internal server error',
+            user: req.user,
+            currentPath: req.path
+        });
+    }
+});
+
+// Public user profile page
+router.get('/user/:username', async (req, res) => {
+    const { username } = req.params;
+    try {
+        // Get user by username
+        const user = await db.getUserByUsername(username);
+        if (!user) {
+            return res.status(404).render('error', {
+                title: 'User Not Found',
+                message: 'The requested user could not be found.',
+                user: req.user,
+                currentPath: req.path
+            });
+        }
+        // Get user's mods
+        const userMods = await db.all(
+            `SELECT m.*, c.name as category_name
+             FROM mods m
+             LEFT JOIN categories c ON m.category_id = c.id
+             WHERE m.author_id = ?
+             ORDER BY m.created_at DESC`,
+            [user.id]
+        );
+        // Get user achievements
+        const userAchievements = await db.getUserAchievements(user.id);
+        // Get user game stats
+        const userStats = await db.getUserGameStats(user.id);
+        // Get recent achievements (last 5)
+        const recentAchievements = userAchievements.slice(0, 5);
+        // Check if user has a default avatar
+        const hasDefaultAvatar = isDefaultAvatar(user.avatar_url);
+        // Get user's favorite mods (public view: only show published mods)
+        const userFavorites = await db.all(
+            `SELECT m.*, c.name as category_name
+             FROM favorites f
+             JOIN mods m ON f.mod_id = m.id
+             LEFT JOIN categories c ON m.category_id = c.id
+             WHERE f.user_id = ? AND m.is_published = 1
+             ORDER BY f.created_at DESC`,
+            [user.id]
+        );
+        res.render('profile', {
+            title: `${user.display_name || user.username}'s Profile`,
+            user: req.user, // current logged in user
+            profileUser: user, // the profile being viewed
+            userMods,
+            userAchievements,
+            userStats,
+            recentAchievements,
+            hasDefaultAvatar,
+            userFavorites,
+            isPublicProfile: true,
+            error: req.query.error || null,
+            errorMessage: req.query.message ? decodeURIComponent(req.query.message) : null,
+            success: req.query.success || null
+        });
+    } catch (error) {
+        console.error('User profile error:', error);
         res.status(500).render('error', {
             title: 'Error',
             message: 'Internal server error',
