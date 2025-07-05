@@ -13,9 +13,6 @@
     <a href="LICENSE">
       <img src="https://img.shields.io/github/license/Dynamicaaa/Sayonika?style=for-the-badge&logo=opensourceinitiative&logoColor=white&color=4169e1&labelColor=191970" alt="License">
     </a>
-    <a href="https://discord.gg/ktd9NR2XA2">
-      <img src="https://img.shields.io/badge/Join_Our_Discord!-454fbf?style=for-the-badge&logo=discord&logoColor=white" alt="Join Our Discord!">
-    </a>
   </p>
   
   <p>
